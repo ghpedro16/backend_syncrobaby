@@ -5,22 +5,22 @@
  * Versão: 1.0
  * ****************************************************************************************************************************************/
 
-const userDAO = require('../../model/user.js')
+const measuresDAO = require('../../model/measures.js')
 
 const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
 
-const listUser = async function(id){
+const listMeasuresByChildrenId = async function(id_children){
 
 }
 
-const insertUser = async function(){
+const insertMeasures = async function(){
 
 }
 
-const updateUser = async function(id){
+const updateMeasures = async function(id){
 
 }
 
-const deleteUser = async function(id){
+const deleteMeasures = async function(id){
 
 }
