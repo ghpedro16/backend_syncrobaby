@@ -5,20 +5,17 @@
  * Versão: 1.0
  * ****************************************************************************************************/
 
-//Criar variavel para conexao com o banco
+const db = require('../config/connection.js')
 
 const getUserById = async function (id) {
     try {
-        //Script sql
-        let sql = null
+        
+        let dados = await db('tbl_responsavel')
+        .select('*')
+        .where('id_responsavel', id)
+        .first()
 
-        //Variavel de encaminhamento ao banco
-        let result = null
-
-        if (Array.isArray(result))
-            return result
-        else
-            return false
+        return dados || false
 
     } catch (error) {
         return false
@@ -27,16 +24,16 @@ const getUserById = async function (id) {
 
 const getUserByLogin = async function (email, password) {
     try {
-        //Script sql
-        let sql = null
 
-        //Variavel de encaminhamento ao banco
-        let result = null
+        let dados = await db('tbl_responsavel')
+        .select('*')
+        .where({
+            email: `${email}`,
+            senha: `${password}`
+        })
+        .first()
 
-        if (Array.isArray(result))
-            return result
-        else
-            return false
+        return dados || false
 
     } catch (error) {
         return false
@@ -44,15 +41,58 @@ const getUserByLogin = async function (email, password) {
 }
 
 const setInsertUser = async function (user) {
+    try {
 
+        let dados = await db('tbl_responsavel')
+        .insert({
+            nome_responsavel: `${user.nome_responsavel}`,
+            email: `${user.email}`,
+            senha: `${user.senha}`,
+            foto_perfil: `${user.foto_perfil}`,
+            ativo: `${user.ativo}`
+        })
+
+        return dados || false
+
+    } catch (error) {
+        return false
+    }
 }
 
 const setUpdateUser = async function (id, user) {
+    try {
 
+        let dados = await db('tbl_responsavel')
+        .update({
+            nome_responsavel: `${user.nome_responsavel}`,
+            email: `${user.email}`,
+            senha: `${user.senha}`,
+            foto_perfil: `${user.foto_perfil}`,
+            ativo: `${user.ativo}`
+        })
+        .where('id_responsavel', id)
+
+        return dados || false
+
+    } catch (error) {
+        return false
+    }
 }
 
 const setDeleteUser = async function (id) {
+    try {
 
+        let dados = await db('tbl_responsavel')
+        .update({
+            ativo: false
+        })
+        .where('id_responsavel', id)
+
+        return dados || false
+
+    } catch (error) {
+        return false
+    }
 }
 
 module.exports = {
