@@ -54,3 +54,11 @@ const setUpdateChildren = async function(id){
 const setDeleteChildren = async function(id){
 
 }
+
+module.exports = {
+    getChildrenById,
+    getAllChildrenByIdUser,
+    setInsertChildren,
+    setUpdateChildren,
+    setDeleteChildren
+}
