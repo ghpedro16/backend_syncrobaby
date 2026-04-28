@@ -48,8 +48,7 @@ const setInsertUser = async function (user) {
             nome_responsavel: `${user.nome_responsavel}`,
             email: `${user.email}`,
             senha: `${user.senha}`,
-            foto_perfil: `${user.foto_perfil}`,
-            ativo: `${user.ativo}`
+            foto_perfil: `${user.foto_perfil}`
         })
 
         return dados || false
@@ -67,8 +66,7 @@ const setUpdateUser = async function (id, user) {
             nome_responsavel: `${user.nome_responsavel}`,
             email: `${user.email}`,
             senha: `${user.senha}`,
-            foto_perfil: `${user.foto_perfil}`,
-            ativo: `${user.ativo}`
+            foto_perfil: `${user.foto_perfil}`
         })
         .where('id_responsavel', id)
 
@@ -79,14 +77,17 @@ const setUpdateUser = async function (id, user) {
     }
 }
 
-const setDeleteUser = async function (id) {
+const setDeleteUser = async function (id, password) {
     try {
 
         let dados = await db('tbl_responsavel')
         .update({
             ativo: false
         })
-        .where('id_responsavel', id)
+        .where({
+            id_responsavel: `${id}`,
+            senha: `${password}`
+        })
 
         return dados || false
 
