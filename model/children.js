@@ -5,20 +5,15 @@
  * Versão: 1.0
  * ****************************************************************************************************/
 
-//Criar variavel para conexao com o banco
+const db = require('../config/connection.js')
 
 const getAllChildrenByIdUser = async function(id_user){
    try {
-        //Script sql
-        let sql = null
+        let dados = await db('tbl_filho')
+        .select('*')
+        .where('fk_id_responsavel', id_user)
 
-        //Variavel de encaminhamento ao banco
-        let result = null
-
-        if(Array.isArray(result))
-            return result
-        else
-            return false
+        return dados || false
 
    } catch (error) {
         return false
@@ -26,33 +21,75 @@ const getAllChildrenByIdUser = async function(id_user){
 }
 
 const getChildrenById = async function(id){
-    try {
-        //Script sql
-        let sql = null
+   try {
+        let dados = await db('tbl_filho')
+        .select('*')
+        .where('id_filho', id)
 
-        //Variavel de encaminhamento ao banco
-        let result = null
-
-        if(Array.isArray(result))
-            return result
-        else
-            return false
-
+        return dados || false
+        
    } catch (error) {
         return false
    }
 }
 
-const setInsertChildren = async function(){
+const setInsertChildren = async function(children){
+    try {
+        let dados = await db('tbl_filho')
+        .insert({
+            nome_filho: `${children.nome_filho}`,
+            altura: `${children.altura}`,
+            peso: `${children.peso}`,
+            data_nascimento: `${children.data_nascimento}`,
+            imc: `${children.imc}`,
+            tipo_sanguineo: `${children.tipo_sanguineo}`,
+            genero: `${children.genero}`,
+            foto: `${children.foto}`,
+            fk_id_responsavel: `${children.fk_id_responsavel}`,
+        })
 
+        return dados || false
+        
+   } catch (error) {
+        return false
+   }
 }
 
-const setUpdateChildren = async function(id){
+const setUpdateChildren = async function(children, id){
+    try {
+        let dados = await db('tbl_filho')
+        .update({
+            nome_filho: `${children.nome_filho}`,
+            altura: `${children.altura}`,
+            peso: `${children.peso}`,
+            data_nascimento: `${children.data_nascimento}`,
+            imc: `${children.imc}`,
+            tipo_sanguineo: `${children.tipo_sanguineo}`,
+            genero: `${children.genero}`,
+            foto: `${children.foto}`
+        })
+        .where('id_filho', id)
 
+        return dados || false
+        
+   } catch (error) {
+        return false
+   }
 }
 
 const setDeleteChildren = async function(id){
+    try {
+        let dados = await db('tbl_filho')
+        .update({
+            ativo: false
+        })
+        .where('id_filho', id)
 
+        return dados || false
+        
+   } catch (error) {
+        return false
+   }
 }
 
 module.exports = {
