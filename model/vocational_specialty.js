@@ -5,22 +5,40 @@
  * Versão: 1.0
  * ****************************************************************************************************/
 
-//Criar variavel para conexao com o banco
+const db = require('../config/connection.js')
 
 const getVocationalSpecialtyById = async function (id) {
     try {
-        //Script sql
-        let sql = null
+        let dados = await db('tbl_especializacao')
+        .select('*')
+        .where('id_especializacao', id)
 
-        //Variavel de encaminhamento ao banco
-        let result = null
-
-        if (Array.isArray(result))
-            return result
+        if (dados.length > 0)
+            return dados
         else
             return false
 
     } catch (error) {
         return false
     }
+}
+
+const getAllVocationalSpecialty = async function () {
+    try {
+        let dados = await db('tbl_especializacao')
+        .select('*')
+
+        if (dados.length > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
+module.exports = {
+    getVocationalSpecialtyById,
+    getAllVocationalSpecialty
 }
