@@ -5,17 +5,15 @@
  * Versão: 1.0
  * ****************************************************************************************************/
 
-//Criar variavel para conexao com o banco
+const db = require('../config/connection.js')
  
 const getVaccineByStatus = async function(id_status){
     try {
-        //Script sql
-        let sql = null
+        let dados = await db('tbl_vacina')
+        .join('tbl_filho_vacina')
+        .where()
 
-        //Variavel de encaminhamento ao banco
-        let result = null
-
-        if(Array.isArray(result))
+        if(dados.length > 0)
             return result
         else
             return false
@@ -27,13 +25,10 @@ const getVaccineByStatus = async function(id_status){
 
 const getAllVaccines = async function(){
     try {
-        //Script sql
-        let sql = null
+        let dados = await db('tbl_vacina')
+        .select('*')
 
-        //Variavel de encaminhamento ao banco
-        let result = null
-
-        if(Array.isArray(result))
+        if(dados.length > 0)
             return result
         else
             return false
@@ -43,6 +38,17 @@ const getAllVaccines = async function(){
    }
 }
 
-const setUpdateVaccine = async function(id){
+const getVaccineByAgeGroup = async function(age_group){
+    try {
+        let dados = await db('tbl_vacina')
+        .select('*')
 
+        if(dados.length > 0)
+            return result
+        else
+            return false
+
+   } catch (error) {
+        return false
+   }
 }

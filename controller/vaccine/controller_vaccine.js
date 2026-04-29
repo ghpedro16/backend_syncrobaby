@@ -5,19 +5,19 @@
  * Versão: 1.0
  * ****************************************************************************************************************************************/
 
- const vaccineDAO = require('../../model/vaccine.js')
+const vaccineDAO = require('../../model/vaccine.js')
 
- const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
- 
- const listVaccineByStatus = async function(id_status){
- 
- }
- 
- const listVaccines = async function(){
- 
- }
- 
- const updateVaccine = async function(id){
- 
- }
- 
+const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
+
+const listVaccineByStatus = async function (id_status) {
+
+}
+
+const listVaccines = async function () {
+
+}
+
+const updateVaccine = async function (id) {
+
+}
+
