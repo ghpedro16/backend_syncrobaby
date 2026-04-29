@@ -5,22 +5,41 @@
  * Versão: 1.0
  * ****************************************************************************************************/
 
-//Criar variavel para conexao com o banco
+const db = require('../config/connection.js')
 
 const getGreatnessById = async function (id) {
     try {
-        //Script sql
-        let sql = null
+        let dados = db('tbl_grandeza')
+        .select('*')
+        .where('id_grandeza', id)
+        .first()
 
-        //Variavel de encaminhamento ao banco
-        let result = null
-
-        if (Array.isArray(result))
-            return result
+        if(dados.length > 0)
+            return dados
         else
             return false
 
     } catch (error) {
         return false
     }
+}
+
+const getAllGreatness = async function () {
+    try {
+        let dados = db('tbl_grandeza')
+        .select('*')
+
+        if(dados.length > 0)
+            return dados
+        else
+            return false
+        
+    } catch (error) {
+        return false
+    }
+}
+
+module.exports = {
+    getGreatnessById,
+    getAllGreatness
 }

@@ -5,18 +5,17 @@
  * Versão: 1.0
  * ****************************************************************************************************/
 
-//Criar variavel para conexao com o banco
+const db = require('../config/connection.js')
 
-const getProductByType = async function (product_type) {
+const getProductByType = async function (id_type) {
     try {
-        //Script sql
-        let sql = null
+        
+        let dados = await db('tbl_produto')
+        .select('*')
+        .where('fk_id_tipo_produto', id_type)
 
-        //Variavel de encaminhamento ao banco
-        let result = null
-
-        if (Array.isArray(result))
-            return result
+        if(dados.length > 0)
+            return dados
         else
             return false
 
@@ -25,6 +24,27 @@ const getProductByType = async function (product_type) {
     }
 }
 
-const setInsertProduct = async function () {
+const setInsertProduct = async function (product) {
+    try {
+        
+        let dados = await db('tbl_produto')
+        .insert({
+            nome_produto: `${product.nome_produto}`,
+            fk_id_tipo_produto: `${product.fk_id_tipo_produto}`,
+            fk_id_grandeza: `${product.fk_id_grandeza}`
+        })
 
+        if(dados.length > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
+module.exports = {
+    getProductByType,
+    setInsertProduct
 }
