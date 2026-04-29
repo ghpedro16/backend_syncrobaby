@@ -9,7 +9,7 @@ const db = require('../config/connection.js')
 
 const getGreatnessById = async function (id) {
     try {
-        let dados = db('tbl_grandeza')
+        let dados = await db('tbl_grandeza')
         .select('*')
         .where('id_grandeza', id)
         .first()
@@ -26,7 +26,7 @@ const getGreatnessById = async function (id) {
 
 const getAllGreatness = async function () {
     try {
-        let dados = db('tbl_grandeza')
+        let dados = await db('tbl_grandeza')
         .select('*')
 
         if(dados.length > 0)
