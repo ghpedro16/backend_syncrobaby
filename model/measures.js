@@ -5,18 +5,16 @@
  * Versão: 1.0
  * ****************************************************************************************************/
 
-//Criar variavel para conexao com o banco
+const db = require('../config/connection.js')
  
-const getMeasuresByChildrenId = async function(id){
+const getHeightByChildrenId = async function(id){
     try {
-        //Script sql
-        let sql = null
+        let dados = await db('tbl_historico_medidas')
+        .select('altura', 'data')
+        .where('fk_id_filho', id)
 
-        //Variavel de encaminhamento ao banco
-        let result = null
-
-        if(Array.isArray(result))
-            return result
+        if(dados.length > 0)
+            return dados
         else
             return false
 
@@ -25,14 +23,79 @@ const getMeasuresByChildrenId = async function(id){
    }
 }
 
-const setInsertMeasures = async function(){
+const getWeightByChildrenId = async function(id){
+    try {
+        let dados = await db('tbl_historico_medidas')
+        .select('peso', 'data')
+        .where('fk_id_filho', id)
 
+        if(dados.length > 0)
+            return dados
+        else
+            return false
+
+   } catch (error) {
+        return false
+   }
 }
 
-const setUpdateMeasures = async function(id){
+const getBmiByChildrenId = async function(id){
+    try {
+        let dados = await db('tbl_historico_medidas')
+        .select('imc', 'data')
+        .where('fk_id_filho', id)
 
+        if(dados.length > 0)
+            return dados
+        else
+            return false
+
+   } catch (error) {
+        return false
+   }
 }
 
-const setDeleteMeasures = async function(id){
+const getHeadCircumferenceByChildrenId = async function(id){
+    try {
+        let dados = await db('tbl_historico_medidas')
+        .select('perimetro_cefalico', 'data')
+        .where('fk_id_filho', id)
 
+        if(dados.length > 0)
+            return dados
+        else
+            return false
+
+   } catch (error) {
+        return false
+   }
+}
+
+const setInsertMeasures = async function(medidas){
+    try {
+        let dados = await db('tbl_historico_medidas')
+        .insert({
+            peso: `${medidas.peso}`,
+            altura: `${medidas.altura}`,
+            perimetro_cefalico: `${medidas.perimetro_cefalico}`,
+            descricao: `${medidas.descricao}`,
+            fk_id_historico_medidas: `${medidas.fk_id_historico_medidas}`
+        })
+
+        if(dados.length > 0)
+            return dados
+        else
+            return false
+
+   } catch (error) {
+        return false
+   }
+}
+
+module.exports = {
+    getHeightByChildrenId,
+    getWeightByChildrenId,
+    getBmiByChildrenId,
+    getHeadCircumferenceByChildrenId,
+    setInsertMeasures
 }
