@@ -27,9 +27,9 @@ const SUCCESS_REQUEST = {status: true, status_code: 200, message: 'Requisição 
 
 const SUCCESS_CREATE_ITEM = {status: true, status_code: 201, message: 'Requisição bem sucedida...'}
 
-const SUCCESS_UPDATED_ITEM = {status: true, status_code: 200, message: 'Item atualizado com sucesso...'}
+const SUCCESS_UPDATE_ITEM = {status: true, status_code: 200, message: 'Item atualizado com sucesso...'}
 
-const SUCCESS_DELETED_ITEM = {status: true, status_code: 200, message: 'Item excluído com sucesso...'}
+const SUCCESS_DELETE_ITEM = {status: true, status_code: 200, message: 'Item excluído com sucesso...'}
 
 /********************************************************************    MENSAGENS DE ERRO      ********************************************************************/
 
