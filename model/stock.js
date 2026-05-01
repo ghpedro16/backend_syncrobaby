@@ -5,52 +5,80 @@
  * Versão: 1.0
  * ****************************************************************************************************/
 
-//Criar variavel para conexao com o banco
+const db = require('../config/connection.js')
  
-const getStockProductsById = async function(id){
+const getStockRegistryById = async function(id){
     try {
-        //Script sql
-        let sql = null
+        let dados = await db('tbl_stock_registry')
+        .select('*')
+        .where('id_stock_registry', id)
 
-        //Variavel de encaminhamento ao banco
-        let result = null
-
-        if(Array.isArray(result))
-            return result
+        if (dados.length > 0)
+            return dados
         else
             return false
 
-   } catch (error) {
+    } catch (error) {
         return false
-   }
+    }
 }
 
-const getStockByChildrenId = async function(id_children){
+const getStockByChildrenId = async function(id_child){
     try {
-        //Script sql
-        let sql = null
+        let dados = await db('tbl_stock_registry')
+        .select('*')
+        .where('fk_id_child', id_child)
 
-        //Variavel de encaminhamento ao banco
-        let result = null
-
-        if(Array.isArray(result))
-            return result
+        if (dados.length > 0)
+            return dados
         else
             return false
 
-   } catch (error) {
+    } catch (error) {
         return false
-   }
+    }
 }
 
-const setInsertStockProduct = async function(){
+const setInsertStockProduct = async function(stock_product){
+    try {
+        let dados = await db('tbl_stock_registry')
+        .insert({
+            description: `${stock_product.description}`,
+            quantity: `${stock_product.quantity}`,
+            volume: `${stock_product.volume}`,
+            fk_id_child: `${stock_product.fk_id_child}`,
+            fk_id_product: `${stock_product.fk_id_product}`
+        })
 
-}
+        if (dados.length > 0)
+            return dados
+        else
+            return false
 
-const setUpdateStockProduct = async function(id){
-
+    } catch (error) {
+        return false
+    }
 }
 
 const setDeleteStockProduct = async function(id){
+    try {
+        let dados = await db('tbl_stock_registry')
+        .where('id_stock_registry', id)
+        .delete()
 
+        if (dados > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
+module.exports = {
+    getStockRegistryById,
+    getStockByChildrenId,
+    setInsertStockProduct,
+    setDeleteStockProduct
 }
