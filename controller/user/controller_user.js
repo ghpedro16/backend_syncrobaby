@@ -6,8 +6,10 @@
  * ****************************************************************************************************************************************/
 
 const userDAO = require('../../model/user.js')
+const jwt = require('../../middleware/middleware_jwt.js')
 
 const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
+const { jsonExtract } = require('../../config/connection.js')
 
 const listUserId = async function(id){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
@@ -41,6 +43,10 @@ const listUserLogin = async function(email, password){
 
         if(resultUser){
             if(resultUser.length > 0){
+                let tokenUser = jwt.createJWT(resultUser.id)
+
+                resultUser.token = tokenUser
+
                 MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
                 MESSAGES.DEFAULT_HEADER.response.user = resultUser
