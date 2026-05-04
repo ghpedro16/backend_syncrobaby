@@ -7,11 +7,11 @@
 
 const db = require('../config/connection.js')
  
-const getVaccineByStatus = async function(id_status){
+const getVaccineByStatus = async function(status){
     try {
-        let dados = await db('tbl_vacina')
-        .join('tbl_filho_vacina')
-        .where()
+        let dados = await db('vw_vaccination_status')
+        .select('*')
+        .where('application_status', status)
 
         if(dados.length > 0)
             return result
@@ -25,7 +25,7 @@ const getVaccineByStatus = async function(id_status){
 
 const getAllVaccines = async function(){
     try {
-        let dados = await db('tbl_vacina')
+        let dados = await db('tbl_vaccine')
         .select('*')
 
         if(dados.length > 0)
@@ -40,8 +40,9 @@ const getAllVaccines = async function(){
 
 const getVaccineByAgeGroup = async function(age_group){
     try {
-        let dados = await db('tbl_vacina')
+        let dados = await db('vw_application_status')
         .select('*')
+        .where('age_group', age_group)
 
         if(dados.length > 0)
             return result
@@ -51,4 +52,10 @@ const getVaccineByAgeGroup = async function(age_group){
    } catch (error) {
         return false
    }
+}
+
+module.exports = {
+    getAllVaccines,
+    getVaccineByStatus,
+    getVaccineByAgeGroup
 }

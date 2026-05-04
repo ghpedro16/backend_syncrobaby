@@ -9,7 +9,7 @@ const vaccineDAO = require('../../model/vaccine.js')
 
 const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
 
-const listVaccineByStatus = async function (id_status) {
+const listVaccineByStatus = async function (status) {
 
 }
 
@@ -17,7 +17,7 @@ const listVaccines = async function () {
 
 }
 
-const updateVaccine = async function (id) {
+const listVaccineByAgeGroup = async function (age_group) {
 
 }
 
