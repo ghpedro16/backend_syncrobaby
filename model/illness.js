@@ -5,18 +5,32 @@
  * Versão: 1.0
  * ****************************************************************************************************/
 
-//Criar variavel para conexao com o banco
+const db = require('../config/connection.js')
+
+const getIllnessById = async function(id){
+    try {
+        let dados = await db('tbl_illness')
+        .select('*')
+        .where('id_illness', id)
+
+        if(dados.length > 0)
+            return dados
+        else
+            return false
+
+   } catch (error) {
+        return false
+   }
+}
  
-const getIllnessByChildrenId = async function(id_children){
+const getIllnessByChildId = async function(id_child){
     try {
-        //Script sql
-        let sql = null
+        let dados = await db('tbl_illness')
+        .select('*')
+        .where('fk_id_child', id_child)
 
-        //Variavel de encaminhamento ao banco
-        let result = null
-
-        if(Array.isArray(result))
-            return result
+        if(dados.length > 0)
+            return dados
         else
             return false
 
@@ -25,16 +39,14 @@ const getIllnessByChildrenId = async function(id_children){
    }
 }
 
-const getIllnessByType = async function(id_type){
+const getIllnessByType = async function(type){
     try {
-        //Script sql
-        let sql = null
+        let dados = await db('tbl_illness')
+        .select('*')
+        .where('illness_type', type)
 
-        //Variavel de encaminhamento ao banco
-        let result = null
-
-        if(Array.isArray(result))
-            return result
+        if(dados.length > 0)
+            return dados
         else
             return false
 
@@ -43,10 +55,49 @@ const getIllnessByType = async function(id_type){
    }
 }
 
-const setInsertIllness = async function(){
+const setInsertIllness = async function(illness){
+    try {
+        let dados = await db('tbl_illness')
+        .insert({
+            illness_name: `${illness.illness_name}`,
+            start_date: `${illness.start_date}`,
+            end_date: `${illness.end_date}`,
+            description: `${illness.description}`,
+            illness_type: `${illness.illness_type}`,
+            medication: `${illness.medication}`,
+            fk_id_child: `${illness.fk_id_child}`
+        })
 
+        if(dados.length > 0)
+            return dados
+        else
+            return false
+
+   } catch (error) {
+        return false
+   }
 }
 
 const setDeleteIllness = async function(id){
+    try {
+        let dados = await db('tbl_illness')
+        .where('id_illness', id)
+        .delete()
 
+        if(dados > 0)
+            return dados
+        else
+            return false
+
+   } catch (error) {
+        return false
+   }
+}
+
+module.exports = {
+    getIllnessById,
+    getIllnessByChildId,
+    getIllnessByType,
+    setInsertIllness,
+    setDeleteIllness
 }
