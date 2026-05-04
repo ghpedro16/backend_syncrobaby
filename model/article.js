@@ -5,18 +5,15 @@
  * Versão: 1.0
  * ****************************************************************************************************/
 
-//Criar variavel para conexao com o banco
+const db = require('../config/connection.js')
 
 const getAllArticles = async function () {
     try {
-        //Script sql
-        let sql = null
+        let dados = await db('tbl_article')
+        .select('*')
 
-        //Variavel de encaminhamento ao banco
-        let result = null
-
-        if (Array.isArray(result))
-            return result
+        if (dados.length > 0)
+            return dados
         else
             return false
 
@@ -25,20 +22,23 @@ const getAllArticles = async function () {
     }
 }
 
-const getArticleByAgeGroup = async function (age_group) {
+const getArticlesByAgeGroup = async function (age_group) {
     try {
-        //Script sql
-        let sql = null
+        let dados = await db('tbl_article')
+        .select('*')
+        .where('age_group', age_group)
 
-        //Variavel de encaminhamento ao banco
-        let result = null
-
-        if (Array.isArray(result))
-            return result
+        if (dados.length > 0)
+            return dados
         else
             return false
 
     } catch (error) {
         return false
     }
+}
+
+module.exports = {
+    getAllArticles,
+    getArticlesByAgeGroup
 }
