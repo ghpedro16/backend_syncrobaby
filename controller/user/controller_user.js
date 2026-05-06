@@ -9,7 +9,6 @@ const userDAO = require('../../model/user.js')
 const jwt = require('../../middleware/middleware_jwt.js')
 
 const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
-const { jsonExtract } = require('../../config/connection.js')
 
 const listUserId = async function(id){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
@@ -41,22 +40,28 @@ const listUserLogin = async function(email, password){
     try {
         let resultUser = await userDAO.getUserByLogin(email, password)
 
-        if(resultUser){
-            if(resultUser.length > 0){
-                let tokenUser = jwt.createJWT(resultUser.id)
+        if(resultUser.status_code != 200){
 
-                resultUser.token = tokenUser
+            if(resultUser){
 
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
-                MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.user = resultUser
-
-                return MESSAGES.DEFAULT_HEADER // 200
+                if(resultUser.length > 0){
+                    let tokenUser = await jwt.createJWT(resultUser[0].id_guardian)
+    
+                    resultUser[0].token = tokenUser
+    
+                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                    MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
+                    MESSAGES.DEFAULT_HEADER.response.user = resultUser
+    
+                    return MESSAGES.DEFAULT_HEADER // 200
+                }else{
+                    return MESSAGES.ERROR_NOT_FOUND // 404
+                }
             }else{
-                return MESSAGES.ERROR_NOT_FOUND // 404
+                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
             }
         }else{
-            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+            return MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Usuário ou Senha inválidos]'
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
@@ -101,13 +106,13 @@ const updateUser = async function(user, id, contentType){
     try {
         if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
             
-            let validar = validarDados(user)
+            let validar = await validarDados(user)
 
             if(!validar){
                 let validarId = await listUserId(id)
 
                 if(validarId.status_code == 200){
-                    user.id = Number(id)
+                    user.id_guardian = Number(id)
 
                     let resultUser = await userDAO.setUpdateUser(user)
 
@@ -169,7 +174,7 @@ const deleteUser = async function(id){
 const validarDados = async function(user){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
-    if(user.nome == '' || user.nome == undefined || user.nome == null || user.nome.length > 150){
+    if(user.guardian_name == '' || user.guardian_name == undefined || user.guardian_name == null || user.guardian_name.length > 150){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Nome incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
@@ -177,11 +182,11 @@ const validarDados = async function(user){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [E-mail incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(user.senha == '' || user.senha == undefined || user.senha == null || user.senha.length > 15){
+    }else if(user.password == '' || user.password == undefined || user.password == null || user.password.length > 15){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Senha incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(user.foto_perfil == undefined || user.foto_perfil.length > 255){
+    }else if(user.profile_picture == undefined || user.profile_picture.length > 255){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [URL da Foto incorreto]'
     }else{
         return false

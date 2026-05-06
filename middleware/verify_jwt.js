@@ -17,3 +17,5 @@ const verifyJWT = async function(request, response, next) {
     else
         return response.status(401).end()
 }
+
+module.exports = verifyJWT

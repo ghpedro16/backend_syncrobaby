@@ -10,12 +10,14 @@ const db = require('../config/connection.js')
 const getUserById = async function (id) {
     try {
         
-        let dados = await db('tbl_responsavel')
+        let dados = await db('tbl_guardian')
         .select('*')
-        .where('id_responsavel', id)
-        .first()
+        .where('id_guardian', id)
 
-        return dados || false
+        if(dados.length > 0)
+            return dados
+        else
+            return false
 
     } catch (error) {
         return false
@@ -25,15 +27,17 @@ const getUserById = async function (id) {
 const getUserByLogin = async function (email, password) {
     try {
 
-        let dados = await db('tbl_responsavel')
+        let dados = await db('tbl_guardian')
         .select('*')
         .where({
             email: `${email}`,
-            senha: `${password}`
+            password: `${password}`
         })
-        .first()
 
-        return dados || false
+        if(dados.length > 0)
+            return dados
+        else
+            return false
 
     } catch (error) {
         return false
@@ -43,34 +47,40 @@ const getUserByLogin = async function (email, password) {
 const setInsertUser = async function (user) {
     try {
 
-        let dados = await db('tbl_responsavel')
+        let dados = await db('tbl_guardian')
         .insert({
-            nome_responsavel: `${user.nome_responsavel}`,
+            guardian_name: `${user.guardian_name}`,
             email: `${user.email}`,
-            senha: `${user.senha}`,
-            foto_perfil: `${user.foto_perfil}`
+            password: `${user.password}`,
+            profile_picture: `${user.profile_picture}`
         })
 
-        return dados || false
+        if(dados.length > 0)
+            return dados
+        else
+            return false
 
     } catch (error) {
         return false
     }
 }
 
-const setUpdateUser = async function (id, user) {
+const setUpdateUser = async function (user) {
     try {
 
-        let dados = await db('tbl_responsavel')
+        let dados = await db('tbl_guardian')
         .update({
-            nome_responsavel: `${user.nome_responsavel}`,
+            guardian_name: `${user.guardian_name}`,
             email: `${user.email}`,
-            senha: `${user.senha}`,
-            foto_perfil: `${user.foto_perfil}`
+            password: `${user.password}`,
+            profile_picture: `${user.profile_picture}`
         })
-        .where('id_responsavel', id)
+        .where({id_guardian: `${user.id_guardian}`})
 
-        return dados || false
+        if(dados > 0)
+            return dados
+        else
+            return false
 
     } catch (error) {
         return false
@@ -80,16 +90,19 @@ const setUpdateUser = async function (id, user) {
 const setDeleteUser = async function (id, password) {
     try {
 
-        let dados = await db('tbl_responsavel')
+        let dados = await db('tbl_guardian')
         .update({
-            ativo: false
+            active: false
         })
         .where({
-            id_responsavel: `${id}`,
-            senha: `${password}`
+            id_guardian: `${id}`,
+            password: `${password}`
         })
 
-        return dados || false
+        if(dados.length > 0)
+            return dados
+        else
+            return false
 
     } catch (error) {
         return false
