@@ -37,7 +37,7 @@ const listChildrenByUserId = async function(id_user){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
-        let resultChildren = await childrenDAO.getAllChildrenByIdUser(id)
+        let resultChildren = await childrenDAO.getAllChildrenByIdUser(id_user)
 
         if(resultChildren){
             if(resultChildren.length > 0){
@@ -163,46 +163,38 @@ const deleteChildren = async function(id){
     }
 }
 
-const validarDados = async function(children) {
+const validarDados = async function(child) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
-    if(children.nome_filho == '' || children.nome_filho == undefined || children.nome_filho == null || children.nome_filho.length > 150){
+    if(child.child_name == '' || child.child_name == undefined || child.child_name == null || child.child_name.length > 150){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Nome incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(isNaN(children.altura) || children.altura == undefined || children.altura < 0){
+    }else if(isNaN(child.height) || child.height == undefined || child.height < 0){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Altura incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(isNaN(children.peso) || children.peso == undefined || children.peso < 0){
+    }else if(isNaN(child.weight) || child.weight == undefined || child.weight < 0){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Peso incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(children.data_nascimento == null || children.data_nascimento == undefined || children.data_nascimento == '' || new Date(children.data_nascimento) > new Date()){
+    }else if(child.birth_date == null || child.birth_date == undefined || child.birth_date == '' || new Date(child.birth_date) > new Date()){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Data de Nascimento incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(children.imc == undefined || children.imc < 0){
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [IMC incorreto]'
-        return MESSAGES.ERROR_REQUIRED_FIELDS
-
-    }else if(children.tipo_sanguineo == undefined || children.tipo_sanguineo.length > 3){
+    }else if(child.blood_type == undefined || child.blood_type.length > 3){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Tipo Sanguíneo incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(children.foto == undefined || children.foto.length > 255){
+    }else if(child.photo == undefined || child.photo.length > 255){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Foto incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(children.genero == undefined || children.genero == null || children.genero == ''){
+    }else if(child.gender == undefined || child.gender == null || child.gender == ''){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Gênero incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(children.ativo == undefined){
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Status de Atividade incorreto]'
-        return MESSAGES.ERROR_REQUIRED_FIELDS
-
-    }else if(children.fk_id_responsavel == undefined || children.fk_id_responsavel == null || children.fk_id_responsavel == '' || isNaN(children.fk_id_responsavel) || children.fk_id_responsavel <= 0){
+    }else if(child.fk_id_guardian == undefined || child.fk_id_guardian == null || child.fk_id_guardian == '' || isNaN(child.fk_id_guardian) || child.fk_id_guardian <= 0){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID (chave estrangeira) incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 

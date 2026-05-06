@@ -23,6 +23,10 @@ app.use((request, response, next) => {
     next()
 })
 
+const routesChild = require('./routes/routes_child.js')
+
+app.use(routesChild)
+
 //Inicia a API
 app.listen(PORT, function () {
     console.log('API aguardando requisições...')
