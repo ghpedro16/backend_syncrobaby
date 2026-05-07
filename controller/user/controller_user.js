@@ -10,23 +10,23 @@ const jwt = require('../../middleware/middleware_jwt.js')
 
 const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
 
-const listUserId = async function(id){
+const listUserId = async function (id) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
         let resultUser = await userDAO.getUserById(id)
 
-        if(resultUser){
-            if(resultUser.length > 0){
+        if (resultUser) {
+            if (resultUser.length > 0) {
                 MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
                 MESSAGES.DEFAULT_HEADER.response.user = resultUser
 
                 return MESSAGES.DEFAULT_HEADER // 200
-            }else{
+            } else {
                 return MESSAGES.ERROR_NOT_FOUND // 404
             }
-        }else{
+        } else {
             return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
         }
     } catch (error) {
@@ -34,41 +34,42 @@ const listUserId = async function(id){
     }
 }
 
-const listUserLogin = async function(email, password){
+const listUserLogin = async function (user, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
-        let resultUser = await userDAO.getUserByLogin(email, password)
+        if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
 
-        if(resultUser.status_code != 200){
+            let resultUser = await userDAO.getUserByLogin(user)
 
-            if(resultUser){
+            if (resultUser) {
 
-                if(resultUser.length > 0){
+                if (resultUser.length > 0) {
                     let tokenUser = await jwt.createJWT(resultUser[0].id_guardian)
-    
+
                     resultUser[0].token = tokenUser
-    
+
                     MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
                     MESSAGES.DEFAULT_HEADER.response.user = resultUser
-    
+
                     return MESSAGES.DEFAULT_HEADER // 200
-                }else{
+                } else {
                     return MESSAGES.ERROR_NOT_FOUND // 404
                 }
-            }else{
-                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+            } else {
+                MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Usuário ou Senha inválidos]'
+                return MESSAGES.ERROR_REQUIRED_FIELDS
             }
-        }else{
-            return MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Usuário ou Senha inválidos]'
+        } else {
+            return MESSAGES.ERROR_CONTENT_TYPE // 415
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
     }
 }
 
-const insertUser = async function(user, contentType){
+const insertUser = async function (user, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
@@ -76,20 +77,20 @@ const insertUser = async function(user, contentType){
 
             let validar = await validarDados(user)
 
-            if(!validar){
+            if (!validar) {
 
                 let resultUser = userDAO.setInsertUser(user)
 
-                if(resultUser){
+                if (resultUser) {
                     MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
                     MESSAGES.DEFAULT_HEADER.response = user
 
                     return MESSAGES.DEFAULT_HEADER // 201
-                }else{
+                } else {
                     return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
                 }
-            }else{
+            } else {
                 return validar
             }
         } else {
@@ -100,38 +101,38 @@ const insertUser = async function(user, contentType){
     }
 }
 
-const updateUser = async function(user, id, contentType){
+const updateUser = async function (user, id, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
         if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
-            
+
             let validar = await validarDados(user)
 
-            if(!validar){
+            if (!validar) {
                 let validarId = await listUserId(id)
 
-                if(validarId.status_code == 200){
+                if (validarId.status_code == 200) {
                     user.id_guardian = Number(id)
 
                     let resultUser = await userDAO.setUpdateUser(user)
 
-                    if(resultUser){
+                    if (resultUser) {
                         MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_UPDATE_ITEM.status
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_UPDATE_ITEM.status_code
                         MESSAGES.DEFAULT_HEADER.response.user = user
 
                         return MESSAGES.DEFAULT_HEADER // 200
-                    }else{
+                    } else {
                         return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
                     }
-                }else{
+                } else {
                     return validarId
                 }
-            }else{
+            } else {
                 return validar
             }
-        }else{
+        } else {
             return MESSAGES.ERROR_CONTENT_TYPE // 415
         }
     } catch (error) {
@@ -139,30 +140,30 @@ const updateUser = async function(user, id, contentType){
     }
 }
 
-const deleteUser = async function(id){
+const deleteUser = async function (id) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
         if (isNaN(id) && id != '' && id != null && id > 0) {
             let validarId = await listUserId(id)
 
-            if(validarId.status_code == 200){
+            if (validarId.status_code == 200) {
 
                 let resultUser = await userDAO.setDeleteUser(id)
 
-                if(resultUser){
+                if (resultUser) {
                     MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_DELETE_ITEM.status
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETE_ITEM.status_code
                     MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_DELETE_ITEM.message
-    
+
                     return MESSAGES.DEFAULT_HEADER // 200
-                }else{
+                } else {
                     return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
                 }
-            }else{
+            } else {
                 MESSAGES.ERROR_NOT_FOUND // 404
             }
-        }else{
+        } else {
             MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID Incorreto!]'
             return MESSAGES.ERROR_REQUIRED_FIELDS // 400
         }
@@ -171,24 +172,24 @@ const deleteUser = async function(id){
     }
 }
 
-const validarDados = async function(user){
+const validarDados = async function (user) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
-    if(user.guardian_name == '' || user.guardian_name == undefined || user.guardian_name == null || user.guardian_name.length > 150){
+    if (user.guardian_name == '' || user.guardian_name == undefined || user.guardian_name == null || user.guardian_name.length > 150) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Nome incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(user.email == '' || user.email == undefined || user.email == null || user.email.length > 255){
+    } else if (user.email == '' || user.email == undefined || user.email == null || user.email.length > 255) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [E-mail incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(user.password == '' || user.password == undefined || user.password == null || user.password.length > 15){
+    } else if (user.password == '' || user.password == undefined || user.password == null || user.password.length > 15) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Senha incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(user.profile_picture == undefined || user.profile_picture.length > 255){
+    } else if (user.profile_picture == undefined || user.profile_picture.length > 255) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [URL da Foto incorreto]'
-    }else{
+    } else {
         return false
     }
 }

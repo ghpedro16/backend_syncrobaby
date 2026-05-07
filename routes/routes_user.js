@@ -28,11 +28,11 @@ app.get('/syncrobaby/user/:id', verifyJWT, cors(), async (request, response) => 
 })
 
 //Login do Usuário
-app.get('/syncrobaby/user/auth', cors(), async (request, response) => {
-    let email = request.query.email
-    let password = request.query.password
+app.post('/syncrobaby/auth/user', cors(), bodyParserJSON, async (request, response) => {
+    let dadosBody = request.body
+    let contentType = request.headers['content-type']
 
-    let auth = await controller_user.listUserLogin(email, password)
+    let auth = await controller_user.listUserLogin(dadosBody, contentType)
     response.status(auth.status_code).json(auth)
 })
 

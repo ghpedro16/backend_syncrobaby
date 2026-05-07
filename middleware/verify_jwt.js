@@ -8,14 +8,27 @@
 const jwt = require('./middleware_jwt.js')
 
 const verifyJWT = async function(request, response, next) {
-    let token = request.headers['x-access-token']
+    const authHeader = request.headers.authorization
 
-    const autenticidadeJWT = jwt.validateJWT(token)
+    if (!authHeader) {
+        return response.status(401).json({
+            erro: 'Token não fornecido'
+        })
+    }
 
-    if(autenticidadeJWT)
-        next()
-    else
-        return response.status(401).end()
+    const token = authHeader.split(' ')[1]
+
+    const decoded = jwt.validateJWT(token)
+
+    if (!decoded) {
+        return response.status(403).json({
+            erro: 'Token inválido'
+        })
+    }
+
+    request.user = decoded
+
+    return next()
 }
 
 module.exports = verifyJWT

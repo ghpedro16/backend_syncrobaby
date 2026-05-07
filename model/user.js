@@ -24,14 +24,13 @@ const getUserById = async function (id) {
     }
 }
 
-const getUserByLogin = async function (email, password) {
+const getUserByLogin = async function (user) {
     try {
-
         let dados = await db('tbl_guardian')
         .select('*')
         .where({
-            email: `${email}`,
-            password: `${password}`
+            email: `${user.email}`,
+            password: `${user.password}`
         })
 
         if(dados.length > 0)

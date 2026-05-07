@@ -9,7 +9,7 @@ require('dotenv').config()
 
 const jwt = require('jsonwebtoken')
 const SECRET = process.env.JWT_SECRET
-const EXPIRES = 60
+const EXPIRES = '7d'
 
 const createJWT = async function(payLoad) {
     const token = jwt.sign({userID: payLoad}, SECRET, {expiresIn: EXPIRES})
@@ -17,18 +17,18 @@ const createJWT = async function(payLoad) {
     return token
 }
 
-const validateJWT = async function(token){
-    let status
+const validateJWT = function(token){
 
-    jwt.verify(token, SECRET, async function (err, decode) {
+    try {
 
-        if(err != null)
-            status = false
-        else
-            status = true
-    })
+        const decoded = jwt.verify(token, SECRET)
 
-    return status
+        return decoded
+
+    } catch (error) {
+
+        return false
+    }
 }
 
 module.exports = {
