@@ -19,7 +19,6 @@ const verifyJWT = async function(request, response, next) {
     const token = authHeader.split(' ')[1]
 
     const decoded = jwt.validateJWT(token)
-    console.log(decoded) 
 
     if (!decoded) {
         return response.status(403).json({

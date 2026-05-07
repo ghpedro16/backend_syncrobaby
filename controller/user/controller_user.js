@@ -91,7 +91,7 @@ const insertUser = async function (user, contentType) {
 
                     if (resultUser) {
 
-                        delete resultUser.password
+                        delete user.password
 
                         MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
@@ -139,7 +139,7 @@ const updateUser = async function (user, id, contentType) {
 
                         if (resultUser) {
 
-                            delete resultUser.password
+                            delete user.password
 
                             MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_UPDATE_ITEM.status
                             MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_UPDATE_ITEM.status_code
@@ -163,7 +163,7 @@ const updateUser = async function (user, id, contentType) {
             return MESSAGES.ERROR_CONTENT_TYPE // 415
         }
     } catch (error) {
-        MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
+        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
     }
 }
 
