@@ -18,6 +18,8 @@ const listUserId = async function (id) {
 
         if (resultUser) {
             if (resultUser.length > 0) {
+                delete resultUser[0].password
+
                 MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
                 MESSAGES.DEFAULT_HEADER.response.user = resultUser
@@ -45,6 +47,8 @@ const listUserLogin = async function (user, contentType) {
             if (resultUser) {
 
                 if (resultUser.length > 0) {
+                    delete resultUser[0].password
+
                     let tokenUser = await jwt.createJWT(resultUser[0].id_guardian)
 
                     resultUser[0].token = tokenUser
@@ -79,16 +83,27 @@ const insertUser = async function (user, contentType) {
 
             if (!validar) {
 
-                let resultUser = userDAO.setInsertUser(user)
+                let validarEmail = await userDAO.getUserByEmail(user.email)
 
-                if (resultUser) {
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
-                    MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.response = user
+                if(!validarEmail){
 
-                    return MESSAGES.DEFAULT_HEADER // 201
-                } else {
-                    return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+                    let resultUser = await userDAO.setInsertUser(user)
+
+                    if (resultUser) {
+
+                        delete resultUser.password
+
+                        MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
+                        MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
+                        MESSAGES.DEFAULT_HEADER.response = user
+    
+                        return MESSAGES.DEFAULT_HEADER // 201
+                    } else {
+                        return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+                    }
+                }else{
+                    MESSAGES.ERROR_UNIQUE_CONFLICT.message += ' [E-mail já existe!]'
+                    return MESSAGES.ERROR_UNIQUE_CONFLICT // 409
                 }
             } else {
                 return validar
@@ -110,21 +125,33 @@ const updateUser = async function (user, id, contentType) {
             let validar = await validarDados(user)
 
             if (!validar) {
+
                 let validarId = await listUserId(id)
 
                 if (validarId.status_code == 200) {
                     user.id_guardian = Number(id)
 
-                    let resultUser = await userDAO.setUpdateUser(user)
+                    let validarEmail = await userDAO.getUserByEmail(user.email)
 
-                    if (resultUser) {
-                        MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_UPDATE_ITEM.status
-                        MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_UPDATE_ITEM.status_code
-                        MESSAGES.DEFAULT_HEADER.response.user = user
+                    if(!validarEmail){
+                        
+                        let resultUser = await userDAO.setUpdateUser(user)
 
-                        return MESSAGES.DEFAULT_HEADER // 200
-                    } else {
-                        return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+                        if (resultUser) {
+
+                            delete resultUser.password
+
+                            MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_UPDATE_ITEM.status
+                            MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_UPDATE_ITEM.status_code
+                            MESSAGES.DEFAULT_HEADER.response.user = user
+    
+                            return MESSAGES.DEFAULT_HEADER // 200
+                        } else {
+                            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+                        }
+                    }else{
+                        MESSAGES.ERROR_UNIQUE_CONFLICT.message += ' [E-mail já existe!]'
+                        return MESSAGES.ERROR_UNIQUE_CONFLICT // 409
                     }
                 } else {
                     return validarId

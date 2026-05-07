@@ -20,8 +20,8 @@ const app = express()
 const controller_user = require('../controller/user/controller_user.js')
 
 //Retorna Usuário
-app.get('/syncrobaby/user/:id', verifyJWT, cors(), async (request, response) => {
-    let userId = request.params.id
+app.get('/syncrobaby/user', verifyJWT, cors(), async (request, response) => {
+    let userId = request.user.userID
     let user = await controller_user.listUserId(userId)
 
     response.status(user.status_code).json(user)
@@ -46,8 +46,8 @@ app.post('/syncrobaby/user', cors(), bodyParserJSON, async (request, response) =
 })
 
 //Atualiza um Usuario
-app.put('/syncrobaby/user/:id', verifyJWT, cors(), bodyParserJSON, async (request, response) => {
-    let idUser = request.params.id
+app.put('/syncrobaby/user', verifyJWT, cors(), bodyParserJSON, async (request, response) => {
+    let idUser = request.user.userID
     let dadosBody = request.body
     let contentType = request.headers['content-type']
 
