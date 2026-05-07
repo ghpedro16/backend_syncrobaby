@@ -20,7 +20,6 @@ const DEFAULT_HEADER = {
 
 }
 
-
 /********************************************************************   MENSAGENS DE SUCESSO    ********************************************************************/
 
 const SUCCESS_REQUEST = {status: true, status_code: 200, message: 'Requisição bem sucedida...'}
@@ -45,6 +44,8 @@ const ERROR_CONTENT_TYPE = {status: false, status_code: 415, message: 'Não foi 
 
 const ERROR_RELATIONAL_INSERTION = {status: false, status_code: 500, message: 'A requisição do item principal foi processada com sucesso, porém houveram problemas ao inserir dados na tabela de relação!'}
 
+const ERROR_UNIQUE_CONFLICT = {status: false, status_code: 409, message: "Não foi possivel processar a requisição pois o item principal causará um conflito na base de dados."}
+
 module.exports = {
     DEFAULT_HEADER,
     SUCCESS_REQUEST,
@@ -56,5 +57,6 @@ module.exports = {
     ERROR_CONTENT_TYPE,
     SUCCESS_UPDATE_ITEM,
     SUCCESS_DELETE_ITEM,
-    ERROR_RELATIONAL_INSERTION
+    ERROR_RELATIONAL_INSERTION,
+    ERROR_UNIQUE_CONFLICT
 }
