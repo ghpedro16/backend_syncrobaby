@@ -47,11 +47,11 @@ const listUserLogin = async function (user, contentType) {
             if (resultUser) {
 
                 if (resultUser.length > 0) {
-                    delete resultUser[0].password
+                    delete resultUser.password
 
-                    let tokenUser = await jwt.createJWT(resultUser[0].id_guardian)
+                    let tokenUser = await jwt.createJWT(resultUser.id_guardian)
 
-                    resultUser[0].token = tokenUser
+                    resultUser.token = tokenUser
 
                     MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
@@ -85,7 +85,7 @@ const insertUser = async function (user, contentType) {
 
                 let validarEmail = await userDAO.getUserByEmail(user.email)
 
-                if(!validarEmail){
+                if (!validarEmail) {
 
                     let resultUser = await userDAO.setInsertUser(user)
 
@@ -96,12 +96,12 @@ const insertUser = async function (user, contentType) {
                         MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
                         MESSAGES.DEFAULT_HEADER.response = user
-    
+
                         return MESSAGES.DEFAULT_HEADER // 201
                     } else {
                         return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
                     }
-                }else{
+                } else {
                     MESSAGES.ERROR_UNIQUE_CONFLICT.message += ' [E-mail já existe!]'
                     return MESSAGES.ERROR_UNIQUE_CONFLICT // 409
                 }
@@ -132,9 +132,10 @@ const updateUser = async function (user, id, contentType) {
                     user.id_guardian = Number(id)
 
                     let validarEmail = await userDAO.getUserByEmail(user.email)
+                    delete validarEmail[0].password
 
-                    if(!validarEmail){
-                        
+                    if (!validarEmail || id == user.id_guardian) {
+
                         let resultUser = await userDAO.setUpdateUser(user)
 
                         if (resultUser) {
@@ -144,12 +145,12 @@ const updateUser = async function (user, id, contentType) {
                             MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_UPDATE_ITEM.status
                             MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_UPDATE_ITEM.status_code
                             MESSAGES.DEFAULT_HEADER.response.user = user
-    
+
                             return MESSAGES.DEFAULT_HEADER // 200
                         } else {
                             return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
                         }
-                    }else{
+                    } else {
                         MESSAGES.ERROR_UNIQUE_CONFLICT.message += ' [E-mail já existe!]'
                         return MESSAGES.ERROR_UNIQUE_CONFLICT // 409
                     }
@@ -171,24 +172,23 @@ const deleteUser = async function (id) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
-        if (isNaN(id) && id != '' && id != null && id > 0) {
-            let validarId = await listUserId(id)
 
-            if (validarId.status_code == 200) {
+        validarId = await listUserId(id)
 
-                let resultUser = await userDAO.setDeleteUser(id)
+        if (validarId.status_code == 200) {
 
-                if (resultUser) {
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_DELETE_ITEM.status
-                    MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETE_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_DELETE_ITEM.message
+            let resultUser = await userDAO.setDeleteUser(id)
 
-                    return MESSAGES.DEFAULT_HEADER // 200
-                } else {
-                    return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
-                }
+            if (resultUser) {
+                let user = await listUserId(id)
+
+                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_DELETE_ITEM.status
+                MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETE_ITEM.status_code
+                MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_DELETE_ITEM.message
+
+                return MESSAGES.DEFAULT_HEADER // 200
             } else {
-                MESSAGES.ERROR_NOT_FOUND // 404
+                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
             }
         } else {
             MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID Incorreto!]'

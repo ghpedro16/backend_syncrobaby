@@ -31,9 +31,9 @@ const getUserByEmail = async function (email) {
         let dados = await db('tbl_guardian')
         .select('*')
         .where({email: email})
-
+        
         if(dados.length > 0)
-            return true
+            return dados
         else
             return false
 
@@ -51,13 +51,14 @@ const getUserByLogin = async function (user) {
             .where({
                 email: user.email
             })
+            .first()
 
         if (!dados)
             return false
 
         const senhaValida = await bcrypt.compare(
             user.password,
-            dados[0].password
+            dados.password
         )
 
         if (!senhaValida)
@@ -119,7 +120,7 @@ const setUpdateUser = async function (user) {
     }
 }
 
-const setDeleteUser = async function (id, password) {
+const setDeleteUser = async function (id) {
     try {
 
         let dados = await db('tbl_guardian')
@@ -127,11 +128,10 @@ const setDeleteUser = async function (id, password) {
             active: false
         })
         .where({
-            id_guardian: `${id}`,
-            password: `${password}`
+            id_guardian: id
         })
 
-        if(dados.length > 0)
+        if(dados > 0)
             return dados
         else
             return false

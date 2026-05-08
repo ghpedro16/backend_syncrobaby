@@ -55,4 +55,12 @@ app.put('/syncrobaby/user', verifyJWT, cors(), bodyParserJSON, async (request, r
     response.status(user.status_code).json(user)
 })
 
+//Deleta um Usuario
+app.put('/syncrobaby/desative/user', verifyJWT, cors(), async (request, response) => {
+    let idUser = request.user.userID
+
+    let user = await controller_user.deleteUser(idUser)
+    response.status(user.status_code).json(user)
+})
+
 module.exports = app
