@@ -29,11 +29,11 @@ const getUserByEmail = async function (email) {
     try {
         
         let dados = await db('tbl_guardian')
-        .select('*')
+        .select('id_guardian', 'email', 'password')
         .where({email: email})
-
+        
         if(dados.length > 0)
-            return true
+            return dados
         else
             return false
 
@@ -74,17 +74,13 @@ const setInsertUser = async function (user) {
 
     try {
 
-        // gera hash da senha
-        const senhaCriptografada = await bcrypt.hash(user.password, 10)
-
         let dados = await db('tbl_guardian')
             .insert({
                 guardian_name: user.guardian_name,
                 email: user.email,
-                password: senhaCriptografada,
+                password: user.password,
                 profile_picture: user.profile_picture
             })
-
 
         if (dados.length > 0)
             return dados
@@ -104,7 +100,6 @@ const setUpdateUser = async function (user) {
         .update({
             guardian_name: `${user.guardian_name}`,
             email: `${user.email}`,
-            password: `${user.password}`,
             profile_picture: `${user.profile_picture}`
         })
         .where({id_guardian: `${user.id_guardian}`})
@@ -119,7 +114,28 @@ const setUpdateUser = async function (user) {
     }
 }
 
-const setDeleteUser = async function (id, password) {
+const setUpdatePassword = async function(user){
+    try {
+
+        let dados = await db('tbl_guardian')
+            .update({
+                password: user.password
+            })
+            .where({
+                id_guardian: user.id_guardian
+            })
+
+        if (dados > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
+const setDeactivateUser = async function (id) {
     try {
 
         let dados = await db('tbl_guardian')
@@ -127,11 +143,31 @@ const setDeleteUser = async function (id, password) {
             active: false
         })
         .where({
-            id_guardian: `${id}`,
-            password: `${password}`
+            id_guardian: id
         })
 
-        if(dados.length > 0)
+        if(dados > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
+const setReactivateUser = async function (id) {
+    try {
+
+        let dados = await db('tbl_guardian')
+        .update({
+            active: true
+        })
+        .where({
+            id_guardian: id
+        })
+
+        if(dados > 0)
             return dados
         else
             return false
@@ -147,5 +183,7 @@ module.exports = {
     getUserByLogin,
     setInsertUser,
     setUpdateUser,
-    setDeleteUser
+    setUpdatePassword,
+    setDeactivateUser,
+    setReactivateUser
 }

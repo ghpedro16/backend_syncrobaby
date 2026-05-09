@@ -7,6 +7,7 @@
 
 const userDAO = require('../../model/user.js')
 const jwt = require('../../middleware/middleware_jwt.js')
+const bcrypt = require('bcrypt')
 
 const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
 
@@ -14,6 +15,7 @@ const listUserId = async function (id) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
+
         let resultUser = await userDAO.getUserById(id)
 
         if (resultUser) {
@@ -40,26 +42,33 @@ const listUserLogin = async function (user, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
+
         if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
 
             let resultUser = await userDAO.getUserByLogin(user)
 
             if (resultUser) {
 
-                if (resultUser.length > 0) {
-                    delete resultUser[0].password
+                if (resultUser[0].active != false) {
 
-                    let tokenUser = await jwt.createJWT(resultUser[0].id_guardian)
+                    if (resultUser.length > 0) {
+                        delete resultUser[0].password
 
-                    resultUser[0].token = tokenUser
+                        let tokenUser = await jwt.createJWT(resultUser[0].id_guardian)
 
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
-                    MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                    MESSAGES.DEFAULT_HEADER.response.user = resultUser
+                        resultUser[0].token = tokenUser
 
-                    return MESSAGES.DEFAULT_HEADER // 200
+                        MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                        MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
+                        MESSAGES.DEFAULT_HEADER.response.user = resultUser
+
+                        return MESSAGES.DEFAULT_HEADER // 200
+                    } else {
+                        return MESSAGES.ERROR_NOT_FOUND // 404
+                    }
                 } else {
-                    return MESSAGES.ERROR_NOT_FOUND // 404
+                    MESSAGES.ERROR_DISABLED_USER.message += ' [Conta Desativada]'
+                    return MESSAGES.ERROR_DISABLED_USER
                 }
             } else {
                 MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Usuário ou Senha inválidos]'
@@ -77,6 +86,7 @@ const insertUser = async function (user, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
+
         if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
 
             let validar = await validarDados(user)
@@ -85,23 +95,25 @@ const insertUser = async function (user, contentType) {
 
                 let validarEmail = await userDAO.getUserByEmail(user.email)
 
-                if(!validarEmail){
+                if (!validarEmail) {
+
+                    user.password = await bcrypt.hash(user.password, 10)
 
                     let resultUser = await userDAO.setInsertUser(user)
 
                     if (resultUser) {
 
-                        delete resultUser.password
+                        delete user.password
 
                         MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
                         MESSAGES.DEFAULT_HEADER.response = user
-    
+
                         return MESSAGES.DEFAULT_HEADER // 201
                     } else {
                         return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
                     }
-                }else{
+                } else {
                     MESSAGES.ERROR_UNIQUE_CONFLICT.message += ' [E-mail já existe!]'
                     return MESSAGES.ERROR_UNIQUE_CONFLICT // 409
                 }
@@ -120,9 +132,10 @@ const updateUser = async function (user, id, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
+
         if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
 
-            let validar = await validarDados(user)
+            let validar = await validarUpdate(user)
 
             if (!validar) {
 
@@ -133,23 +146,21 @@ const updateUser = async function (user, id, contentType) {
 
                     let validarEmail = await userDAO.getUserByEmail(user.email)
 
-                    if(!validarEmail){
-                        
+                    if (!validarEmail || validarEmail[0].id_guardian == user.id_guardian) {
+
                         let resultUser = await userDAO.setUpdateUser(user)
 
                         if (resultUser) {
 
-                            delete resultUser.password
-
                             MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_UPDATE_ITEM.status
                             MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_UPDATE_ITEM.status_code
                             MESSAGES.DEFAULT_HEADER.response.user = user
-    
+
                             return MESSAGES.DEFAULT_HEADER // 200
                         } else {
                             return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
                         }
-                    }else{
+                    } else {
                         MESSAGES.ERROR_UNIQUE_CONFLICT.message += ' [E-mail já existe!]'
                         return MESSAGES.ERROR_UNIQUE_CONFLICT // 409
                     }
@@ -163,36 +174,139 @@ const updateUser = async function (user, id, contentType) {
             return MESSAGES.ERROR_CONTENT_TYPE // 415
         }
     } catch (error) {
-        MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
+        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
     }
 }
 
-const deleteUser = async function (id) {
+const updatePassword = async function (user, id, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
-        if (isNaN(id) && id != '' && id != null && id > 0) {
-            let validarId = await listUserId(id)
 
-            if (validarId.status_code == 200) {
+        if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
 
-                let resultUser = await userDAO.setDeleteUser(id)
+            let validar = await validarPassword(user)
 
-                if (resultUser) {
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_DELETE_ITEM.status
-                    MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETE_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_DELETE_ITEM.message
+            if (!validar) {
 
-                    return MESSAGES.DEFAULT_HEADER // 200
+                let validarId = await userDAO.getUserById(id)
+
+                if (validarId) {
+                    user.id_guardian = Number(id)
+
+                    const passwordValidation = await bcrypt.compare(user.current_password, validarId[0].password)
+
+                    if (passwordValidation) {
+
+                        user.password = await bcrypt.hash(user.new_password, 10)
+
+                        let resultUser = await userDAO.setUpdatePassword(user)
+
+                        if (resultUser) {
+
+                            MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_MODIFIED_ITEM.status_code
+
+                            return MESSAGES.DEFAULT_HEADER // 204
+                        } else {
+                            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+                        }
+                    } else {
+                        return MESSAGES.ERROR_INVALID_PASSWORD // 401
+                    }
                 } else {
-                    return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+                    return validarId
                 }
             } else {
-                MESSAGES.ERROR_NOT_FOUND // 404
+                return validar
             }
         } else {
-            MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID Incorreto!]'
-            return MESSAGES.ERROR_REQUIRED_FIELDS // 400
+            return MESSAGES.ERROR_CONTENT_TYPE // 415
+        }
+    } catch (error) {
+        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
+    }
+}
+
+const deactivateUser = async function (user, id, contentType) {
+    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+
+    try {
+
+        if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
+
+            let validarId = await userDAO.getUserById(id)
+
+            if (validarId) {
+
+                const passwordValidation = await bcrypt.compare(user.password, validarId[0].password)
+
+                if (passwordValidation) {
+
+                    let resultUser = await userDAO.setDeactivateUser(id)
+
+                    if (resultUser) {
+
+                        MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DEACTIVATE_ITEM.status_code
+
+                        return MESSAGES.DEFAULT_HEADER // 204
+                    } else {
+                        return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+                    }
+                } else {
+                    return MESSAGES.ERROR_INVALID_PASSWORD // 401
+                }
+            } else {
+                MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID Incorreto!]'
+                return MESSAGES.ERROR_REQUIRED_FIELDS // 400
+            }
+        } else {
+            return MESSAGES.ERROR_CONTENT_TYPE // 415
+        }
+    } catch (error) {
+        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
+    }
+}
+
+const reactivateUser = async function (user, contentType) {
+    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+
+    try {
+
+        if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
+
+            let validarEmail = await userDAO.getUserByEmail(user.email)
+
+            if (validarEmail) {
+
+                const passwordValidation = await bcrypt.compare(user.password, validarEmail[0].password)
+
+                if (passwordValidation) {
+                    let id = validarEmail[0].id_guardian
+
+                    let resultUser = await userDAO.setReactivateUser(id)
+
+                    if (resultUser) {
+
+                        let tokenUser = await jwt.createJWT(id)
+
+                        MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REACTIVATE_ITEM.status
+                        MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REACTIVATE_ITEM.status_code
+                        MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_REACTIVATE_ITEM.message
+                        MESSAGES.DEFAULT_HEADER.response.user = {id_guardian: id, token: tokenUser}
+
+                        return MESSAGES.DEFAULT_HEADER // 200
+                    } else {
+                        return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+                    }
+                } else {
+                    return MESSAGES.ERROR_INVALID_PASSWORD // 401
+                }
+            } else {
+                MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID Incorreto!]'
+                return MESSAGES.ERROR_REQUIRED_FIELDS // 400
+            }
+        } else {
+            return MESSAGES.ERROR_CONTENT_TYPE // 415
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
@@ -221,10 +335,46 @@ const validarDados = async function (user) {
     }
 }
 
+const validarUpdate = async function (user) {
+    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+
+    if (user.guardian_name == '' || user.guardian_name == undefined || user.guardian_name == null || user.guardian_name.length > 150) {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Nome incorreto]'
+        return MESSAGES.ERROR_REQUIRED_FIELDS
+
+    } else if (user.email == '' || user.email == undefined || user.email == null || user.email.length > 255) {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [E-mail incorreto]'
+        return MESSAGES.ERROR_REQUIRED_FIELDS
+
+    } else if (user.profile_picture == undefined || user.profile_picture.length > 255) {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [URL da Foto incorreto]'
+    } else {
+        return false
+    }
+}
+
+const validarPassword = async function (user) {
+    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+
+    if (user.current_password == '' || user.current_password == undefined || user.current_password == null || user.current_password.length > 15) {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Senha Atual incorreto]'
+        return MESSAGES.ERROR_REQUIRED_FIELDS
+
+    } else if (user.new_password == '' || user.new_password == undefined || user.new_password == null || user.new_password.length > 15) {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Nova Senha incorreto]'
+        return MESSAGES.ERROR_REQUIRED_FIELDS
+
+    } else {
+        return false
+    }
+}
+
 module.exports = {
     listUserId,
     listUserLogin,
     insertUser,
     updateUser,
-    deleteUser
+    updatePassword,
+    deactivateUser,
+    reactivateUser
 }

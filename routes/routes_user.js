@@ -55,4 +55,33 @@ app.put('/syncrobaby/user', verifyJWT, cors(), bodyParserJSON, async (request, r
     response.status(user.status_code).json(user)
 })
 
+//Desativa um Usuario
+app.patch('/syncrobaby/deactivate/user', verifyJWT, cors(), bodyParserJSON, async (request, response) => {
+    let idUser = request.user.userID
+        let dadosBody = request.body
+    let contentType = request.headers['content-type']
+
+    let user = await controller_user.deactivateUser(dadosBody, idUser, contentType)
+    response.status(user.status_code).json(user)
+})
+
+//Reativa um Usuario
+app.patch('/syncrobaby/reactivate/user', cors(), bodyParserJSON, async (request, response) => {
+    let dadosBody = request.body
+    let contentType = request.headers['content-type']
+
+    let user = await controller_user.reactivateUser(dadosBody, contentType)
+    response.status(user.status_code).json(user)
+})
+
+//Atualiza senha
+app.patch('/syncrobaby/user/password', verifyJWT, cors(), bodyParserJSON, async (request, response) => {
+    let idUser = request.user.userID
+    let dadosBody = request.body
+    let contentType = request.headers['content-type']
+
+    let user = await controller_user.updatePassword(dadosBody, idUser, contentType)
+    response.status(user.status_code).json(user)
+})
+
 module.exports = app
