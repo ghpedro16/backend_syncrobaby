@@ -30,6 +30,12 @@ const SUCCESS_UPDATE_ITEM = {status: true, status_code: 200, message: 'Item atua
 
 const SUCCESS_DELETE_ITEM = {status: true, status_code: 200, message: 'Item excluído com sucesso...'}
 
+const SUCCESS_MODIFIED_ITEM = {status: true, status_code: 204, message: 'Item modificado com sucesso!'}
+
+const SUCCESS_REACTIVATE_ITEM = {status: true, status_code: 200, message: 'Item reativado com sucesso!'}
+
+const SUCCESS_DEACTIVATE_ITEM = {status: true, status_code: 204, message: 'Item desativado com sucesso!'}
+
 /********************************************************************    MENSAGENS DE ERRO      ********************************************************************/
 
 const ERROR_NOT_FOUND = {status: false, status_code: 404, message: 'Não foram encontrados dados de retorno!'}
@@ -46,6 +52,10 @@ const ERROR_RELATIONAL_INSERTION = {status: false, status_code: 500, message: 'A
 
 const ERROR_UNIQUE_CONFLICT = {status: false, status_code: 409, message: "Não foi possivel processar a requisição pois o item principal causará um conflito na base de dados."}
 
+const ERROR_DISABLED_USER = {status: false, status_code: 403, message: "Não foi possível acessar esse usuário."}
+
+const ERROR_INVALID_PASSWORD = {status: false, status_code: 401, message: "Senha incorreta!"}
+
 module.exports = {
     DEFAULT_HEADER,
     SUCCESS_REQUEST,
@@ -58,5 +68,10 @@ module.exports = {
     SUCCESS_UPDATE_ITEM,
     SUCCESS_DELETE_ITEM,
     ERROR_RELATIONAL_INSERTION,
-    ERROR_UNIQUE_CONFLICT
+    ERROR_UNIQUE_CONFLICT,
+    ERROR_DISABLED_USER,
+    ERROR_INVALID_PASSWORD,
+    SUCCESS_MODIFIED_ITEM,
+    SUCCESS_DEACTIVATE_ITEM,
+    SUCCESS_REACTIVATE_ITEM
 }
