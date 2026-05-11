@@ -23,11 +23,14 @@ const getAllChildrenByIdUser = async function (id_guardian) {
      }
 }
 
-const getChildrenById = async function (id) {
+const getChildrenById = async function (id, id_guardian) {
      try {
           let dados = await db('tbl_child')
                .select('*')
-               .where('id_child', id)
+               .where({
+                    id_child: id,
+                    fk_id_guardian: id_guardian
+               })
 
           if (dados.length > 0)
                return dados
@@ -65,17 +68,18 @@ const setInsertChildren = async function (child) {
 
 const setUpdateChildren = async function (child) {
      try {
-          let dados = await db('tbl_filho')
+          let dados = await db('tbl_child')
                .update({
                     child_name: `${child.child_name}`,
-                    height: `${child.height}`,
-                    weight: `${child.weight}`,
                     birth_date: `${child.birth_date}`,
                     blood_type: `${child.blood_type}`,
                     gender: `${child.gender}`,
                     photo: `${child.photo}`
                })
-               .where({id_child: child.id_child})
+               .where({
+                    id_child: child.id_child,
+                    fk_id_guardian: child.fk_id_guardian
+               })
 
           if (dados > 0)
                return dados
@@ -87,13 +91,16 @@ const setUpdateChildren = async function (child) {
      }
 }
 
-const setDeleteChildren = async function (id) {
+const setDeactivateChildren = async function (id, id_guardian) {
      try {
           let dados = await db('tbl_child')
                .update({
                     active: false
                })
-               .where('id_child', id)
+               .where({
+                    id_child: id,
+                    fk_id_guardian: id_guardian
+               })
 
           if (dados > 0)
                return dados
@@ -110,5 +117,5 @@ module.exports = {
      getAllChildrenByIdUser,
      setInsertChildren,
      setUpdateChildren,
-     setDeleteChildren
+     setDeactivateChildren
 }

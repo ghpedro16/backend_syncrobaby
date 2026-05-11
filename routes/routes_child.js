@@ -9,6 +9,7 @@
 const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
+const verifyJWT = require('../middleware/verify_jwt.js')
 
 //Cria um objeto especialista no formato JSON para receber dados via POST e PUT
 const bodyParserJSON = bodyParser.json()
@@ -18,18 +19,51 @@ const app = express()
 
 const controller_children = require('../controller/children/controller_children.js')
 
-app.get('/syncrobaby/child/:id', cors(), async (request, response) => {
-    let userId = request.params.id
+//Retorna filho por ID
+app.get('/syncrobaby/child/:id', verifyJWT, cors(), async (request, response) => {
+    let childId = request.params.id
+    let userId = request.user.userID
+    let user = await controller_children.listChildren(childId, userId)
+
+    response.status(user.status_code).json(user)
+})
+
+//Retorna filhos do Usuario
+app.get('/syncrobaby/user/child', verifyJWT, cors(), async (request, response) => {
+    let userId = request.user.userID
     let user = await controller_children.listChildrenByUserId(userId)
 
     response.status(user.status_code).json(user)
 })
 
-app.post('/syncrobaby/child', cors(), bodyParserJSON, async (request, response) => {
+//Insere novo filho
+app.post('/syncrobaby/child', verifyJWT, cors(), bodyParserJSON, async (request, response) => {
+    let idUser = request.user.userID
     let dadosBody = request.body
     let contentType = request.headers['content-type']
-    let child = await controller_children.insertChildren(dadosBody, contentType)
+    let child = await controller_children.insertChildren(dadosBody, idUser, contentType)
 
+    response.status(child.status_code).json(child)
+})
+
+//Atualiza perfil do filho
+app.put('/syncrobaby/child/:id', verifyJWT, cors(), bodyParserJSON, async function (request, response){
+    let idChild = request.params.id
+    let dadosBody = request.body
+    dadosBody.fk_id_guardian = request.user.userID
+    let contentType = request.headers['content-type']
+
+    let child = await controller_children.updateChildren(idChild, dadosBody, contentType)
+    response.status(child.status_code).json(child)
+})
+
+app.patch('/syncrobaby/child/deactivate/:id', verifyJWT, cors(), bodyParserJSON, async function (request, response){
+    let idChild = request.params.id
+    let dadosBody = request.body
+    dadosBody.fk_id_guardian = request.user.userID
+    let contentType = request.headers['content-type']
+
+    let child = await controller_children.deactivateChildren(idChild, dadosBody, contentType)
     response.status(child.status_code).json(child)
 })
 
