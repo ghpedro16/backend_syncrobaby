@@ -11,7 +11,10 @@ const getAllChildrenByIdUser = async function (id_guardian) {
      try {
           let dados = await db('tbl_child')
                .select('*')
-               .where('fk_id_guardian', id_guardian)
+               .where({
+                    fk_id_guardian: id_guardian,
+                    active: 1
+               })
 
           if (dados.length > 0)
                return dados
@@ -30,6 +33,25 @@ const getChildrenById = async function (id, id_guardian) {
                .where({
                     id_child: id,
                     fk_id_guardian: id_guardian
+               })
+
+          if (dados.length > 0)
+               return dados
+          else
+               return false
+
+     } catch (error) {
+          return false
+     }
+}
+
+const getDeactivateChildren = async function (id_guardian) {
+     try {
+          let dados = await db('tbl_child')
+               .select('*')
+               .where({
+                    fk_id_guardian: id_guardian,
+                    active: 0
                })
 
           if (dados.length > 0)
@@ -112,10 +134,33 @@ const setDeactivateChildren = async function (id, id_guardian) {
      }
 }
 
+const setReactivateChildren = async function (id, id_guardian) {
+     try {
+          let dados = await db('tbl_child')
+               .update({
+                    active: true
+               })
+               .where({
+                    id_child: id,
+                    fk_id_guardian: id_guardian
+               })
+
+          if (dados > 0)
+               return dados
+          else
+               return false
+
+     } catch (error) {
+          return false
+     }
+}
+
 module.exports = {
      getChildrenById,
      getAllChildrenByIdUser,
+     getDeactivateChildren,
      setInsertChildren,
      setUpdateChildren,
-     setDeactivateChildren
+     setDeactivateChildren,
+     setReactivateChildren
 }

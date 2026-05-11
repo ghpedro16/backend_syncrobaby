@@ -36,6 +36,14 @@ app.get('/syncrobaby/user/child', verifyJWT, cors(), async (request, response) =
     response.status(user.status_code).json(user)
 })
 
+//Retorna filhos desativados do Usuario
+app.get('/syncrobaby/user/child/deactivate', verifyJWT, cors(), async (request, response) => {
+    let userId = request.user.userID
+    let user = await controller_children.listDeactivateChildren(userId)
+
+    response.status(user.status_code).json(user)
+})
+
 //Insere novo filho
 app.post('/syncrobaby/child', verifyJWT, cors(), bodyParserJSON, async (request, response) => {
     let idUser = request.user.userID
@@ -57,6 +65,7 @@ app.put('/syncrobaby/child/:id', verifyJWT, cors(), bodyParserJSON, async functi
     response.status(child.status_code).json(child)
 })
 
+//Desativa perfil do filho
 app.patch('/syncrobaby/child/deactivate/:id', verifyJWT, cors(), bodyParserJSON, async function (request, response){
     let idChild = request.params.id
     let dadosBody = request.body
@@ -64,6 +73,15 @@ app.patch('/syncrobaby/child/deactivate/:id', verifyJWT, cors(), bodyParserJSON,
     let contentType = request.headers['content-type']
 
     let child = await controller_children.deactivateChildren(idChild, dadosBody, contentType)
+    response.status(child.status_code).json(child)
+})
+
+//Reativa perfil do filho
+app.patch('/syncrobaby/child/reactivate/:id', verifyJWT, cors(), async function (request, response){
+    let idChild = request.params.id
+    let idUser = request.user.userID
+
+    let child = await controller_children.reactivateChildren(idChild, idUser)
     response.status(child.status_code).json(child)
 })
 
