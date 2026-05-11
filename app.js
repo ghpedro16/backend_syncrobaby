@@ -23,7 +23,17 @@ app.use((request, response, next) => {
     next()
 })
 
+const routesUser = require('./routes/routes_user.js')
+const routesIllness = require('./routes/routes_illness.js')
+
+app.use(routesUser)
+app.use(routesIllness)
+
+
 //Inicia a API
 app.listen(PORT, function () {
     console.log('API aguardando requisições...')
 })
+
+app.use(routesUser)
+app.use(routesIllness)
