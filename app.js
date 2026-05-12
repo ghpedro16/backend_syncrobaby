@@ -24,6 +24,11 @@ app.use((request, response, next) => {
 })
 
 const routesUser = require('./routes/routes_user.js')
+const routesIllness = require('./routes/routes_illness.js')
+
+app.use(routesUser)
+app.use(routesIllness)
+
 
 //Inicia a API
 app.listen(PORT, function () {
@@ -31,3 +36,4 @@ app.listen(PORT, function () {
 })
 
 app.use(routesUser)
+app.use(routesIllness)
