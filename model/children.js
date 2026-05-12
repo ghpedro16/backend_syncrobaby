@@ -7,50 +7,42 @@
 
 //Criar variavel para conexao com o banco
 
-const getAllChildrenByIdUser = async function(id_user){
-   try {
-        //Script sql
-        let sql = null
+const getAllChildrenByIdUser = async function (id_user) {
+  try {
+    //Script sql
+    let sql = null;
 
-        //Variavel de encaminhamento ao banco
-        let result = null
+    //Variavel de encaminhamento ao banco
+    let result = null;
 
-        if(Array.isArray(result))
-            return result
-        else
-            return false
+    if (Array.isArray(result)) return result;
+    else return false;
+  } catch (error) {
+    return false;
+  }
+};
 
-   } catch (error) {
-        return false
-   }
-}
+const getChildrenById = async function (id) {
+  try {
+    let result = await db("tbl_child").select("*").where("id_child", id);
 
-const getChildrenById = async function(id){
-    try {
-        //Script sql
-        let sql = null
+    if (Array.isArray(result)) return result;
+    else return false;
+  } catch (error) {
+    return false;
+  }
+};
 
-        //Variavel de encaminhamento ao banco
-        let result = null
+const setInsertChildren = async function () {};
 
-        if(Array.isArray(result))
-            return result
-        else
-            return false
+const setUpdateChildren = async function (id) {};
 
-   } catch (error) {
-        return false
-   }
-}
+const setDeleteChildren = async function (id) {};
 
-const setInsertChildren = async function(){
-
-}
-
-const setUpdateChildren = async function(id){
-
-}
-
-const setDeleteChildren = async function(id){
-
-}
+module.exports = {
+  getAllChildrenByIdUser,
+  getChildrenById,
+  setInsertChildren,
+  setUpdateChildren,
+  setDeleteChildren,
+};

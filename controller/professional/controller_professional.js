@@ -5,23 +5,24 @@
  * Versão: 1.0
  * ****************************************************************************************************************************************/
 
-const illnessDAO = require("../../model/illness.js");
-const childDAO = require("../../model/children.js");
+const vocationalDAO = require("../../model/professional.js");
+const specialtyDAO = require("../../model/professional_specialty.js");
+const childrenDAO = require("../../model/children.js");
 
 const DEFAULT_MESSAGES = require("../modulo/config_messages.js");
 
-const listIllnessById = async function (id) {
+const listVocationalById = async function (id) {
   let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
 
   try {
-    let resultIllness = await illnessDAO.getIllnessById(id);
+    let resultVocational = await vocationalDAO.getVocationalById(id);
 
-    if (resultIllness) {
-      if (resultIllness.length > 0) {
+    if (resultVocational) {
+      if (resultVocational.length > 0) {
         MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status;
         MESSAGES.DEFAULT_HEADER.status_code =
           MESSAGES.SUCCESS_REQUEST.status_code;
-        MESSAGES.DEFAULT_HEADER.response.illness = resultIllness;
+        MESSAGES.DEFAULT_HEADER.response.vocational = resultVocational;
 
         return MESSAGES.DEFAULT_HEADER; // 200
       } else {
@@ -35,48 +36,19 @@ const listIllnessById = async function (id) {
   }
 };
 
-const listIllnessByChildId = async function (id_child) {
+const listVocationalByChildrenId = async function (id_children) {
   let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
 
   try {
-    let resultChild = await childDAO.getChildrenById(id_child);
-    if (!resultChild) {
-      let resultIllness = await illnessDAO.getIllnessByChildId(id_child);
+    let resultVocational =
+      await vocationalDAO.getVocationalByChildrenId(id_children);
 
-      if (resultIllness) {
-        if (resultIllness.length > 0) {
-          MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status;
-          MESSAGES.DEFAULT_HEADER.status_code =
-            MESSAGES.SUCCESS_REQUEST.status_code;
-          MESSAGES.DEFAULT_HEADER.response.illness = resultIllness;
-
-          return MESSAGES.DEFAULT_HEADER; // 200
-        } else {
-          return MESSAGES.ERROR_NOT_FOUND; // 404
-        }
-      } else {
-        return MESSAGES.ERROR_RELATIONAL_INSERTION; // 500
-      }
-    } else {
-      return MESSAGES.ERROR_INTERNAL_SERVER_MODEL; // 404
-    }
-  } catch (error) {
-    return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
-  }
-};
-
-const listIllnessByType = async function (type) {
-  let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
-
-  try {
-    let resultIllness = await illnessDAO.getIllnessByType(type);
-
-    if (resultIllness) {
-      if (resultIllness.length > 0) {
+    if (resultVocational) {
+      if (resultVocational.length > 0) {
         MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status;
         MESSAGES.DEFAULT_HEADER.status_code =
           MESSAGES.SUCCESS_REQUEST.status_code;
-        MESSAGES.DEFAULT_HEADER.response.illness = resultIllness;
+        MESSAGES.DEFAULT_HEADER.response.vocational = resultVocational;
 
         return MESSAGES.DEFAULT_HEADER; // 200
       } else {
@@ -90,21 +62,49 @@ const listIllnessByType = async function (type) {
   }
 };
 
-const insertIllness = async function (illness, contentType) {
+const listVocationalBySpecialty = async function (id_specialty, id_children) {
+  let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
+
+  try {
+    let resultVocational = await vocationalDAO.getVocationalByChildrenId(
+      id_specialty,
+      id_children,
+    );
+
+    if (resultVocational) {
+      if (resultVocational.length > 0) {
+        MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status;
+        MESSAGES.DEFAULT_HEADER.status_code =
+          MESSAGES.SUCCESS_REQUEST.status_code;
+        MESSAGES.DEFAULT_HEADER.response.vocational = resultVocational;
+
+        return MESSAGES.DEFAULT_HEADER; // 200
+      } else {
+        return MESSAGES.ERROR_NOT_FOUND; // 404
+      }
+    } else {
+      return MESSAGES.ERROR_INTERNAL_SERVER_MODEL; // 500
+    }
+  } catch (error) {
+    return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
+  }
+};
+
+const insertVocational = async function (vocational, contentType) {
   let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
 
   try {
     if (String(contentType).toUpperCase() == "APPLICATION/JSON") {
-      let validar = await validarDados(illness);
+      let validar = await validarDados(vocational);
 
       if (!validar) {
-        let resultIllness = await illnessDAO.setInsertIllness(illness);
+        let resultVocational = vocationalDAO.setInsertVocational(vocational);
 
-        if (resultIllness) {
+        if (resultVocational) {
           MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status;
           MESSAGES.DEFAULT_HEADER.status_code =
             MESSAGES.SUCCESS_CREATE_ITEM.status_code;
-          MESSAGES.DEFAULT_HEADER.response = illness;
+          MESSAGES.DEFAULT_HEADER.response = vocational;
 
           return MESSAGES.DEFAULT_HEADER; // 201
         } else {
@@ -121,28 +121,28 @@ const insertIllness = async function (illness, contentType) {
   }
 };
 
-const updateIllness = async function (illness, id, contentType) {
+const updateVocational = async function (vocational, id, contentType) {
   let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
 
   try {
     if (String(contentType).toUpperCase() == "APPLICATION/JSON") {
-      let validar = await validarDados(illness);
+      let validar = await validarDados(vocational);
 
       if (!validar) {
-        let validarId = await listIllnessById(id);
+        let validarId = listVocationalById(id);
 
         if (validarId.status_code == 200) {
-          illness.id_illness = Number(id);
-          let resultIllness = await illnessDAO.setUpdateIllness(illness);
+          vocational.id = Number(id);
 
-          if (resultIllness) {
+          let resultVocational = vocationalDAO.setUpdateVocational(vocational);
+          if (resultVocational) {
             MESSAGES.DEFAULT_HEADER.status =
-              MESSAGES.SUCCESS_UPDATE_ITEM.status;
+              MESSAGES.SUCCESS_CREATE_ITEM.status;
             MESSAGES.DEFAULT_HEADER.status_code =
-              MESSAGES.SUCCESS_UPDATE_ITEM.status_code;
-            MESSAGES.DEFAULT_HEADER.response.illness = illness;
+              MESSAGES.SUCCESS_CREATE_ITEM.status_code;
+            MESSAGES.DEFAULT_HEADER.response = vocational;
 
-            return MESSAGES.DEFAULT_HEADER; // 200
+            return MESSAGES.DEFAULT_HEADER; // 201
           } else {
             return MESSAGES.ERROR_INTERNAL_SERVER_MODEL; // 500
           }
@@ -160,17 +160,17 @@ const updateIllness = async function (illness, id, contentType) {
   }
 };
 
-const deleteIllness = async function (id) {
+const deleteVocational = async function (id) {
   let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
 
   try {
-    if (!isNaN(id) && id != "" && id != null && id > 0) {
-      let validarId = await listIllnessById(id);
+    if (isNaN(id) && id != "" && id != null && id > 0) {
+      let validarId = await listVocationalById(id);
 
       if (validarId.status_code == 200) {
-        let resultIllness = await illnessDAO.setDeleteIllness(id);
+        let resultVocational = await vocationalDAO.setDeleteVocational(id);
 
-        if (resultIllness) {
+        if (resultVocational) {
           MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_DELETE_ITEM.status;
           MESSAGES.DEFAULT_HEADER.status_code =
             MESSAGES.SUCCESS_DELETE_ITEM.status_code;
@@ -193,59 +193,57 @@ const deleteIllness = async function (id) {
   }
 };
 
-const validarDados = async function (illness) {
+const validarDados = async function (vocational) {
   let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
 
   if (
-    illness.illness_name == null ||
-    illness.illness_name == undefined ||
-    illness.illness_name == "" ||
-    illness.illness_name.length > 150
+    vocational.nome == "" ||
+    vocational.nome == undefined ||
+    vocational.nome == null ||
+    vocational.nome.length > 150
   ) {
     MESSAGES.ERROR_REQUIRED_FIELDS.message += " [Nome incorreto]";
     return MESSAGES.ERROR_REQUIRED_FIELDS;
   } else if (
-    illness.start_date == undefined ||
-    new Date(illness.start_date) > new Date() ||
-    illness.start_date == null ||
-    illness.start_date == ""
+    vocational.telefone == null ||
+    vocational.telefone == undefined ||
+    vocational.telefone == "" ||
+    vocational.telefone.length > 15
   ) {
-    MESSAGES.ERROR_REQUIRED_FIELDS.message += " [Data Inicio incorreto]";
+    MESSAGES.ERROR_REQUIRED_FIELDS.message += " [Telefone incorreto]";
     return MESSAGES.ERROR_REQUIRED_FIELDS;
   } else if (
-    illness.end_date == undefined ||
-    new Date(illness.end_date) > new Date() ||
-    illness.end_date == null ||
-    illness.end_date == ""
+    vocational.endereco == null ||
+    vocational.endereco == undefined ||
+    vocational.endereco == "" ||
+    vocational.endereco.length > 500
   ) {
-    MESSAGES.ERROR_REQUIRED_FIELDS.message += " [Data Fim incorreto]";
+    MESSAGES.ERROR_REQUIRED_FIELDS.message += " [Endereco incorreto]";
     return MESSAGES.ERROR_REQUIRED_FIELDS;
   } else if (
-    illness.description == undefined ||
-    illness.description.length > 255
+    vocational.ultima_consulta == null ||
+    vocational.ultima_consulta == undefined ||
+    vocational.ultima_consulta == "" ||
+    new Date(vocational.ultima_consulta) > new Date()
   ) {
-    MESSAGES.ERROR_REQUIRED_FIELDS.message += " [Descricao incorreto]";
+    MESSAGES.ERROR_REQUIRED_FIELDS.message += " [Ultima Consulta incorreto]";
     return MESSAGES.ERROR_REQUIRED_FIELDS;
   } else if (
-    illness.illness_type == undefined ||
-    illness.illness_type == null ||
-    (illness.illness_type === "acute" && illness.illness_type === "chronic") ||
-    illness.illness_type == ""
+    vocational.fk_id_filho == undefined ||
+    vocational.fk_id_filho == null ||
+    vocational.fk_id_filho == "" ||
+    isNaN(vocational.fk_id_filho) ||
+    vocational.fk_id_filho <= 0
   ) {
-    MESSAGES.ERROR_REQUIRED_FIELDS.message += " [Tipo Doença incorreto]";
+    MESSAGES.ERROR_REQUIRED_FIELDS.message +=
+      " [ID (chave estrangeira) incorreto]";
     return MESSAGES.ERROR_REQUIRED_FIELDS;
   } else if (
-    illness.medication == undefined ||
-    illness.medication.length > 150
-  ) {
-    MESSAGES.ERROR_REQUIRED_FIELDS.message += " [Medicacao incorreto]";
-    return MESSAGES.ERROR_REQUIRED_FIELDS;
-  } else if (
-    illness.fk_id_child == undefined ||
-    illness.fk_id_child == null ||
-    illness.fk_id_child == "" ||
-    isNaN(illness.fk_id_child) ||
-    illness.fk_id_child <= 0
+    vocational.fk_id_especializacao == undefined ||
+    vocational.fk_id_especializacao == null ||
+    vocational.fk_id_especializacao == "" ||
+    isNaN(vocational.fk_id_especializacao) ||
+    vocational.fk_id_especializacao <= 0
   ) {
     MESSAGES.ERROR_REQUIRED_FIELDS.message +=
       " [ID (chave estrangeira) incorreto]";
@@ -253,13 +251,4 @@ const validarDados = async function (illness) {
   } else {
     return false;
   }
-};
-
-module.exports = {
-  listIllnessByChildId,
-  listIllnessById,
-  listIllnessByType,
-  insertIllness,
-  deleteIllness,
-  updateIllness,
 };
