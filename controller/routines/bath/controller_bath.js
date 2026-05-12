@@ -5,21 +5,21 @@
  * Versão: 1.0
 *****************************************************************************************************************************************/
 
-const showerDAO = require('../../../model/shower.js')
+const bathDAO = require('../../../model/bath.js')
 
 const DEFAULT_MESSAGES = require('../../modulo/config_messages.js')
 
-const listShowerId = async function(id){
+const listBathId = async function(id){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
-        let resultShower = await showerDAO.getShowerById(id)
+        let resultBath = await bathDAO.getBathById(id)
 
-        if(resultShower){
-            if(resultShower.length > 0){
+        if(resultBath){
+            if(resultBath.length > 0){
                 MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.shower = resultShower
+                MESSAGES.DEFAULT_HEADER.response.bath = resultBath
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
@@ -33,22 +33,22 @@ const listShowerId = async function(id){
     }
 }
  
-const insertShower = async function(shower, contentType){
+const insertBath = async function(bath, contentType){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
         if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
 
-            let validar = await validarDados(shower)
+            let validar = await validarDados(bath)
 
             if(!validar){
 
-                let resultShower = showerDAO.setInsertShower(shower)
+                let resultBath = await bathDAO.setInsertBath(bath)
 
-                if(resultShower){
+                if(resultBath){
                     MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.response = shower
+                    MESSAGES.DEFAULT_HEADER.response = bath
 
                     return MESSAGES.DEFAULT_HEADER // 201
                 }else{
@@ -65,19 +65,19 @@ const insertShower = async function(shower, contentType){
     }
 }
  
-const deleteShower = async function(id){
+const deleteBath = async function(id){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
-        if (isNaN(id) && id != '' && id != null && id > 0) {
+        if (!isNaN(id) && id != '' && id != null && id > 0) {
 
-            let validarId = await listShowerId(id)
+            let validarId = await listBathId(id)
 
             if(validarId.status_code == 200){
 
-                let resultShower = await showerDAO.setDeleteShower(id)
+                let resultBath = await bathDAO.setDeleteBath(id)
 
-                if(resultShower){
+                if(resultBath){
                     MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_DELETE_ITEM.status
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETE_ITEM.status_code
                     MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_DELETE_ITEM.message
@@ -98,22 +98,22 @@ const deleteShower = async function(id){
     } 
 }
 
-const validarDados = async function(shower){
+const validarDados = async function(bath){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
-    if(!shower.horario_inicio || Number.isNaN(new Date(shower.horario_inicio).getTime()) || new Date(shower.horario_inicio) > new Date()){
+    if(!bath.start_time || Number.isNaN(new Date(bath.start_time).getTime()) || new Date(bath.start_time) > new Date()){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Data inicio incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(!shower.horario_termino || Number.isNaN(new Date(shower.horario_termino).getTime()) || new Date(shower.horario_termino) > new Date()){
+    }else if(!bath.end_time || Number.isNaN(new Date(bath.end_time).getTime()) || new Date(bath.end_time) > new Date() || bath.end_time < bath.start_time){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Data termino incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(shower.descricao == undefined || shower.descricao.length > 255){
+    }else if(bath.description == undefined || bath.description.length > 255){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Descricao incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(shower.fk_id_filho == undefined || shower.fk_id_filho == null || shower.fk_id_filho == '' || isNaN(shower.fk_id_filho) || shower.fk_id_filho <= 0){
+    }else if(bath.fk_id_child == undefined || bath.fk_id_child == null || bath.fk_id_child == '' || isNaN(bath.fk_id_child) || bath.fk_id_child <= 0){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID (chave estrangeira) incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
@@ -123,7 +123,7 @@ const validarDados = async function(shower){
 }
 
 module.exports = {
-    listShowerId,
-    insertShower,
-    deleteShower
+    listBathId,
+    insertBath,
+    deleteBath
 }

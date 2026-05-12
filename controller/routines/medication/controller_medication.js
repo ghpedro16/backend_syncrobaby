@@ -43,7 +43,7 @@ const insertMedication = async function(medication, contentType){
 
             if(!validar){
 
-                let resultMedication = medicationDAO.setInsertMedication(medication)
+                let resultMedication = await medicationDAO.setInsertMedication(medication)
 
                 if(resultMedication){
                     MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
@@ -69,7 +69,7 @@ const deleteMedication = async function(id){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
-        if (isNaN(id) && id != '' && id != null && id > 0) {
+        if (!isNaN(id) && id != '' && id != null && id > 0) {
 
             let validarId = await listMedicationId(id)
 
@@ -101,15 +101,15 @@ const deleteMedication = async function(id){
 const validarDados = async function(medication){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
-    if(!medication.data_hora || Number.isNaN(new Date(medication.data_hora).getTime()) || new Date(medication.data_hora) > new Date()){
+    if(!medication.date_time || Number.isNaN(new Date(medication.date_time).getTime()) || new Date(medication.date_time) > new Date()){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Data incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(medication.descricao == undefined || medication.descricao.length > 255){
+    }else if(medication.description == undefined || medication.description.length > 255){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Descricao incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(medication.fk_id_filho == undefined || medication.fk_id_filho == null || medication.fk_id_filho == '' || isNaN(medication.fk_id_filho) || medication.fk_id_filho <= 0){
+    }else if(medication.fk_id_child == undefined || medication.fk_id_child == null || medication.fk_id_child == '' || isNaN(medication.fk_id_child) || medication.fk_id_child <= 0){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID (chave estrangeira) incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 

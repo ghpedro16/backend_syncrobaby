@@ -43,7 +43,7 @@ const insertDiaper = async function(diaper, contentType){
 
             if(!validar){
 
-                let resultDiaper = diaperDAO.setInsertDiaper(diaper)
+                let resultDiaper = await diaperDAO.setInsertDiaper(diaper)
 
                 if(resultDiaper){
                     MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
@@ -69,7 +69,7 @@ const deleteDiaper = async function(id){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
-        if (isNaN(id) && id != '' && id != null && id > 0) {
+        if (!isNaN(id) && id != '' && id != null && id > 0) {
 
             let validarId = await listDiaperId(id)
 
@@ -101,19 +101,19 @@ const deleteDiaper = async function(id){
 const validarDados = async function(diaper){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
-    if(!diaper.data_hora || Number.isNaN(new Date(diaper.data_hora).getTime()) || new Date(diaper.data_hora) > new Date()){
+    if(!diaper.date_time || Number.isNaN(new Date(diaper.date_time).getTime()) || new Date(diaper.date_time) > new Date()){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Data incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(diaper.tipo == null || diaper.tipo == undefined || diaper.tipo == ''){
+    }else if(diaper.type != "urine" && diaper.type != "stool"){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Tipo incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(diaper.descricao == undefined || diaper.descricao.length > 255){
+    }else if(diaper.description == undefined || diaper.description.length > 255){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Descricao incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(diaper.fk_id_filho == undefined || diaper.fk_id_filho == null || diaper.fk_id_filho == '' || isNaN(diaper.fk_id_filho) || diaper.fk_id_filho <= 0){
+    }else if(diaper.fk_id_child == undefined || diaper.fk_id_child == null || diaper.fk_id_child == '' || isNaN(diaper.fk_id_child) || diaper.fk_id_child <= 0){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID (chave estrangeira) incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 

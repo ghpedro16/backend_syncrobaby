@@ -49,8 +49,7 @@ const setDeleteSleep = async function (id, id_child) {
 
         let dados = await db('tbl_sleep_log')
             .where({
-                id_sleep: id,
-                fk_id_child: id_child
+                id_sleep: id
             })
             .delete()
 

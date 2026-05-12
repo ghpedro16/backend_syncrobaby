@@ -69,7 +69,7 @@ const deleteFeeding = async function(id){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
-        if (isNaN(id) && id != '' && id != null && id > 0) {
+        if (!isNaN(id) && id != '' && id != null && id > 0) {
 
             let validarId = await listFeedingId(id)
 

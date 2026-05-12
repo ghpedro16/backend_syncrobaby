@@ -9,9 +9,9 @@ const db = require('../config/connection.js')
 
 const getDiaperById = async function (id){
     try {
-        let dados = await db('tbl_registro_fralda')
+        let dados = await db('tbl_diaper_log')
         .select('*')
-        .where('id_fralda', id)
+        .where('id_diaper', id)
 
         if (dados.length > 0)
             return dados
@@ -26,12 +26,12 @@ const getDiaperById = async function (id){
 const setInsertDiaper = async function (diaper) {
     try {
 
-        let dados = await db('tbl_registro_fralda')
+        let dados = await db('tbl_diaper_log')
             .insert({
-                data_hora: `${diaper.data_hora}`,
-                descricao: `${diaper.descricao}`,
-                tipo: `${diaper.tipo}`,
-                fk_id_filho: `${diaper.fk_id_filho}`
+                date_time: `${diaper.date_time}`,
+                description: `${diaper.description}`,
+                type: `${diaper.type}`,
+                fk_id_child: `${diaper.fk_id_child}`
             })
 
         if (dados.length > 0)
@@ -47,8 +47,8 @@ const setInsertDiaper = async function (diaper) {
 const setDeleteDiaper = async function (id) {
     try {
 
-        let dados = await db('tbl_registro_fralda')
-            .where('id_fralda', id)
+        let dados = await db('tbl_diaper_log')
+            .where('id_diaper', id)
             .delete()
 
         if (dados > 0)

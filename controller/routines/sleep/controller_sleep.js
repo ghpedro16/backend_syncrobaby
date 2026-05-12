@@ -69,7 +69,7 @@ const deleteSleep = async function(id){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
-        if (isNaN(id) && id != '' && id != null && id > 0) {
+        if (!isNaN(id) && id != '' && id != null && id > 0) {
 
             let validarId = await listSleepId(id)
 
@@ -105,7 +105,7 @@ const validarDados = async function(sleep){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Data inicio incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(!sleep.end_time || Number.isNaN(new Date(sleep.end_time).getTime()) || new Date(sleep.end_time) > new Date()){
+    }else if(!sleep.end_time || Number.isNaN(new Date(sleep.end_time).getTime()) || new Date(sleep.end_time) > new Date() || sleep.end_time < sleep.start_time){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Data termino incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 

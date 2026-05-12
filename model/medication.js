@@ -1,18 +1,17 @@
-/******************************************************************************************************
+/******************************************************************************************************************
  * Objetivo: Arquivo responsavel pelo CRUD referente a tabela de REGISTRO MEDICAMENTO da aplicação SyncroBaby
  * Data: 24/04/2026
  * Autor: SyncroBaby
  * Versão: 1.0
- * ****************************************************************************************************/
-
+ * ****************************************************************************************************************/
 
 const db = require('../config/connection.js')
 
 const getMedicationById = async function (id){
     try {
-        let dados = await db('tbl_registro_medicacao')
+        let dados = await db('tbl_medication_log')
         .select('*')
-        .where('id_medicacao', id)
+        .where('id_medication', id)
 
         if (dados.length > 0)
             return dados
@@ -27,11 +26,11 @@ const getMedicationById = async function (id){
 const setInsertMedication = async function (medication) {
     try {
 
-        let dados = await db('tbl_registro_medicacao')
+        let dados = await db('tbl_medication_log')
             .insert({
-                data_hora: `${medication.data_hora}`,
-                descricao: `${medication.descricao}`,
-                fk_id_filho: `${medication.fk_id_filho}`
+                date_time: `${medication.date_time}`,
+                description: `${medication.description}`,
+                fk_id_child: `${medication.fk_id_child}`
             })
 
         if (dados.length > 0)
@@ -47,7 +46,7 @@ const setInsertMedication = async function (medication) {
 const setDeleteMedication = async function (id) {
     try {
 
-        let dados = await db('tbl_registro_medication')
+        let dados = await db('tbl_medication_log')
             .where('id_medication', id)
             .delete()
 

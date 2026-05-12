@@ -5,8 +5,12 @@
  * Versão: 1.0
  * ****************************************************************************************************/
 
-//Criar variavel para conexao com o banco
+const db = require('../config/connection.js')
 
 const getRoutinesByCurrentDate = async function(id_children, date){
 
+}
+
+module.exports = {
+    getRoutinesByCurrentDate
 }

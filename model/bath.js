@@ -7,11 +7,11 @@
 
 const db = require('../config/connection.js')
 
-const getShowerById = async function (id){
+const getBathById = async function (id){
     try {
-        let dados = await db('tbl_registro_banho')
+        let dados = await db('tbl_bath_log')
         .select('*')
-        .where('id_banho', id)
+        .where('id_bath', id)
 
         if (dados.length > 0)
             return dados
@@ -23,15 +23,15 @@ const getShowerById = async function (id){
     }
 }
 
-const setInsertShower = async function(shower){
+const setInsertBath = async function(bath){
     try {
         
-        let dados = await db('tbl_registro_banho')
+        let dados = await db('tbl_bath_log')
         .insert({
-            horario_inicio: `${shower.horario_inicio}`,
-            horario_termino: `${shower.horario_termino}`,
-            descricao: `${shower.descricao}`,
-            fk_id_filho: `${shower.fk_id_filho}`
+            start_time: `${bath.start_time}`,
+            end_time: `${bath.end_time}`,
+            description: `${bath.description}`,
+            fk_id_child: `${bath.fk_id_child}`
         })
 
         if(dados.length > 0)
@@ -44,11 +44,11 @@ const setInsertShower = async function(shower){
     }
 }
 
-const setDeleteShower = async function(id){
+const setDeleteBath = async function(id){
     try {
         
-        let dados = await db('tbl_registro_banho')
-        .where('id_banho', id)
+        let dados = await db('tbl_bath_log')
+        .where('id_bath', id)
         .delete()
 
         if(dados > 0)
@@ -62,7 +62,7 @@ const setDeleteShower = async function(id){
 }
 
 module.exports = {
-    getShowerById,
-    setInsertShower,
-    setDeleteShower
+    getBathById,
+    setInsertBath,
+    setDeleteBath
 }
