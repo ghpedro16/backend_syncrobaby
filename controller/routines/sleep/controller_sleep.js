@@ -43,7 +43,7 @@ const insertSleep = async function(sleep, contentType){
 
             if(!validar){
 
-                let resultSleep = sleepDAO.setInsertSleep(sleep)
+                let resultSleep = await sleepDAO.setInsertSleep(sleep)
 
                 if(resultSleep){
                     MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
@@ -101,19 +101,19 @@ const deleteSleep = async function(id){
 const validarDados = async function(sleep){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
-    if(!sleep.horario_inicio || Number.isNaN(new Date(sleep.horario_inicio).getTime()) || new Date(sleep.horario_inicio) > new Date()){
+    if(!sleep.start_time || Number.isNaN(new Date(sleep.start_time).getTime()) || new Date(sleep.start_time) > new Date()){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Data inicio incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(!sleep.horario_termino || Number.isNaN(new Date(sleep.horario_termino).getTime()) || new Date(sleep.horario_termino) > new Date()){
+    }else if(!sleep.end_time || Number.isNaN(new Date(sleep.end_time).getTime()) || new Date(sleep.end_time) > new Date()){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Data termino incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(sleep.descricao == undefined || sleep.descricao.length > 255){
+    }else if(sleep.description == undefined || sleep.description.length > 255){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Descricao incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(sleep.fk_id_filho == undefined || sleep.fk_id_filho == null || sleep.fk_id_filho == '' || isNaN(sleep.fk_id_filho) || sleep.fk_id_filho <= 0){
+    }else if(sleep.fk_id_child == undefined || sleep.fk_id_child == null || sleep.fk_id_child == '' || isNaN(sleep.fk_id_child) || sleep.fk_id_child <= 0){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID (chave estrangeira) incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 

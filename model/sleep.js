@@ -9,9 +9,9 @@ const db = require('../config/connection.js')
 
 const getSleepById = async function (id){
     try {
-        let dados = await db('tbl_registro_sono')
+        let dados = await db('tbl_sleep_log')
         .select('*')
-        .where('id_sono', id)
+        .where('id_sleep', id)
 
         if (dados.length > 0)
             return dados
@@ -26,13 +26,12 @@ const getSleepById = async function (id){
 const setInsertSleep = async function (sleep) {
     try {
 
-        let dados = await db('tbl_registro_sono')
+        let dados = await db('tbl_sleep_log')
         .insert({
-            horario_inicio: `${sleep.horario_inicio}`,
-            horario_termino: `${sleep.horario_termino}`,
-            data: `${sleep.data}`,
-            descricao: `${sleep.descricao}`,
-            fk_id_filho: `${sleep.fk_id_filho}`
+            start_time: `${sleep.start_time}`,
+            end_time: `${sleep.end_time}`,
+            description: `${sleep.description}`,
+            fk_id_child: `${sleep.fk_id_child}`
         })
 
         if (dados.length > 0)
@@ -45,11 +44,14 @@ const setInsertSleep = async function (sleep) {
     }
 }
 
-const setDeleteSleep = async function (id) {
+const setDeleteSleep = async function (id, id_child) {
     try {
 
-        let dados = await db('tbl_registro_sono')
-            .where('id_sono', id)
+        let dados = await db('tbl_sleep_log')
+            .where({
+                id_sleep: id,
+                fk_id_child: id_child
+            })
             .delete()
 
         if (dados > 0)
