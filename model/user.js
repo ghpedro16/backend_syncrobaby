@@ -5,34 +5,185 @@
  * Versão: 1.0
  * ****************************************************************************************************/
 
-//Criar variavel para conexao com o banco
- 
- const getUserById = async function(id){
-     try {
-         //Script sql
-         let sql = null
- 
-         //Variavel de encaminhamento ao banco
-         let result = null
- 
-         if(Array.isArray(result))
-             return result
-         else
-             return false
- 
+const db = require('../config/connection.js')
+const bcrypt = require('bcrypt')
+
+const getUserById = async function (id) {
+    try {
+        
+        let dados = await db('tbl_guardian')
+        .select('*')
+        .where('id_guardian', id)
+
+        if(dados.length > 0)
+            return dados
+        else
+            return false
+
     } catch (error) {
-         return false
+        return false
     }
- }
- 
- const setInsertUser = async function(){
- 
- }
- 
- const setUpdateUser = async function(id){
- 
- }
- 
- const setDeleteUser = async function(id){
- 
- }
+}
+
+const getUserByEmail = async function (email) {
+    try {
+        
+        let dados = await db('tbl_guardian')
+        .select('id_guardian', 'email', 'password')
+        .where({email: email})
+        
+        if(dados.length > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
+const getUserByLogin = async function (user) {
+
+    try {
+
+        let dados = await db('tbl_guardian')
+            .select('*')
+            .where({
+                email: user.email
+            })
+
+        if (!dados)
+            return false
+
+        const senhaValida = await bcrypt.compare(
+            user.password,
+            dados[0].password
+        )
+
+        if (!senhaValida)
+            return false
+
+        return dados
+
+    } catch (error) {
+        return false
+    }
+}
+
+const setInsertUser = async function (user) {
+
+    try {
+
+        let dados = await db('tbl_guardian')
+            .insert({
+                guardian_name: user.guardian_name,
+                email: user.email,
+                password: user.password,
+                profile_picture: user.profile_picture
+            })
+
+        if (dados.length > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+    
+        return false
+    }
+}
+
+const setUpdateUser = async function (user) {
+    try {
+
+        let dados = await db('tbl_guardian')
+        .update({
+            guardian_name: `${user.guardian_name}`,
+            email: `${user.email}`,
+            profile_picture: `${user.profile_picture}`
+        })
+        .where({id_guardian: `${user.id_guardian}`})
+
+        if(dados > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
+const setUpdatePassword = async function(user){
+    try {
+
+        let dados = await db('tbl_guardian')
+            .update({
+                password: user.password
+            })
+            .where({
+                id_guardian: user.id_guardian
+            })
+
+        if (dados > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
+const setDeactivateUser = async function (id) {
+    try {
+
+        let dados = await db('tbl_guardian')
+        .update({
+            active: false
+        })
+        .where({
+            id_guardian: id
+        })
+
+        if(dados > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
+const setReactivateUser = async function (id) {
+    try {
+
+        let dados = await db('tbl_guardian')
+        .update({
+            active: true
+        })
+        .where({
+            id_guardian: id
+        })
+
+        if(dados > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
+module.exports = {
+    getUserById,
+    getUserByEmail,
+    getUserByLogin,
+    setInsertUser,
+    setUpdateUser,
+    setUpdatePassword,
+    setDeactivateUser,
+    setReactivateUser
+}
