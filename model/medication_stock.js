@@ -8,7 +8,7 @@
 const db = require('../config/connection.js')
 
 const getMedicationStockByMedicationId = async function (id_medication) {
-        try {
+    try {
         let dados = await db('tbl_stock_medication')
         .select('*')
         .where('fk_id_medication', id_medication)
@@ -27,7 +27,7 @@ const setInsertMedicationStock = async function (medication) {
     try {
         let dados = await db('tbl_stock_medication')
         .insert({
-            quantidade: `${medication.quantidade}`,
+            quantity: `${medication.quantity}`,
             fk_id_medication: `${medication.fk_id_medication}`,
             fk_id_stock_registry: `${medication.fk_id_stock_registry}`
         })

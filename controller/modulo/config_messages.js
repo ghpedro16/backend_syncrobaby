@@ -20,7 +20,6 @@ const DEFAULT_HEADER = {
 
 }
 
-
 /********************************************************************   MENSAGENS DE SUCESSO    ********************************************************************/
 
 const SUCCESS_REQUEST = {status: true, status_code: 200, message: 'Requisição bem sucedida...'}
@@ -30,6 +29,13 @@ const SUCCESS_CREATE_ITEM = {status: true, status_code: 201, message: 'Requisiç
 const SUCCESS_UPDATE_ITEM = {status: true, status_code: 200, message: 'Item atualizado com sucesso...'}
 
 const SUCCESS_DELETE_ITEM = {status: true, status_code: 200, message: 'Item excluído com sucesso...'}
+
+const SUCCESS_MODIFIED_ITEM = {status: true, status_code: 204, message: 'Item modificado com sucesso!'}
+
+const SUCCESS_REACTIVATE_ITEM = {status: true, status_code: 200, message: 'Item reativado com sucesso!'}
+
+const SUCCESS_DEACTIVATE_ITEM = {status: true, status_code: 204, message: 'Item desativado com sucesso!'}
+
 
 /********************************************************************    MENSAGENS DE ERRO      ********************************************************************/
 
@@ -45,6 +51,12 @@ const ERROR_CONTENT_TYPE = {status: false, status_code: 415, message: 'Não foi 
 
 const ERROR_RELATIONAL_INSERTION = {status: false, status_code: 500, message: 'A requisição do item principal foi processada com sucesso, porém houveram problemas ao inserir dados na tabela de relação!'}
 
+const ERROR_UNIQUE_CONFLICT = {status: false, status_code: 409, message: "Não foi possivel processar a requisição pois o item principal causará um conflito na base de dados."}
+
+const ERROR_DISABLED_USER = {status: false, status_code: 403, message: "Não foi possível acessar esse usuário."}
+
+const ERROR_INVALID_PASSWORD = {status: false, status_code: 401, message: "Senha incorreta!"}
+
 module.exports = {
     DEFAULT_HEADER,
     SUCCESS_REQUEST,
@@ -54,7 +66,13 @@ module.exports = {
     ERROR_REQUIRED_FIELDS,
     SUCCESS_CREATE_ITEM,
     ERROR_CONTENT_TYPE,
-    SUCCESS_UPDATED_ITEM,
-    SUCCESS_DELETED_ITEM,
-    ERROR_RELATIONAL_INSERTION
+    SUCCESS_UPDATE_ITEM,
+    SUCCESS_DELETE_ITEM,
+    ERROR_RELATIONAL_INSERTION,
+    ERROR_UNIQUE_CONFLICT,
+    ERROR_DISABLED_USER,
+    ERROR_INVALID_PASSWORD,
+    SUCCESS_MODIFIED_ITEM,
+    SUCCESS_DEACTIVATE_ITEM,
+    SUCCESS_REACTIVATE_ITEM
 }
