@@ -7,11 +7,11 @@
 
 const db = require('../config/connection.js')
 
-const getGreatnessById = async function (id) {
+const getUnitById = async function (id) {
     try {
-        let dados = await db('tbl_grandeza')
+        let dados = await db('tbl_unit')
         .select('*')
-        .where('id_grandeza', id)
+        .where('id_unit', id)
         .first()
 
         if(dados.length > 0)
@@ -24,9 +24,9 @@ const getGreatnessById = async function (id) {
     }
 }
 
-const getAllGreatness = async function () {
+const getAllUnit = async function () {
     try {
-        let dados = await db('tbl_grandeza')
+        let dados = await db('tbl_unit')
         .select('*')
 
         if(dados.length > 0)
@@ -40,6 +40,6 @@ const getAllGreatness = async function () {
 }
 
 module.exports = {
-    getGreatnessById,
-    getAllGreatness
+    getUnitById,
+    getAllUnit
 }

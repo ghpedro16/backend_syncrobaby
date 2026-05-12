@@ -9,9 +9,9 @@ const db = require('../config/connection.js')
 
 const getProductTypeById = async function (id) {
     try {
-        let dados = await db('tbl_tipo_produto')
+        let dados = await db('tbl_product_type')
         .select('*')
-        .where('id_tipo_produto', id)
+        .where('id_product_type', id)
         .first()
 
         if(dados.length > 0)
@@ -26,7 +26,7 @@ const getProductTypeById = async function (id) {
 
 const getAllProductType = async function () {
     try {
-        let dados = await db('tbl_tipo_produto')
+        let dados = await db('tbl_product_type')
         .select('*')
 
         if(dados.length > 0)

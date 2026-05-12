@@ -10,29 +10,9 @@ const db = require('../config/connection.js')
 const getProductByType = async function (id_type) {
     try {
         
-        let dados = await db('tbl_produto')
+        let dados = await db('tbl_product')
         .select('*')
-        .where('fk_id_tipo_produto', id_type)
-
-        if(dados.length > 0)
-            return dados
-        else
-            return false
-
-    } catch (error) {
-        return false
-    }
-}
-
-const setInsertProduct = async function (product) {
-    try {
-        
-        let dados = await db('tbl_produto')
-        .insert({
-            nome_produto: `${product.nome_produto}`,
-            fk_id_tipo_produto: `${product.fk_id_tipo_produto}`,
-            fk_id_grandeza: `${product.fk_id_grandeza}`
-        })
+        .where('fk_id_product_type', id_type)
 
         if(dados.length > 0)
             return dados
@@ -45,6 +25,5 @@ const setInsertProduct = async function (product) {
 }
 
 module.exports = {
-    getProductByType,
-    setInsertProduct
+    getProductByType
 }
