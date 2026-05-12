@@ -125,7 +125,6 @@ const updateIllness = async function (illness, id, contentType) {
       if (!validar) {
         let validarId = await listIllnessById(id);
 
-        console.log(validarId);
         if (validarId.status_code == 200) {
           illness.id_illness = Number(id);
           let resultIllness = await illnessDAO.setUpdateIllness(illness);
@@ -159,7 +158,6 @@ const deleteIllness = async function (id) {
   let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
 
   try {
-    console.log(id);
     if (!isNaN(id) && id != "" && id != null && id > 0) {
       let validarId = await listIllnessById(id);
 
@@ -225,6 +223,8 @@ const validarDados = async function (illness) {
   } else if (
     illness.illness_type == undefined ||
     illness.illness_type == null ||
+    illness.illness_type !== "acute" ||
+    illness.illness_type !== "chronic" ||
     illness.illness_type == ""
   ) {
     MESSAGES.ERROR_REQUIRED_FIELDS.message += " [Tipo Doença incorreto]";

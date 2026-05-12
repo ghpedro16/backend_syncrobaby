@@ -76,6 +76,8 @@ const setUpdateIllness = async function (illness) {
       .where({
         id_illness: `${illness.id_illness}`,
       });
+    if (dados > 0) return dados;
+    else return false;
   } catch (error) {
     return false;
   }
@@ -98,4 +100,5 @@ module.exports = {
   getIllnessByType,
   setInsertIllness,
   setDeleteIllness,
+  setUpdateIllness,
 };
