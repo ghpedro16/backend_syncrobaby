@@ -23,10 +23,34 @@ const listStockById = async function(id){
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
-                return MESSAGES.ERROR_NOT_FOUND // 404
+                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
             }
         }else{
-            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+            return MESSAGES.ERROR_NOT_FOUND // 404
+        }
+    } catch (error) {
+        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
+    }
+}
+
+const listStockByType = async function(id_child, id_type){
+    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+
+    try {
+        let resultStock = await stockDAO.getStockRegistryByType(id_child, id_type)
+
+        if(resultStock){
+            if(resultStock.length > 0){
+                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
+                MESSAGES.DEFAULT_HEADER.response.stock = resultStock
+
+                return MESSAGES.DEFAULT_HEADER // 200
+            }else{
+                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+            }
+        }else{
+            return MESSAGES.ERROR_NOT_FOUND // 404
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
@@ -47,10 +71,10 @@ const listStockByIdChild = async function(id_child){
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
-                return MESSAGES.ERROR_NOT_FOUND // 404
+                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
             }
         }else{
-            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+            return MESSAGES.ERROR_NOT_FOUND // 404
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
@@ -67,7 +91,7 @@ const insertStock = async function(stock, contentType){
 
             if(!validar){
 
-                let resultStock = stockDAO.setInsertStockProduct(stock)
+                let resultStock = await stockDAO.setInsertStockProduct(stock)
 
                 if(resultStock){
                     MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
@@ -93,7 +117,7 @@ const deleteStock = async function(id){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
-        if (isNaN(id) && id != '' && id != null && id > 0) {
+        if (!isNaN(id) && id != '' && id != null && id > 0) {
 
             let validarId = await listStockById(id)
 
@@ -129,7 +153,7 @@ const validarDados = async function(stock){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Quantidade incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(stock.volume == undefined || stock.volume == null || stock.volume == '' || isNaN(stock.volume) || stock.volume <= 0){
+    }else if(stock.volume == undefined || isNaN(stock.volume) || stock.volume < 0){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Volume incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
@@ -148,4 +172,12 @@ const validarDados = async function(stock){
     }else{
         return false
     }
+}
+
+module.exports = {
+    listStockById,
+    listStockByType,
+    listStockByIdChild,
+    insertStock,
+    deleteStock
 }

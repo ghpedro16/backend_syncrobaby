@@ -23,6 +23,25 @@ const getStockRegistryById = async function(id){
     }
 }
 
+const getStockRegistryByType = async function(id_child, id_type){
+    try {
+        let dados = await db('tbl_stock_registry')
+        .select('*')
+        .where({
+            fk_id_child: id_child,
+            fk_id_product_type: id_type
+        })
+
+        if (dados.length > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
 const getStockByChildrenId = async function(id_child){
     try {
         let dados = await db('tbl_stock_registry')
@@ -64,7 +83,7 @@ const setDeleteStockProduct = async function(id){
     try {
         let dados = await db('tbl_stock_registry')
         .where('id_stock_registry', id)
-        .delete()
+        .del()
 
         if (dados > 0)
             return dados
@@ -78,6 +97,7 @@ const setDeleteStockProduct = async function(id){
 
 module.exports = {
     getStockRegistryById,
+    getStockRegistryByType,
     getStockByChildrenId,
     setInsertStockProduct,
     setDeleteStockProduct
