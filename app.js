@@ -27,6 +27,8 @@ app.use((request, response, next) => {
 const routesUser = require('./routes/routes_user.js')
 const routesChild = require('./routes/routes_child.js')
 const routesStock = require('./routes/routes_stock.js')
+const routesProduct = require('./routes/routes_product.js')
+
 
 //Inicia a API
 app.listen(PORT, function () {
@@ -37,3 +39,5 @@ app.listen(PORT, function () {
 app.use(routesUser)
 app.use(routesChild)
 app.use(routesStock)
+app.use(routesProduct)
+
