@@ -26,6 +26,7 @@ app.use((request, response, next) => {
 //Importa as rotas
 const routesUser = require('./routes/routes_user.js')
 const routesChild = require('./routes/routes_child.js')
+const routesProduct = require('./routes/routes_product.js')
 
 //Inicia a API
 app.listen(PORT, function () {
@@ -35,3 +36,4 @@ app.listen(PORT, function () {
 //Utiliza as rotas
 app.use(routesUser)
 app.use(routesChild)
+app.use(routesProduct)
