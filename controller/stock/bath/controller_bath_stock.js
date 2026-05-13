@@ -6,26 +6,27 @@
  * ****************************************************************************************************************************************/
 
 const bathStockDAO = require('../../../model/bath_stock.js')
+const controller_stock = require('../../stock/controller_stock.js')
 
 const DEFAULT_MESSAGES = require('../../modulo/config_messages.js')
 
-const listBathStock = async function(id_bath) {
+const listBathStock = async function (id_bath) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
         let resultBath = await bathStockDAO.getBathStockByBathId(id_bath)
 
-        if(resultBath){
-            if(resultBath.length > 0){
+        if (resultBath) {
+            if (resultBath.length > 0) {
                 MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
                 MESSAGES.DEFAULT_HEADER.response.bath = resultBath
 
                 return MESSAGES.DEFAULT_HEADER // 200
-            }else{
+            } else {
                 return MESSAGES.ERROR_NOT_FOUND // 404
             }
-        }else{
+        } else {
             return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
         }
     } catch (error) {
@@ -33,28 +34,28 @@ const listBathStock = async function(id_bath) {
     }
 }
 
-const insertBathStock = async function(bath, contentType) {
+const insertBathStock = async function (bathStock, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
         if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
 
-            let validar = await validarDados(bath)
+            let validar = await validarDados(bathStock)
 
-            if(!validar){
+            if (!validar) {
 
-                let resultBath = bathStockDAO.setInsertBathStock(bath)
+                let resultBath = await bathStockDAO.setInsertBathStock(bathStock)
 
-                if(resultBath){
+                if (resultBath) {
                     MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.response = bath
+                    MESSAGES.DEFAULT_HEADER.response = bathStock
 
                     return MESSAGES.DEFAULT_HEADER // 201
-                }else{
+                } else {
                     return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
                 }
-            }else{
+            } else {
                 return validar
             }
         } else {
@@ -65,22 +66,22 @@ const insertBathStock = async function(bath, contentType) {
     }
 }
 
-const validarDados = async function(bath) {
+const validarDados = async function (bath) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
-    if(bath.quantity == undefined || bath.quantity == null || bath.quantity == '' || isNaN(bath.quantity) || bath.quantity <= 0){
+    if (bath.quantity == undefined || bath.quantity == null || bath.quantity == '' || isNaN(bath.quantity) || bath.quantity <= 0) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Quantidade incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(bath.fk_id_bath == undefined || bath.fk_id_bath == null || bath.fk_id_bath == '' || isNaN(bath.fk_id_bath) || bath.fk_id_bath <= 0){
+    } else if (bath.fk_id_bath == undefined || bath.fk_id_bath == null || bath.fk_id_bath == '' || isNaN(bath.fk_id_bath) || bath.fk_id_bath <= 0) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID (chave estrangeira) incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(bath.fk_id_stock_registry == undefined || bath.fk_id_stock_registry == null || bath.fk_id_stock_registry == '' || isNaN(bath.fk_id_stock_registry) || bath.fk_id_stock_registry <= 0){
+    } else if (bath.fk_id_stock_registry == undefined || bath.fk_id_stock_registry == null || bath.fk_id_stock_registry == '' || isNaN(bath.fk_id_stock_registry) || bath.fk_id_stock_registry <= 0) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID (chave estrangeira) incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else{
+    } else {
         return false
     }
 }
