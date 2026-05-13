@@ -43,7 +43,7 @@ const insertDiaperStock = async function(diaper, contentType) {
 
             if(!validar){
 
-                let resultDiaper = diaperStockDAO.setInsertDiaperStock(diaper)
+                let resultDiaper = await diaperStockDAO.setInsertDiaperStock(diaper)
 
                 if(resultDiaper){
                     MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
@@ -68,7 +68,7 @@ const insertDiaperStock = async function(diaper, contentType) {
 const validarDados = async function(diaper) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
-    if(diaper.quantity == undefined || diaper.quantity == null || diaper.quantity == '' || isNaN(diaper.quantity) || diaper.quantity <= 0){
+    if(diaper.quantity == undefined || diaper.quantity == null || diaper.quantity == '' || isNaN(diaper.quantity) || diaper.quantity < 0){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Quantidade incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 

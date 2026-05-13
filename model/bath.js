@@ -26,7 +26,7 @@ const getBathById = async function (id) {
 const getLastId = async function () {
     try {
         let dados = await db('tbl_bath_log')
-            .select('id_bath', 'fk_id_child')
+            .select('id_bath')
             .orderBy('id_bath', 'desc')
             .limit(1)
 

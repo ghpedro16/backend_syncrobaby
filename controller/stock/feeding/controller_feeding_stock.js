@@ -43,7 +43,7 @@ const insertFeedingStock = async function(feeding, contentType) {
 
             if(!validar){
 
-                let resultFeeding = feedingStockDAO.setInsertFeedingStock(feeding)
+                let resultFeeding = await feedingStockDAO.setInsertFeedingStock(feeding)
 
                 if(resultFeeding){
                     MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
@@ -68,7 +68,7 @@ const insertFeedingStock = async function(feeding, contentType) {
 const validarDados = async function(feeding) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
-    if(feeding.quantity == undefined || feeding.quantity == null || feeding.quantity == '' || isNaN(feeding.quantity) || feeding.quantity <= 0){
+    if(feeding.quantity == undefined || feeding.quantity == null || feeding.quantity == '' || isNaN(feeding.quantity) || feeding.quantity < 0){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Quantidade incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 

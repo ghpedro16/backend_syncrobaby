@@ -27,7 +27,7 @@ const setInsertMedicationStock = async function (medication) {
     try {
         let dados = await db('tbl_stock_medication')
         .insert({
-            quantity: `${medication.quantity}`,
+            dosage: `${medication.dosage}`,
             fk_id_medication: `${medication.fk_id_medication}`,
             fk_id_stock_registry: `${medication.fk_id_stock_registry}`
         })

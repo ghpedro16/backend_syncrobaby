@@ -55,7 +55,7 @@ const insertBath = async function(bath, contentType){
                         for(product of bath.product_id){
                             let bathStock = {fk_id_bath: lastId[0].id_bath, fk_id_stock_registry: product.id, quantity: product.quantity_product}
 
-                            let resultBathStock = await controllerBathStock.insertBathStock(bathStock, lastId[0].fk_id_child, contentType)
+                            let resultBathStock = await controllerBathStock.insertBathStock(bathStock, contentType)
 
                             if(resultBathStock.status_code != 201){
                                 return MESSAGES.ERROR_RELATIONAL_INSERTION // 500

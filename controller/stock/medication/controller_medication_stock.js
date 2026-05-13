@@ -68,8 +68,8 @@ const insertMedicationStock = async function(medication, contentType) {
 const validarDados = async function(medication) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
-    if(medication.quantity == undefined || medication.quantity == null || medication.quantity == '' || isNaN(medication.quantity) || medication.quantity <= 0){
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Quantidade incorreto]'
+    if(medication.dosage == undefined || medication.dosage == null || medication.dosage == '' || isNaN(medication.dosage) || medication.dosage < 0){
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Dosagem incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
     }else if(medication.fk_id_medication == undefined || medication.fk_id_medication == null || medication.fk_id_medication == '' || isNaN(medication.fk_id_medication) || medication.fk_id_medication <= 0){

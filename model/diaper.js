@@ -23,6 +23,23 @@ const getDiaperById = async function (id){
     }
 }
 
+const getLastId = async function () {
+    try {
+        let dados = await db('tbl_diaper_log')
+            .select('id_diaper')
+            .orderBy('id_diaper', 'desc')
+            .limit(1)
+
+        if (dados.length > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
 const setInsertDiaper = async function (diaper) {
     try {
 
@@ -63,6 +80,7 @@ const setDeleteDiaper = async function (id) {
 
 module.exports = {
     getDiaperById,
+    getLastId,
     setInsertDiaper,
     setDeleteDiaper
 }

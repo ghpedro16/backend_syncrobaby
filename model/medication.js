@@ -23,6 +23,23 @@ const getMedicationById = async function (id){
     }
 }
 
+const getLastId = async function () {
+    try {
+        let dados = await db('tbl_medication_log')
+            .select('id_medication')
+            .orderBy('id_medication', 'desc')
+            .limit(1)
+
+        if (dados.length > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
 const setInsertMedication = async function (medication) {
     try {
 
@@ -62,6 +79,7 @@ const setDeleteMedication = async function (id) {
 
 module.exports = {
     getMedicationById,
+    getLastId,
     setInsertMedication,
     setDeleteMedication
 }
