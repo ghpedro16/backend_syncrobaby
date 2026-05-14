@@ -26,7 +26,6 @@ app.get(
   cors(),
   async (request, response) => {
     let childId = request.params.childId;
-    console.log(childId);
     let illness = await controller_illness.listIllnessByChildId(childId);
 
     response.status(illness.status_code).json(illness);

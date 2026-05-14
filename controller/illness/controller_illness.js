@@ -229,8 +229,7 @@ const validarDados = async function (illness) {
   } else if (
     illness.illness_type == undefined ||
     illness.illness_type == null ||
-    (illness.illness_type === "acute" && illness.illness_type === "chronic") ||
-    illness.illness_type == ""
+    (illness.illness_type != "acute" && illness.illness_type != "chronic")
   ) {
     MESSAGES.ERROR_REQUIRED_FIELDS.message += " [Tipo Doença incorreto]";
     return MESSAGES.ERROR_REQUIRED_FIELDS;
