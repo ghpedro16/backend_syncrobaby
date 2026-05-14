@@ -23,11 +23,10 @@ app.use((request, response, next) => {
     next()
 })
 
+//Importa as rotas
 const routesUser = require('./routes/routes_user.js')
+const routesChild = require('./routes/routes_child.js')
 const routesIllness = require('./routes/routes_illness.js')
-
-app.use(routesUser)
-app.use(routesIllness)
 
 
 //Inicia a API
@@ -35,5 +34,7 @@ app.listen(PORT, function () {
     console.log('API aguardando requisições...')
 })
 
+//Utiliza as rotas
 app.use(routesUser)
+app.use(routesChild)
 app.use(routesIllness)
