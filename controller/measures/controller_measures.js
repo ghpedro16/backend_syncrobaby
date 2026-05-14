@@ -105,7 +105,7 @@ const listHeadCircumferenceByChildId = async function(id_children){
     }
 }
 
-const insertMeasures = async function(measures){
+const insertMeasures = async function(measures, contentType){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
@@ -140,31 +140,35 @@ const insertMeasures = async function(measures){
 const validarDados = async function(measures){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
-    if(isNaN(measures.perimetro_cefalico) || measures.perimetro_cefalico == undefined || measures.perimetro_cefalico < 0){
+    if(isNaN(measures.head_circumference) || measures.head_circumference == undefined || measures.head_circumference < 0){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Perímetro Cefálico incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(isNaN(measures.altura) || measures.altura == undefined || measures.altura < 0){
+    }else if(isNaN(measures.height) || measures.height == undefined || measures.height < 0){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Altura incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(isNaN(measures.peso) || measures.peso == undefined || measures.peso < 0){
+    }else if(isNaN(measures.weight) || measures.weight == undefined || measures.weight < 0){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Peso incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(measures.data == null || measures.data == undefined || measures.data == '' || new Date(measures.data) > new Date()){
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Data de Nascimento incorreto]'
+    }else if(measures.description == undefined || measures.description.length > 255){
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Descricao incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(measures.descricao == undefined || measures.descricao.length > 255){
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Tipo Sanguíneo incorreto]'
-        return MESSAGES.ERROR_REQUIRED_FIELDS
-
-    }else if(measures.fk_id_filho == undefined || measures.fk_id_filho == null || measures.fk_id_filho == '' || isNaN(measures.fk_id_filho) || measures.fk_id_filho <= 0){
+    }else if(measures.fk_id_child == undefined || measures.fk_id_child == null || measures.fk_id_child == '' || isNaN(measures.fk_id_child) || measures.fk_id_child <= 0){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID (chave estrangeira) incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
     }else{
         return false
     }
+}
+
+module.exports = {
+    listHeightByChildId,
+    listWeightByChildId,
+    listBmiByChildId,
+    listHeadCircumferenceByChildId,
+    insertMeasures
 }

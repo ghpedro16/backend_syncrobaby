@@ -71,15 +71,15 @@ const getHeadCircumferenceByChildrenId = async function(id){
    }
 }
 
-const setInsertMeasures = async function(measure){
+const setInsertMeasures = async function(measurement){
     try {
         let dados = await db('tbl_measurement_history')
         .insert({
-            weight: `${measure.peso}`,
-            height: `${measure.altura}`,
-            head_circumference: `${measure.perimetro_cefalico}`,
-            description: `${measure.descricao}`,
-            fk_id_child: `${measure.fk_id_child}`
+            description: measurement.description,
+            fk_id_child: measurement.fk_id_child,
+            head_circumference: measurement.head_circumference,
+            height: measurement.height,
+            weight: measurement.weight
         })
 
         if(dados.length > 0)
@@ -88,6 +88,7 @@ const setInsertMeasures = async function(measure){
             return false
 
    } catch (error) {
+       console.log(error)
         return false
    }
 }
