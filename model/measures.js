@@ -9,9 +9,9 @@ const db = require('../config/connection.js')
  
 const getHeightByChildrenId = async function(id){
     try {
-        let dados = await db('tbl_historico_medidas')
-        .select('altura', 'data')
-        .where('fk_id_filho', id)
+        let dados = await db('tbl_measurement_history')
+        .select('height', 'update_date')
+        .where('fk_id_child', id)
 
         if(dados.length > 0)
             return dados
@@ -25,9 +25,9 @@ const getHeightByChildrenId = async function(id){
 
 const getWeightByChildrenId = async function(id){
     try {
-        let dados = await db('tbl_historico_medidas')
-        .select('peso', 'data')
-        .where('fk_id_filho', id)
+        let dados = await db('tbl_measurement_history')
+        .select('weight', 'update_date')
+        .where('fk_id_child', id)
 
         if(dados.length > 0)
             return dados
@@ -41,9 +41,9 @@ const getWeightByChildrenId = async function(id){
 
 const getBmiByChildrenId = async function(id){
     try {
-        let dados = await db('tbl_historico_medidas')
-        .select('imc', 'data')
-        .where('fk_id_filho', id)
+        let dados = await db('tbl_measurement_history')
+        .select('bmi', 'update_date')
+        .where('fk_id_child', id)
 
         if(dados.length > 0)
             return dados
@@ -57,7 +57,7 @@ const getBmiByChildrenId = async function(id){
 
 const getHeadCircumferenceByChildrenId = async function(id){
     try {
-        let dados = await db('tbl_historico_medidas')
+        let dados = await db('tbl_measurement_history')
         .select('perimetro_cefalico', 'data')
         .where('fk_id_filho', id)
 
@@ -73,7 +73,7 @@ const getHeadCircumferenceByChildrenId = async function(id){
 
 const setInsertMeasures = async function(medidas){
     try {
-        let dados = await db('tbl_historico_medidas')
+        let dados = await db('tbl_measurement_history')
         .insert({
             peso: `${medidas.peso}`,
             altura: `${medidas.altura}`,
