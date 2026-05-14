@@ -58,8 +58,8 @@ const getBmiByChildrenId = async function(id){
 const getHeadCircumferenceByChildrenId = async function(id){
     try {
         let dados = await db('tbl_measurement_history')
-        .select('perimetro_cefalico', 'data')
-        .where('fk_id_filho', id)
+        .select('head_circumference', 'update_date')
+        .where('fk_id_child', id)
 
         if(dados.length > 0)
             return dados
@@ -71,15 +71,15 @@ const getHeadCircumferenceByChildrenId = async function(id){
    }
 }
 
-const setInsertMeasures = async function(medidas){
+const setInsertMeasures = async function(measure){
     try {
         let dados = await db('tbl_measurement_history')
         .insert({
-            peso: `${medidas.peso}`,
-            altura: `${medidas.altura}`,
-            perimetro_cefalico: `${medidas.perimetro_cefalico}`,
-            descricao: `${medidas.descricao}`,
-            fk_id_historico_medidas: `${medidas.fk_id_historico_medidas}`
+            weight: `${measure.peso}`,
+            height: `${measure.altura}`,
+            head_circumference: `${measure.perimetro_cefalico}`,
+            description: `${measure.descricao}`,
+            fk_id_child: `${measure.fk_id_child}`
         })
 
         if(dados.length > 0)

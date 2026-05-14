@@ -9,11 +9,11 @@ const measuresDAO = require('../../model/measures.js')
 
 const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
 
-const listHeightByChildrenId = async function(id_children){
+const listHeightByChildId = async function(id_child){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
-        let resultMeasure = await measuresDAO.getHeightByChildrenId(id_children)
+        let resultMeasure = await measuresDAO.getHeightByChildrenId(id_child)
 
         if(resultMeasure){
             if(resultMeasure.length > 0){
@@ -23,21 +23,21 @@ const listHeightByChildrenId = async function(id_children){
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
-                return MESSAGES.ERROR_NOT_FOUND // 404
+                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
             }
         }else{
-            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+            return MESSAGES.ERROR_NOT_FOUND // 404
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
     }
 }
 
-const listWeightByChildrenId = async function(id_children){
+const listWeightByChildId = async function(id_child){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
-        let resultMeasure = await measuresDAO.getWeightByChildrenId(id_children)
+        let resultMeasure = await measuresDAO.getWeightByChildrenId(id_child)
 
         if(resultMeasure){
             if(resultMeasure.length > 0){
@@ -47,21 +47,21 @@ const listWeightByChildrenId = async function(id_children){
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
-                return MESSAGES.ERROR_NOT_FOUND // 404
+                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
             }
         }else{
-            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+            return MESSAGES.ERROR_NOT_FOUND // 404
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
     }
 }
 
-const listBmiByChildrenId = async function(id_children){
+const listBmiByChildId = async function(id_child){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
-        let resultMeasure = await measuresDAO.getBmiByChildrenId(id_children)
+        let resultMeasure = await measuresDAO.getBmiByChildrenId(id_child)
 
         if(resultMeasure){
             if(resultMeasure.length > 0){
@@ -71,17 +71,17 @@ const listBmiByChildrenId = async function(id_children){
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
-                return MESSAGES.ERROR_NOT_FOUND // 404
+                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
             }
         }else{
-            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+            return MESSAGES.ERROR_NOT_FOUND // 404
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
     }
 }
 
-const listHeadCircumferenceByChildrenId = async function(id_children){
+const listHeadCircumferenceByChildId = async function(id_children){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
@@ -95,10 +95,10 @@ const listHeadCircumferenceByChildrenId = async function(id_children){
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
-                return MESSAGES.ERROR_NOT_FOUND // 404
+                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
             }
         }else{
-            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+            return MESSAGES.ERROR_NOT_FOUND // 404
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
@@ -115,7 +115,7 @@ const insertMeasures = async function(measures){
 
             if(!validar){
 
-                let resultMeasure = userDAO.setInsertUser(user)
+                let resultMeasure = await measuresDAO.setInsertMeasures(measures)
 
                 if(resultMeasure){
                     MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
