@@ -12,7 +12,6 @@ const getVocationalById = async function (id) {
     let dados = await db("tbl_professional")
       .select("*")
       .where("id_professional", id);
-
     if (dados.length > 0) return dados;
     else return false;
   } catch (error) {
@@ -25,7 +24,6 @@ const getVocationalByChildrenId = async function (id_children) {
     let dados = await db("tbl_professional")
       .select("*")
       .where("fk_id_child", id_children);
-
     if (dados.length > 0) return dados;
     else return false;
   } catch (error) {
@@ -41,7 +39,6 @@ const getVocationalBySpecialty = async function (id_specialty, id_children) {
         fk_id_specialization: `${id_specialty}`,
         fk_id_child: `${id_children}`,
       });
-
     if (dados.length > 0) return dados;
     else return false;
   } catch (error) {
@@ -70,7 +67,7 @@ const setInsertVocational = async function (vocational) {
 const setUpdateVocational = async function (vocational, id) {
   try {
     let dados = await db("tbl_professional")
-      .insert({
+      .update({
         professional_name: `${vocational.professional_name}`,
         phone: `${vocational.phone}`,
         last_consultation: `${vocational.last_consultation}`,
@@ -78,8 +75,7 @@ const setUpdateVocational = async function (vocational, id) {
         fk_id_specialization: `${vocational.fk_id_specialization}`,
       })
       .where("id_professional", id);
-
-    if (dados.length > 0) return dados;
+    if (dados > 0) return dados;
     else return false;
   } catch (error) {
     return false;
