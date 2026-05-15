@@ -9,16 +9,7 @@ const dataAtual = new Date()
 
 /********************************************************************   MENSAGENS PADRONIZADAS  ********************************************************************/
 
-const DEFAULT_HEADER = {
-
-    development: 'SyncroBaby',
-    api_description: 'API para manipular dados da aplicação SyncroBaby',
-    status: Boolean,
-    status_code: Number,
-    request_date: dataAtual.toLocaleString(),
-    response: {}
-
-}
+const DEFAULT_HEADER = {status_code: Number}
 
 /********************************************************************   MENSAGENS DE SUCESSO    ********************************************************************/
 

@@ -62,9 +62,7 @@ const insertBath = async function(bath, contentType){
                             }
                         }
 
-                        MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                        MESSAGES.DEFAULT_HEADER.response = bath
     
                         return MESSAGES.DEFAULT_HEADER // 201
                     }else{
