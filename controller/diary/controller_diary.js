@@ -30,12 +30,10 @@ const listDiaryByChildren = async function (id_children, id_guardian) {
 
         if (resultDiary) {
           if (resultDiary.length > 0) {
-            MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status;
-            MESSAGES.DEFAULT_HEADER.status_code =
-              MESSAGES.SUCCESS_REQUEST.status_code;
-            MESSAGES.DEFAULT_HEADER.response.diary = resultDiary;
-
-            return MESSAGES.DEFAULT_HEADER; // 200
+            return {
+              status_code: MESSAGES.SUCCESS_REQUEST.status_code,
+              diary: resultDiary,
+            }; // 200
           } else {
             return MESSAGES.ERROR_NOT_FOUND; // 404
           }
@@ -44,7 +42,7 @@ const listDiaryByChildren = async function (id_children, id_guardian) {
         }
       } else {
         MESSAGES.ERROR_RELATIONAL_INSERTION.message +=
-          " [ID de Filho  não encontrado!]";
+          " [ID de Filho não encontrado!]";
         return MESSAGES.ERROR_RELATIONAL_INSERTION; // 404
       }
     } else {
@@ -64,12 +62,10 @@ const listDiaryById = async function (id) {
 
     if (resultDiary) {
       if (resultDiary.length > 0) {
-        MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status;
-        MESSAGES.DEFAULT_HEADER.status_code =
-          MESSAGES.SUCCESS_REQUEST.status_code;
-        MESSAGES.DEFAULT_HEADER.response.diary = resultDiary;
-
-        return MESSAGES.DEFAULT_HEADER; // 200
+        return {
+          status_code: MESSAGES.SUCCESS_REQUEST.status_code,
+          diary: resultDiary,
+        }; // 200
       } else {
         return MESSAGES.ERROR_NOT_FOUND; // 404
       }
@@ -91,12 +87,11 @@ const insertDiary = async function (diary, contentType) {
         let resultDiary = await diaryDAO.setInsertDiary(diary);
 
         if (resultDiary) {
-          MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status;
-          MESSAGES.DEFAULT_HEADER.status_code =
-            MESSAGES.SUCCESS_CREATE_ITEM.status_code;
-          MESSAGES.DEFAULT_HEADER.response = diary;
-
-          return MESSAGES.DEFAULT_HEADER; // 201
+          return {
+            status: MESSAGES.SUCCESS_CREATE_ITEM.status,
+            status_code: MESSAGES.SUCCESS_CREATE_ITEM.status_code,
+            diary: diary,
+          }; // 201
         } else {
           return MESSAGES.ERROR_INTERNAL_SERVER_MODEL; // 500
         }
@@ -119,21 +114,19 @@ const updateDiary = async function (diary, id, contentType) {
       let validar = await validarDados(diary);
 
       if (!validar) {
-        let validarId = listDiaryById(id);
+        let validarId = await listDiaryById(id);
 
         if (validarId.status_code == 200) {
           diary.id = Number(id);
 
-          let resultDiary = diaryDAO.setUpdateDiary(diary, id);
+          let resultDiary = await diaryDAO.setUpdateDiary(diary, id);
 
           if (resultDiary) {
-            MESSAGES.DEFAULT_HEADER.status =
-              MESSAGES.SUCCESS_CREATE_ITEM.status;
-            MESSAGES.DEFAULT_HEADER.status_code =
-              MESSAGES.SUCCESS_CREATE_ITEM.status_code;
-            MESSAGES.DEFAULT_HEADER.response = diary;
-
-            return MESSAGES.DEFAULT_HEADER; // 201
+            return {
+              status: MESSAGES.SUCCESS_CREATE_ITEM.status,
+              status_code: MESSAGES.SUCCESS_CREATE_ITEM.status_code,
+              diary: diary,
+            }; // 201
           } else {
             return MESSAGES.ERROR_INTERNAL_SERVER_MODEL; // 500
           }
@@ -162,18 +155,16 @@ const deleteDiary = async function (id) {
         let resultDiary = await diaryDAO.setDeleteDiary(id);
 
         if (resultDiary) {
-          MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_DELETE_ITEM.status;
-          MESSAGES.DEFAULT_HEADER.status_code =
-            MESSAGES.SUCCESS_DELETE_ITEM.status_code;
-          MESSAGES.DEFAULT_HEADER.message =
-            MESSAGES.SUCCESS_DELETE_ITEM.message;
-
-          return MESSAGES.DEFAULT_HEADER; // 200
+          return {
+            status: MESSAGES.SUCCESS_DELETE_ITEM.status,
+            status_code: MESSAGES.SUCCESS_DELETE_ITEM.status_code,
+            message: MESSAGES.SUCCESS_DELETE_ITEM.message,
+          }; // 200
         } else {
           return MESSAGES.ERROR_INTERNAL_SERVER_MODEL; // 500
         }
       } else {
-        MESSAGES.ERROR_NOT_FOUND; // 404
+        return MESSAGES.ERROR_NOT_FOUND; // 404
       }
     } else {
       MESSAGES.ERROR_REQUIRED_FIELDS.message += " [ID Incorreto!]";
@@ -229,6 +220,12 @@ const validarDados = async function (diary) {
     MESSAGES.ERROR_REQUIRED_FIELDS.message +=
       " [ID (chave estrangeira) incorreto]";
     return MESSAGES.ERROR_REQUIRED_FIELDS;
+  } else if (
+    diary.date == undefined ||
+    diary.date.length > 30 ||
+    diary.date == null ||
+    diary.date == ""
+  ) {
   } else {
     return false;
   }

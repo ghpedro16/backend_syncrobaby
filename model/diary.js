@@ -16,6 +16,7 @@ const getDiaryByChildrenId = async function (id_children) {
     if (dados.length > 0) return dados;
     else return false;
   } catch (error) {
+    console.log(error);
     return false;
   }
 };
@@ -37,6 +38,7 @@ const setInsertDiary = async function (diary) {
   try {
     let dados = await db("tbl_diary_note").insert({
       title: `${diary.title}`,
+      date: `${diary.date}}`,
       content: `${diary.content}`,
       media: `${diary.media}`,
       color: `${diary.color}`,
@@ -55,6 +57,7 @@ const setUpdateDiary = async function (diary, id) {
     let dados = await db("tbl_diary_note")
       .update({
         title: `${diary.title}`,
+        date: `${diary.date}}`,
         content: `${diary.content}`,
         media: `${diary.media}`,
         color: `${diary.color}`,
