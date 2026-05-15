@@ -42,7 +42,7 @@ const getWeightByChildrenId = async function(id){
 const getBmiByChildrenId = async function(id){
     try {
         let dados = await db('tbl_measurement_history')
-        .select('bmi', 'update_date')
+        .select('bmi', 'gender', 'update_date')
         .where('fk_id_child', id)
 
         if(dados.length > 0)
