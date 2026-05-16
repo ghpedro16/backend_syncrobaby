@@ -9,9 +9,9 @@ const db = require('../config/connection.js')
 
 const getAgeGroupById = async function (id) {
     try {
-        let dados = await db('tbl_faixa_etaria')
+        let dados = await db('tbl_age_group')
             .select('*')
-            .where('id_faixa_etaria', id)
+            .where('id_age_group', id)
 
         if (dados.length > 0)
             return dados
@@ -24,7 +24,7 @@ const getAgeGroupById = async function (id) {
 
 const getAllAgeGroup = async function () {
     try {
-        let dados = await db('tbl_faixa_etaria')
+        let dados = await db('tbl_age_group')
             .select('*')
 
         if (dados.length > 0)
