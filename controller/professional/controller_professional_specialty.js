@@ -5,56 +5,54 @@
  * Versão: 1.0
  * ****************************************************************************************************************************************/
 
-const vocationalSpecialtyDAO = require("../../model/professional_specialty.js");
+const professionalSpecialtyDAO = require("../../model/professional_specialty.js");
 
 const DEFAULT_MESSAGES = require("../modulo/config_messages.js");
 
-const listVocationalSpecialtyById = async function (id) {
+const listProfessionalSpecialtyById = async function (id) {
   let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
 
   try {
-    let resultSpecialty =
-      await vocationalSpecialtyDAO.getVocationalSpecialtyById(id);
+    let resultSpecialty = await professionalSpecialtyDAO.getProfessionalSpecialtyById(id);
 
     if (resultSpecialty) {
       if (resultSpecialty.length > 0) {
-        MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status;
+  
         MESSAGES.DEFAULT_HEADER.status_code =
           MESSAGES.SUCCESS_REQUEST.status_code;
-        MESSAGES.DEFAULT_HEADER.response.specialty = resultSpecialty;
+        MESSAGES.DEFAULT_HEADER.specialty = resultSpecialty;
 
         return MESSAGES.DEFAULT_HEADER; // 200
       } else {
-        return MESSAGES.ERROR_NOT_FOUND; // 404
+        return MESSAGES.ERROR_INTERNAL_SERVER_MODEL; // 500
       }
     } else {
-      return MESSAGES.ERROR_INTERNAL_SERVER_MODEL; // 500
+      return MESSAGES.ERROR_NOT_FOUND; // 404
     }
   } catch (error) {
     return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
   }
 };
 
-const listALlVocationalSpecialty = async function () {
+const listAllProfessionalSpecialty = async function () {
   let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
 
   try {
-    let resultSpecialty =
-      await vocationalSpecialtyDAO.getAllVocationalSpecialty();
+    let resultSpecialty = await professionalSpecialtyDAO.getAllProfessionalSpecialty();
 
     if (resultSpecialty) {
       if (resultSpecialty.length > 0) {
-        MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status;
+        
         MESSAGES.DEFAULT_HEADER.status_code =
           MESSAGES.SUCCESS_REQUEST.status_code;
-        MESSAGES.DEFAULT_HEADER.response.specialty = resultSpecialty;
+        MESSAGES.DEFAULT_HEADER.specialty = resultSpecialty;
 
         return MESSAGES.DEFAULT_HEADER; // 200
       } else {
-        return MESSAGES.ERROR_NOT_FOUND; // 404
+        return MESSAGES.ERROR_INTERNAL_SERVER_MODEL; // 500
       }
     } else {
-      return MESSAGES.ERROR_INTERNAL_SERVER_MODEL; // 500
+      return MESSAGES.ERROR_NOT_FOUND; // 404
     }
   } catch (error) {
     return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
@@ -62,6 +60,6 @@ const listALlVocationalSpecialty = async function () {
 };
 
 module.exports = {
-  listVocationalSpecialtyById,
-  listALlVocationalSpecialty,
+  listProfessionalSpecialtyById,
+  listAllProfessionalSpecialty,
 };
