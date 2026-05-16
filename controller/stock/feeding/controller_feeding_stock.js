@@ -17,9 +17,9 @@ const listFeedingStock = async function(id_feeding) {
 
         if(resultFeeding){
             if(resultFeeding.length > 0){
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.feeding = resultFeeding
+                MESSAGES.DEFAULT_HEADER.feeding = resultFeeding
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
@@ -46,9 +46,9 @@ const insertFeedingStock = async function(feeding, contentType) {
                 let resultFeeding = await feedingStockDAO.setInsertFeedingStock(feeding)
 
                 if(resultFeeding){
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
+                    
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.response = feeding
+                    
 
                     return MESSAGES.DEFAULT_HEADER // 201
                 }else{

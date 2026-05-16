@@ -19,9 +19,9 @@ const listRoutines = async function (id_child, date) {
 
             if (resultRoutines) {
                 if (resultRoutines.length > 0) {
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                    
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                    MESSAGES.DEFAULT_HEADER.response.type = resultRoutines
+                    MESSAGES.DEFAULT_HEADER.routines = resultRoutines
 
                     return MESSAGES.DEFAULT_HEADER // 200
                 } else {

@@ -17,9 +17,9 @@ const listDiaperStock = async function(id_diaper) {
 
         if(resultDiaper){
             if(resultDiaper.length > 0){
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.diaper = resultDiaper
+                MESSAGES.DEFAULT_HEADER.diaper = resultDiaper
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
@@ -46,9 +46,9 @@ const insertDiaperStock = async function(diaper, contentType) {
                 let resultDiaper = await diaperStockDAO.setInsertDiaperStock(diaper)
 
                 if(resultDiaper){
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
+                    
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.response = diaper
+                    
 
                     return MESSAGES.DEFAULT_HEADER // 201
                 }else{

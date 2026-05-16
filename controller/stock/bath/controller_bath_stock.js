@@ -18,9 +18,9 @@ const listBathStock = async function (id_bath) {
 
         if (resultBath) {
             if (resultBath.length > 0) {
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.bath = resultBath
+                MESSAGES.DEFAULT_HEADER.bath = resultBath
 
                 return MESSAGES.DEFAULT_HEADER // 200
             } else {
@@ -47,9 +47,8 @@ const insertBathStock = async function (bathStock, contentType) {
                 let resultBath = await bathStockDAO.setInsertBathStock(bathStock)
 
                 if (resultBath) {
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
+                    
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.response = bathStock
 
                     return MESSAGES.DEFAULT_HEADER // 201
                 } else {

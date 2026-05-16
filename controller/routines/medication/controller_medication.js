@@ -18,16 +18,16 @@ const listMedicationId = async function (id) {
 
         if (resultMedication) {
             if (resultMedication.length > 0) {
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+        
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.medication = resultMedication
+                MESSAGES.DEFAULT_HEADER.medication = resultMedication
 
                 return MESSAGES.DEFAULT_HEADER // 200
             } else {
-                return MESSAGES.ERROR_NOT_FOUND // 404
+                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
             }
         } else {
-            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+            return MESSAGES.ERROR_NOT_FOUND // 404
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
@@ -61,9 +61,8 @@ const insertMedication = async function (medication, contentType) {
                                 return MESSAGES.ERROR_RELATIONAL_INSERTION // 500
                             }
                         }
-                        MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
+                        
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                        MESSAGES.DEFAULT_HEADER.response = medication
 
                         return MESSAGES.DEFAULT_HEADER // 201
                     } else {
@@ -96,7 +95,7 @@ const deleteMedication = async function (id) {
                 let resultMedication = await medicationDAO.setDeleteMedication(id)
 
                 if (resultMedication) {
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_DELETE_ITEM.status
+                    
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETE_ITEM.status_code
                     MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_DELETE_ITEM.message
 

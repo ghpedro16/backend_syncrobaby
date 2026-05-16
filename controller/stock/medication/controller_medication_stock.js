@@ -17,9 +17,9 @@ const listMedicationStock = async function(id_medication) {
 
         if(resultMedication){
             if(resultMedication.length > 0){
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.medication = resultMedication
+                MESSAGES.DEFAULT_HEADER.medication = resultMedication
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
@@ -46,9 +46,8 @@ const insertMedicationStock = async function(medication, contentType) {
                 let resultMedication = medicationStockDAO.setInsertMedicationStock(medication)
 
                 if(resultMedication){
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
+                    
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.response = medication
 
                     return MESSAGES.DEFAULT_HEADER // 201
                 }else{

@@ -18,16 +18,16 @@ const listDiaperId = async function (id) {
 
         if (resultDiaper) {
             if (resultDiaper.length > 0) {
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.diaper = resultDiaper
+                MESSAGES.DEFAULT_HEADER.diaper = resultDiaper
 
                 return MESSAGES.DEFAULT_HEADER // 200
             } else {
-                return MESSAGES.ERROR_NOT_FOUND // 404
+                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
             }
         } else {
-            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+            return MESSAGES.ERROR_NOT_FOUND // 404
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
@@ -62,9 +62,7 @@ const insertDiaper = async function (diaper, contentType) {
                             }
                         }
 
-                        MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                        MESSAGES.DEFAULT_HEADER.response = diaper
 
                         return MESSAGES.DEFAULT_HEADER // 201
                     } else {
@@ -97,7 +95,7 @@ const deleteDiaper = async function (id) {
                 let resultDiaper = await diaperDAO.setDeleteDiaper(id)
 
                 if (resultDiaper) {
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_DELETE_ITEM.status
+                    
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETE_ITEM.status_code
                     MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_DELETE_ITEM.message
 

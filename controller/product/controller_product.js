@@ -17,9 +17,9 @@ const listProductByType = async function (id_type) {
 
         if(resultProduct){
             if(resultProduct.length > 0){
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.product = resultProduct
+                MESSAGES.DEFAULT_HEADER.product = resultProduct
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
