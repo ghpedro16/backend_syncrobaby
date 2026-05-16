@@ -20,93 +20,50 @@ const app = express();
 const controller_illness = require("../controller/illness/controller_illness.js");
 
 // Retorna todas enfermidades da criança
-app.get(
-  "/syncrobaby/illness/child/:childId",
-  verifyJWT,
-  cors(),
-  async (request, response) => {
-    let childId = request.params.childId;
-    console.log(childId);
-    let illness = await controller_illness.listIllnessByChildId(childId);
+app.get("/syncrobaby/illness/child/:childId", verifyJWT, cors(), async (request, response) => {
+  let childId = request.params.childId
 
-    response.status(illness.status_code).json(illness);
-  },
-);
-
-// Retorna enfermidades pelo ID
-app.get(
-  "/syncrobaby/illness/:id",
-  verifyJWT,
-  cors(),
-  async (request, response) => {
-    let id = request.params.id;
-    let illness = await controller_illness.listIllnessById(id);
-
-    response.status(illness.status_code).json(illness);
-  },
-);
+  let illness = await controller_illness.listIllnessByChildId(childId)
+  response.status(illness.status_code).json(illness)
+})
 
 // Retorna enfermidades pelo tipo
-app.get(
-  "/syncrobaby/illness/type/:type",
-  verifyJWT,
-  cors(),
-  async (request, response) => {
-    let type = request.params.type;
-    let illness = await controller_illness.listIllnessByType(type);
-    response.status(illness.status_code).json(illness);
-  },
-);
+app.get("/syncrobaby/illness/type", verifyJWT, cors(), async (request, response) => {
+  let type = request.query.type
+  let child = request.query.child
+
+  let illness = await controller_illness.listIllnessByType(type, child)
+  response.status(illness.status_code).json(illness)
+})
 
 // Registrar Enfermidade
-app.post(
-  "/syncrobaby/illness",
-  verifyJWT,
-  cors(),
-  bodyParserJSON,
-  async (request, response) => {
-    let dadosBody = request.body;
-    let contentType = request.headers["content-type"];
-    let illness = await controller_illness.insertIllness(
-      dadosBody,
-      contentType,
-    );
+app.post("/syncrobaby/illness", verifyJWT, cors(), bodyParserJSON, async (request, response) => {
+  let dadosBody = request.body
+  let contentType = request.headers["content-type"]
 
-    response.status(illness.status_code).json(illness);
-  },
-);
+  let illness = await controller_illness.insertIllness(dadosBody, contentType)
+
+  response.status(illness.status_code).json(illness)
+})
 
 // Atualizar Enfermidade
-app.put(
-  "/syncrobaby/illness/:id_illness",
-  verifyJWT,
-  cors(),
-  bodyParserJSON,
-  async (request, response) => {
-    let dadosBody = request.body;
-    let id = request.params.id_illness;
-    let contentType = request.headers["content-type"];
-    let illness = await controller_illness.updateIllness(
-      dadosBody,
-      id,
-      contentType,
-    );
+app.put("/syncrobaby/illness/:id_illness", verifyJWT, cors(), bodyParserJSON, async (request, response) => {
+  let dadosBody = request.body
+  let id = request.params.id_illness
+  let contentType = request.headers["content-type"]
 
-    response.status(illness.status_code).json(illness);
-  },
-);
+  let illness = await controller_illness.updateIllness(dadosBody, id, contentType)
+
+  response.status(illness.status_code).json(illness)
+})
 
 // Deletar Enfermidade
-app.delete(
-  "/syncrobaby/illness/:id",
-  verifyJWT,
-  cors(),
-  async (request, response) => {
-    let id = request.params.id;
-    let illness = await controller_illness.deleteIllness(id);
+app.delete("/syncrobaby/illness/:id", verifyJWT, cors(), async (request, response) => {
+  let id = request.params.id
 
-    response.status(illness.status_code).json(illness);
-  },
-);
+  let illness = await controller_illness.deleteIllness(id)
+
+  response.status(illness.status_code).json(illness)
+})
 
 module.exports = app;
