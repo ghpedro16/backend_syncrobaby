@@ -17,9 +17,9 @@ const listHeightByChildId = async function(id_child){
 
         if(resultMeasure){
             if(resultMeasure.length > 0){
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.height = resultMeasure
+                MESSAGES.DEFAULT_HEADER.height = resultMeasure
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
@@ -41,9 +41,9 @@ const listWeightByChildId = async function(id_child){
 
         if(resultMeasure){
             if(resultMeasure.length > 0){
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.weight = resultMeasure
+                MESSAGES.DEFAULT_HEADER.weight = resultMeasure
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
@@ -65,9 +65,9 @@ const listBmiByChildId = async function(id_child){
 
         if(resultMeasure){
             if(resultMeasure.length > 0){
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.bmi = resultMeasure
+                MESSAGES.DEFAULT_HEADER.bmi = resultMeasure
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
@@ -89,9 +89,9 @@ const listHeadCircumferenceByChildId = async function(id_children){
 
         if(resultMeasure){
             if(resultMeasure.length > 0){
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.head_circumference = resultMeasure
+                MESSAGES.DEFAULT_HEADER.head_circumference = resultMeasure
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
@@ -118,9 +118,9 @@ const insertMeasures = async function(measures, contentType){
                 let resultMeasure = await measuresDAO.setInsertMeasures(measures)
 
                 if(resultMeasure){
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
+                    
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.response = measures
+                    MESSAGES.DEFAULT_HEADER.measures = measures
 
                     return MESSAGES.DEFAULT_HEADER // 201
                 }else{
