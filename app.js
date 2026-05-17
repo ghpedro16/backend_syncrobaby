@@ -29,6 +29,7 @@ app.use((request, response, next) => {
 //Importa as rotas
 const routesUser = require('./routes/routes_user.js')
 const routesChild = require('./routes/routes_child.js')
+const routesProduct = require('./routes/routes_product.js')
 const routesMeasures = require('./routes/routes_measures.js')
 const routesIllness = require("./routes/routes_illness.js");
 const routesProfessional = require("./routes/routes_professional.js");
@@ -41,6 +42,7 @@ app.listen(PORT, function () {
 //Utiliza as rotas
 app.use(routesUser)
 app.use(routesChild)
+app.use(routesProduct)
 app.use(routesMeasures)
 app.use(routesIllness)
 app.use(routesProfessional)
