@@ -11,6 +11,7 @@ const dataAtual = new Date()
 
 const DEFAULT_HEADER = {status_code: Number}
 
+
 /********************************************************************   MENSAGENS DE SUCESSO    ********************************************************************/
 
 const SUCCESS_REQUEST = {status: true, status_code: 200, message: 'Requisição bem sucedida...'}
