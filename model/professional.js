@@ -7,99 +7,128 @@
 
 const db = require("../config/connection.js");
 
-const getVocationalById = async function (id) {
+const getProfessionalById = async function (id) {
   try {
     let dados = await db("tbl_professional")
       .select("*")
-      .where("id_professional", id);
-    if (dados.length > 0) return dados;
-    else return false;
-  } catch (error) {
-    return false;
-  }
-};
+      .where("id_professional", id)
 
-const getVocationalByChildrenId = async function (id_children) {
+    if (dados.length > 0)
+      return dados
+
+    else
+      return false
+
+  } catch (error) {
+    return false
+  }
+}
+
+const getProfessionalByChildrenId = async function (id_children) {
   try {
     let dados = await db("tbl_professional")
       .select("*")
-      .where("fk_id_child", id_children);
-    if (dados.length > 0) return dados;
-    else return false;
-  } catch (error) {
-    return false;
-  }
-};
+      .where("fk_id_child", id_children)
 
-const getVocationalBySpecialty = async function (id_specialty, id_children) {
+    if (dados.length > 0)
+      return dados
+
+    else
+      return false
+
+  } catch (error) {
+    return false
+  }
+}
+
+const getProfessionalBySpecialty = async function (id_specialty, id_children) {
   try {
     let dados = await db("tbl_professional")
       .select("*")
       .where({
         fk_id_specialization: `${id_specialty}`,
         fk_id_child: `${id_children}`,
-      });
-    if (dados.length > 0) return dados;
-    else return false;
-  } catch (error) {
-    return false;
-  }
-};
+      })
 
-const setInsertVocational = async function (vocational) {
+    if (dados.length > 0)
+      return dados
+
+    else
+      return false
+
+  } catch (error) {
+    return false
+  }
+}
+
+const setInsertProfessional = async function (professional) {
   try {
-    let dados = await db("tbl_professional").insert({
-      professional_name: `${vocational.professional_name}`,
-      phone: `${vocational.phone}`,
-      last_consultation: `${vocational.last_consultation}`,
-      address: `${vocational.address}`,
-      fk_id_child: `${vocational.fk_id_child}`,
-      fk_id_specialization: `${vocational.fk_id_specialization}`,
-    });
+    let dados = await db("tbl_professional")
+      .insert({
+        professional_name: `${professional.professional_name}`,
+        phone: `${professional.phone}`,
+        last_consultation: `${professional.last_consultation}`,
+        address: `${professional.address}`,
+        fk_id_child: `${professional.fk_id_child}`,
+        fk_id_specialization: `${professional.fk_id_specialization}`,
+      })
 
-    if (dados.length > 0) return dados;
-    else return false;
+    if (dados.length > 0)
+      return dados
+
+    else
+      return false
+
   } catch (error) {
-    return false;
+    return false
   }
-};
+}
 
-const setUpdateVocational = async function (vocational, id) {
+const setUpdateProfessional = async function (professional, id) {
   try {
     let dados = await db("tbl_professional")
       .update({
-        professional_name: `${vocational.professional_name}`,
-        phone: `${vocational.phone}`,
-        last_consultation: `${vocational.last_consultation}`,
-        address: `${vocational.address}`,
-        fk_id_specialization: `${vocational.fk_id_specialization}`,
+        professional_name: `${professional.professional_name}`,
+        phone: `${professional.phone}`,
+        last_consultation: `${professional.last_consultation}`,
+        address: `${professional.address}`,
+        fk_id_specialization: `${professional.fk_id_specialization}`,
       })
-      .where("id_professional", id);
-    if (dados > 0) return dados;
-    else return false;
-  } catch (error) {
-    return false;
-  }
-};
+      .where("id_professional", id)
 
-const setDeleteVocational = async function (id) {
+    if (dados > 0)
+      return dados
+
+    else
+      return false
+
+  } catch (error) {
+    return false
+  }
+}
+
+const setDeleteProfessional = async function (id) {
   try {
     let dados = await db("tbl_professional")
       .where("id_professional", id)
-      .delete();
+      .delete()
 
-    if (dados > 0) return dados;
-    else return false;
+    if (dados > 0)
+      return dados
+
+    else
+      return false
+
   } catch (error) {
-    return false;
+    return false
   }
-};
+}
 
 module.exports = {
-  getVocationalById,
-  getVocationalByChildrenId,
-  getVocationalBySpecialty,
-  setInsertVocational,
-  setUpdateVocational,
-  setDeleteVocational,
+  getProfessionalById,
+  getProfessionalByChildrenId,
+  getProfessionalBySpecialty,
+  setInsertProfessional,
+  setUpdateProfessional,
+  setDeleteProfessional
 };

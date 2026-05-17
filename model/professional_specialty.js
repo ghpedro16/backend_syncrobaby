@@ -7,7 +7,7 @@
 
 const db = require("../config/connection.js");
 
-const getVocationalSpecialtyById = async function (id) {
+const getProfessionalSpecialtyById = async function (id) {
   try {
     let dados = await db("tbl_specialization")
       .select("*")
@@ -20,7 +20,7 @@ const getVocationalSpecialtyById = async function (id) {
   }
 };
 
-const getAllVocationalSpecialty = async function () {
+const getAllProfessionalSpecialty = async function () {
   try {
     let dados = await db("tbl_specialization").select("*");
 
@@ -32,6 +32,6 @@ const getAllVocationalSpecialty = async function () {
 };
 
 module.exports = {
-  getVocationalSpecialtyById,
-  getAllVocationalSpecialty,
+  getAllProfessionalSpecialty,
+  getProfessionalSpecialtyById
 };
