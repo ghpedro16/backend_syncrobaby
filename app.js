@@ -33,9 +33,10 @@ const routesRoutines = require('./routes/routes_routines.js')
 const routesStock = require('./routes/routes_stock.js')
 const routesProduct = require('./routes/routes_product.js')
 const routesMeasures = require('./routes/routes_measures.js')
-const routesIllness = require("./routes/routes_illness.js");
-const routesProfessional = require("./routes/routes_professional.js");
-const routesSpecialty = require("./routes/routes_specialty.js");
+const routesIllness = require("./routes/routes_illness.js")
+const routesProfessional = require("./routes/routes_professional.js")
+const routesSpecialty = require("./routes/routes_specialty.js")
+const routesDiary = require("./routes/routes_diary.js")
 
 //Inicia a API
 app.listen(PORT, function () {
@@ -51,4 +52,5 @@ app.use(routesProduct)
 app.use(routesMeasures)
 app.use(routesIllness)
 app.use(routesProfessional)
-app.use(routesSpecialty);
+app.use(routesSpecialty)
+app.use(routesDiary)
