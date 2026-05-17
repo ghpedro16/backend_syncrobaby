@@ -27,6 +27,7 @@ const SUCCESS_REACTIVATE_ITEM = {status: true, status_code: 200, message: 'Item 
 
 const SUCCESS_DEACTIVATE_ITEM = {status: true, status_code: 204, message: 'Item desativado com sucesso!'}
 
+
 /********************************************************************    MENSAGENS DE ERRO      ********************************************************************/
 
 const ERROR_NOT_FOUND = {status: false, status_code: 404, message: 'Não foram encontrados dados de retorno!'}
