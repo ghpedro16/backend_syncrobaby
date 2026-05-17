@@ -19,79 +19,40 @@ const app = express();
 
 const controller_diary = require("../controller/diary/controller_diary.js");
 
-//Retorna diario filtrado pelo ID
-app.get(
-  "/syncrobaby/diary/:id",
-  verifyJWT,
-  cors(),
-  async (request, response) => {
-    let diaryId = request.params.id;
-    let user = await controller_diary.listDiaryById(diaryId);
-
-    response.status(user.status_code).json(user);
-  },
-);
-
 // Retorna diarios filtrado pela criança
-app.get(
-  "/syncrobaby/diary/child/:id",
-  verifyJWT,
-  cors(),
-  async (request, response) => {
-    let diaryId = request.params.id;
-    let guardianId = request.user.userID;
-    let user = await controller_diary.listDiaryByChildren(diaryId, guardianId);
+app.get("/syncrobaby/diary/child/:id", verifyJWT, cors(), async (request, response) => {
+    let childId = request.params.id
 
-    response.status(user.status_code).json(user);
-  },
-);
+    let user = await controller_diary.listDiaryByChildren(childId)
 
-//Insere novo diario
-app.post(
-  "/syncrobaby/diary",
-  verifyJWT,
-  cors(),
-  bodyParserJSON,
-  async (request, response) => {
-    let dadosBody = request.body;
-    let contentType = request.headers["content-type"];
-    let diary = await controller_diary.insertDiary(dadosBody, contentType);
+    response.status(user.status_code).json(user)
+})
 
-    response.status(diary.status_code).json(diary);
-  },
-);
+// Insere novo diario
+app.post("/syncrobaby/diary", verifyJWT, cors(), bodyParserJSON, async (request, response) => {
+    let dadosBody = request.body
+    let contentType = request.headers["content-type"]
 
-// Deleta um diario
-app.delete(
-  "/syncrobaby/diary/:id",
-  verifyJWT,
-  cors(),
-  async (request, response) => {
-    let diaryId = request.params.id;
-    let diary = await controller_diary.deleteDiary(diaryId);
-
-    response.status(diary.status_code).json(diary);
-  },
-);
+    let diary = await controller_diary.insertDiary(dadosBody, contentType)
+    response.status(diary.status_code).json(diary)
+})
 
 // Atualiza um diario
-app.put(
-  "/syncrobaby/diary/:id",
-  verifyJWT,
-  cors(),
-  bodyParserJSON,
-  async (request, response) => {
-    let diaryId = request.params.id;
-    let dadosBody = request.body;
-    let contentType = request.headers["content-type"];
-    let diary = await controller_diary.updateDiary(
-      dadosBody,
-      diaryId,
-      contentType,
-    );
+app.put("/syncrobaby/diary/:id", verifyJWT, cors(), bodyParserJSON, async (request, response) => {
+    let diaryId = request.params.id
+    let dadosBody = request.body
+    let contentType = request.headers["content-type"]
 
-    response.status(diary.status_code).json(diary);
-  },
-);
+    let diary = await controller_diary.updateDiary(dadosBody, diaryId, contentType)
+    response.status(diary.status_code).json(diary)
+})
+
+// Deleta um diario
+app.delete("/syncrobaby/diary/:id", verifyJWT, cors(), async (request, response) => {
+    let diaryId = request.params.id
+
+    let diary = await controller_diary.deleteDiary(diaryId)
+    response.status(diary.status_code).json(diary)
+})
 
 module.exports = app;
