@@ -27,9 +27,16 @@ app.use((request, response, next) => {
 });
 
 //Importa as rotas
-const routesUser = require("./routes/routes_user.js");
-const routesChild = require("./routes/routes_child.js");
-const routesDiary = require("./routes/routes_diary.js");
+const routesUser = require('./routes/routes_user.js')
+const routesChild = require('./routes/routes_child.js')
+const routesRoutines = require('./routes/routes_routines.js')
+const routesStock = require('./routes/routes_stock.js')
+const routesProduct = require('./routes/routes_product.js')
+const routesMeasures = require('./routes/routes_measures.js')
+const routesIllness = require("./routes/routes_illness.js")
+const routesProfessional = require("./routes/routes_professional.js")
+const routesSpecialty = require("./routes/routes_specialty.js")
+const routesDiary = require("./routes/routes_diary.js")
 
 //Inicia a API
 app.listen(PORT, function () {
@@ -37,5 +44,13 @@ app.listen(PORT, function () {
 });
 
 //Utiliza as rotas
-app.use(routesUser);
-app.use(routesDiary);
+app.use(routesUser)
+app.use(routesChild)
+app.use(routesRoutines)
+app.use(routesStock)
+app.use(routesProduct)
+app.use(routesMeasures)
+app.use(routesIllness)
+app.use(routesProfessional)
+app.use(routesSpecialty)
+app.use(routesDiary)
