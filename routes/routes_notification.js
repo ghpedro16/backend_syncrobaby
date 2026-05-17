@@ -16,7 +16,7 @@ const app = express()
 const controller_notification = require('../controller/notification/controller_notification.js')
 
 //Retorna notificacoes do filho por ID
-app.get('/syncrobaby/notifications/child/:id', verifyJWT, cors(), async (request, response) => {
+app.get('/syncrobaby/notification/child/:id', verifyJWT, cors(), async (request, response) => {
     let childId = request.params.id
 
     let nots = await controller_notification.listNotificationByChild(childId)
@@ -24,7 +24,7 @@ app.get('/syncrobaby/notifications/child/:id', verifyJWT, cors(), async (request
 })
 
 //Retorna notificacoes do usuario por ID
-app.get('/syncrobaby/notifications/user', verifyJWT, cors(), async (request, response) => {
+app.get('/syncrobaby/notification/user', verifyJWT, cors(), async (request, response) => {
     let userId = request.user.userID
 
     let nots = await controller_notification.listNotificationByUser(userId)
@@ -32,7 +32,7 @@ app.get('/syncrobaby/notifications/user', verifyJWT, cors(), async (request, res
 })
 
 //Retorna notificacoes do filho por ID
-app.patch('/syncrobaby/notifications/:id', verifyJWT, cors(), async (request, response) => {
+app.patch('/syncrobaby/notification/:id', verifyJWT, cors(), async (request, response) => {
     let notificationId = request.params.id
 
     let nots = await controller_notification.updateNotification(notificationId)
@@ -40,7 +40,7 @@ app.patch('/syncrobaby/notifications/:id', verifyJWT, cors(), async (request, re
 })
 
 //Retorna notificacoes do filho por ID
-app.delete('/syncrobaby/notifications/:id', verifyJWT, cors(), async (request, response) => {
+app.delete('/syncrobaby/notification/:id', verifyJWT, cors(), async (request, response) => {
     let notificationId = request.params.id
 
     let nots = await controller_notification.deleteNotification(notificationId)
