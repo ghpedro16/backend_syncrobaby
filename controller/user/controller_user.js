@@ -5,22 +5,26 @@
  * Versão: 1.0
  * ****************************************************************************************************************************************/
 
-const userDAO = require('../../model/user.js')
-const jwt = require('../../middleware/middleware_jwt.js')
-const bcrypt = require('bcrypt')
+const userDAO = require("../../model/user.js");
+const jwt = require("../../middleware/middleware_jwt.js");
+const bcrypt = require("bcrypt");
 
-const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
+const DEFAULT_MESSAGES = require("../modulo/config_messages.js");
 
 const listUserId = async function (id) {
-    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+  let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
 
-    try {
+  try {
+    let resultUser = await userDAO.getUserById(id);
 
-        let resultUser = await userDAO.getUserById(id)
+    if (resultUser) {
+      if (resultUser.length > 0) {
+        delete resultUser[0].password;
 
-        if (resultUser) {
-            if (resultUser.length > 0) {
-                delete resultUser[0].password
+        MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status;
+        MESSAGES.DEFAULT_HEADER.status_code =
+          MESSAGES.SUCCESS_REQUEST.status_code;
+        MESSAGES.DEFAULT_HEADER.response.user = resultUser;
 
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
                 MESSAGES.DEFAULT_HEADER.user = resultUser
@@ -35,27 +39,31 @@ const listUserId = async function (id) {
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
     }
-}
+  } catch (error) {
+    return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
+  }
+};
 
 const listUserLogin = async function (user, contentType) {
-    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+  let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
 
-    try {
+  try {
+    if (String(contentType).toUpperCase() == "APPLICATION/JSON") {
+      let resultUser = await userDAO.getUserByLogin(user);
 
-        if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
+      if (resultUser) {
+        if (resultUser[0].active != false) {
+          if (resultUser.length > 0) {
+            delete resultUser[0].password;
 
-            let resultUser = await userDAO.getUserByLogin(user)
+            let tokenUser = await jwt.createJWT(resultUser[0].id_guardian);
 
-            if (resultUser) {
+            resultUser[0].token = tokenUser;
 
-                if (resultUser[0].active != false) {
-
-                    if (resultUser.length > 0) {
-                        delete resultUser[0].password
-
-                        let tokenUser = await jwt.createJWT(resultUser[0].id_guardian)
-
-                        resultUser[0].token = tokenUser
+            MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status;
+            MESSAGES.DEFAULT_HEADER.status_code =
+              MESSAGES.SUCCESS_REQUEST.status_code;
+            MESSAGES.DEFAULT_HEADER.response.user = resultUser;
 
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
                         MESSAGES.DEFAULT_HEADER.user = resultUser
@@ -73,73 +81,78 @@ const listUserLogin = async function (user, contentType) {
                 return MESSAGES.ERROR_REQUIRED_FIELDS
             }
         } else {
-            return MESSAGES.ERROR_CONTENT_TYPE // 415
+          MESSAGES.ERROR_DISABLED_USER.message += " [Conta Desativada]";
+          return MESSAGES.ERROR_DISABLED_USER;
         }
-    } catch (error) {
-        console.log(error)
-        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
+      } else {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message +=
+          " [Usuário ou Senha inválidos]";
+        return MESSAGES.ERROR_REQUIRED_FIELDS;
+      }
+    } else {
+      return MESSAGES.ERROR_CONTENT_TYPE; // 415
     }
-}
+  } catch (error) {
+    return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
+  }
+};
 
 const insertUser = async function (user, contentType) {
-    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+  let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
 
-    try {
+  try {
+    if (String(contentType).toUpperCase() == "APPLICATION/JSON") {
+      let validar = await validarDados(user);
 
-        if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
+      if (!validar) {
+        let validarEmail = await userDAO.getUserByEmail(user.email);
 
-            let validar = await validarDados(user)
+        if (!validarEmail) {
+          user.password = await bcrypt.hash(user.password, 10);
 
-            if (!validar) {
-
-                let validarEmail = await userDAO.getUserByEmail(user.email)
-
-                if (!validarEmail) {
-
-                    user.password = await bcrypt.hash(user.password, 10)
-
-                    let resultUser = await userDAO.setInsertUser(user)
-
-                    if (resultUser) {
+          let resultUser = await userDAO.setInsertUser(user);
 
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
 
-                        return MESSAGES.DEFAULT_HEADER // 201
-                    } else {
-                        return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
-                    }
-                } else {
-                    MESSAGES.ERROR_UNIQUE_CONFLICT.message += ' [E-mail já existe!]'
-                    return MESSAGES.ERROR_UNIQUE_CONFLICT // 409
-                }
-            } else {
-                return validar
-            }
+            return MESSAGES.DEFAULT_HEADER; // 201
+          } else {
+            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL; // 500
+          }
         } else {
-            return MESSAGES.ERROR_CONTENT_TYPE // 415
+          MESSAGES.ERROR_UNIQUE_CONFLICT.message += " [E-mail já existe!]";
+          return MESSAGES.ERROR_UNIQUE_CONFLICT; // 409
         }
-    } catch (error) {
-        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
+      } else {
+        return validar;
+      }
+    } else {
+      return MESSAGES.ERROR_CONTENT_TYPE; // 415
     }
-}
+  } catch (error) {
+    return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
+  }
+};
 
 const updateUser = async function (user, id, contentType) {
-    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+  let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
 
-    try {
+  try {
+    if (String(contentType).toUpperCase() == "APPLICATION/JSON") {
+      let validar = await validarUpdate(user);
 
-        if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
+      if (!validar) {
+        let validarId = await listUserId(id);
 
-            let validar = await validarUpdate(user)
+        if (validarId.status_code == 200) {
+          user.id_guardian = Number(id);
 
-            if (!validar) {
+          let validarEmail = await userDAO.getUserByEmail(user.email);
 
-                let validarId = await listUserId(id)
-
-                if (validarId.status_code == 200) {
-                    user.id_guardian = Number(id)
-
-                    let validarEmail = await userDAO.getUserByEmail(user.email)
+          if (
+            !validarEmail ||
+            validarEmail[0].id_guardian == user.id_guardian
+          ) {
+            let resultUser = await userDAO.setUpdateUser(user);
 
                     if (!validarEmail || validarEmail[0].id_guardian == user.id_guardian) {
 
@@ -150,116 +163,114 @@ const updateUser = async function (user, id, contentType) {
                             MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_UPDATE_ITEM.status_code
                             MESSAGES.DEFAULT_HEADER.user = user
 
-                            return MESSAGES.DEFAULT_HEADER // 200
-                        } else {
-                            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
-                        }
-                    } else {
-                        MESSAGES.ERROR_UNIQUE_CONFLICT.message += ' [E-mail já existe!]'
-                        return MESSAGES.ERROR_UNIQUE_CONFLICT // 409
-                    }
-                } else {
-                    return validarId
-                }
+              return MESSAGES.DEFAULT_HEADER; // 200
             } else {
-                return validar
+              return MESSAGES.ERROR_INTERNAL_SERVER_MODEL; // 500
             }
+          } else {
+            MESSAGES.ERROR_UNIQUE_CONFLICT.message += " [E-mail já existe!]";
+            return MESSAGES.ERROR_UNIQUE_CONFLICT; // 409
+          }
         } else {
-            return MESSAGES.ERROR_CONTENT_TYPE // 415
+          return validarId;
         }
-    } catch (error) {
-        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
+      } else {
+        return validar;
+      }
+    } else {
+      return MESSAGES.ERROR_CONTENT_TYPE; // 415
     }
-}
+  } catch (error) {
+    return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
+  }
+};
 
 const updatePassword = async function (user, id, contentType) {
-    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+  let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
 
-    try {
+  try {
+    if (String(contentType).toUpperCase() == "APPLICATION/JSON") {
+      let validar = await validarPassword(user);
 
-        if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
+      if (!validar) {
+        let validarId = await userDAO.getUserById(id);
 
-            let validar = await validarPassword(user)
+        if (validarId) {
+          user.id_guardian = Number(id);
 
-            if (!validar) {
+          const passwordValidation = await bcrypt.compare(
+            user.current_password,
+            validarId[0].password,
+          );
 
-                let validarId = await userDAO.getUserById(id)
+          if (passwordValidation) {
+            user.password = await bcrypt.hash(user.new_password, 10);
 
-                if (validarId) {
-                    user.id_guardian = Number(id)
+            let resultUser = await userDAO.setUpdatePassword(user);
 
-                    const passwordValidation = await bcrypt.compare(user.current_password, validarId[0].password)
+            if (resultUser) {
+              MESSAGES.DEFAULT_HEADER.status_code =
+                MESSAGES.SUCCESS_MODIFIED_ITEM.status_code;
 
-                    if (passwordValidation) {
-
-                        user.password = await bcrypt.hash(user.new_password, 10)
-
-                        let resultUser = await userDAO.setUpdatePassword(user)
-
-                        if (resultUser) {
-
-                            MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_MODIFIED_ITEM.status_code
-
-                            return MESSAGES.DEFAULT_HEADER // 204
-                        } else {
-                            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
-                        }
-                    } else {
-                        return MESSAGES.ERROR_INVALID_PASSWORD // 401
-                    }
-                } else {
-                    return validarId
-                }
+              return MESSAGES.DEFAULT_HEADER; // 204
             } else {
-                return validar
+              return MESSAGES.ERROR_INTERNAL_SERVER_MODEL; // 500
             }
+          } else {
+            return MESSAGES.ERROR_INVALID_PASSWORD; // 401
+          }
         } else {
-            return MESSAGES.ERROR_CONTENT_TYPE // 415
+          return validarId;
         }
-    } catch (error) {
-        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
+      } else {
+        return validar;
+      }
+    } else {
+      return MESSAGES.ERROR_CONTENT_TYPE; // 415
     }
-}
+  } catch (error) {
+    return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
+  }
+};
 
 const deactivateUser = async function (user, id, contentType) {
-    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+  let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
 
-    try {
+  try {
+    if (String(contentType).toUpperCase() == "APPLICATION/JSON") {
+      let validarId = await userDAO.getUserById(id);
 
-        if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
+      if (validarId) {
+        const passwordValidation = await bcrypt.compare(
+          user.password,
+          validarId[0].password,
+        );
 
-            let validarId = await userDAO.getUserById(id)
+        if (passwordValidation) {
+          let resultUser = await userDAO.setDeactivateUser(id);
 
-            if (validarId) {
+          if (resultUser) {
+            MESSAGES.DEFAULT_HEADER.status_code =
+              MESSAGES.SUCCESS_DEACTIVATE_ITEM.status_code;
 
-                const passwordValidation = await bcrypt.compare(user.password, validarId[0].password)
-
-                if (passwordValidation) {
-
-                    let resultUser = await userDAO.setDeactivateUser(id)
-
-                    if (resultUser) {
-
-                        MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DEACTIVATE_ITEM.status_code
-
-                        return MESSAGES.DEFAULT_HEADER // 204
-                    } else {
-                        return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
-                    }
-                } else {
-                    return MESSAGES.ERROR_INVALID_PASSWORD // 401
-                }
-            } else {
-                MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID Incorreto!]'
-                return MESSAGES.ERROR_REQUIRED_FIELDS // 400
-            }
+            return MESSAGES.DEFAULT_HEADER; // 204
+          } else {
+            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL; // 500
+          }
         } else {
-            return MESSAGES.ERROR_CONTENT_TYPE // 415
+          return MESSAGES.ERROR_INVALID_PASSWORD; // 401
         }
-    } catch (error) {
-        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
+      } else {
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += " [ID Incorreto!]";
+        return MESSAGES.ERROR_REQUIRED_FIELDS; // 400
+      }
+    } else {
+      return MESSAGES.ERROR_CONTENT_TYPE; // 415
     }
-}
+  } catch (error) {
+    return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
+  }
+};
 
 const reactivateUser = async function (user, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
@@ -298,76 +309,113 @@ const reactivateUser = async function (user, contentType) {
                 return MESSAGES.ERROR_REQUIRED_FIELDS // 400
             }
         } else {
-            return MESSAGES.ERROR_CONTENT_TYPE // 415
+          return MESSAGES.ERROR_INVALID_PASSWORD; // 401
         }
     } catch (error) {
         console.log(error)
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
     }
-}
+  } catch (error) {
+    return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
+  }
+};
 
 const validarDados = async function (user) {
-    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+  let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
 
-    if (user.guardian_name == '' || user.guardian_name == undefined || user.guardian_name == null || user.guardian_name.length > 150) {
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Nome incorreto]'
-        return MESSAGES.ERROR_REQUIRED_FIELDS
-
-    } else if (user.email == '' || user.email == undefined || user.email == null || user.email.length > 255) {
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [E-mail incorreto]'
-        return MESSAGES.ERROR_REQUIRED_FIELDS
-
-    } else if (user.password == '' || user.password == undefined || user.password == null || user.password.length > 15) {
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Senha incorreto]'
-        return MESSAGES.ERROR_REQUIRED_FIELDS
-
-    } else if (user.profile_picture == undefined || user.profile_picture.length > 255) {
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [URL da Foto incorreto]'
-    } else {
-        return false
-    }
-}
+  if (
+    user.guardian_name == "" ||
+    user.guardian_name == undefined ||
+    user.guardian_name == null ||
+    user.guardian_name.length > 150
+  ) {
+    MESSAGES.ERROR_REQUIRED_FIELDS.message += " [Nome incorreto]";
+    return MESSAGES.ERROR_REQUIRED_FIELDS;
+  } else if (
+    user.email == "" ||
+    user.email == undefined ||
+    user.email == null ||
+    user.email.length > 255
+  ) {
+    MESSAGES.ERROR_REQUIRED_FIELDS.message += " [E-mail incorreto]";
+    return MESSAGES.ERROR_REQUIRED_FIELDS;
+  } else if (
+    user.password == "" ||
+    user.password == undefined ||
+    user.password == null ||
+    user.password.length > 15
+  ) {
+    MESSAGES.ERROR_REQUIRED_FIELDS.message += " [Senha incorreto]";
+    return MESSAGES.ERROR_REQUIRED_FIELDS;
+  } else if (
+    user.profile_picture == undefined ||
+    user.profile_picture.length > 255
+  ) {
+    MESSAGES.ERROR_REQUIRED_FIELDS.message += " [URL da Foto incorreto]";
+  } else {
+    return false;
+  }
+};
 
 const validarUpdate = async function (user) {
-    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+  let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
 
-    if (user.guardian_name == '' || user.guardian_name == undefined || user.guardian_name == null || user.guardian_name.length > 150) {
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Nome incorreto]'
-        return MESSAGES.ERROR_REQUIRED_FIELDS
-
-    } else if (user.email == '' || user.email == undefined || user.email == null || user.email.length > 255) {
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [E-mail incorreto]'
-        return MESSAGES.ERROR_REQUIRED_FIELDS
-
-    } else if (user.profile_picture == undefined || user.profile_picture.length > 255) {
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [URL da Foto incorreto]'
-    } else {
-        return false
-    }
-}
+  if (
+    user.guardian_name == "" ||
+    user.guardian_name == undefined ||
+    user.guardian_name == null ||
+    user.guardian_name.length > 150
+  ) {
+    MESSAGES.ERROR_REQUIRED_FIELDS.message += " [Nome incorreto]";
+    return MESSAGES.ERROR_REQUIRED_FIELDS;
+  } else if (
+    user.email == "" ||
+    user.email == undefined ||
+    user.email == null ||
+    user.email.length > 255
+  ) {
+    MESSAGES.ERROR_REQUIRED_FIELDS.message += " [E-mail incorreto]";
+    return MESSAGES.ERROR_REQUIRED_FIELDS;
+  } else if (
+    user.profile_picture == undefined ||
+    user.profile_picture.length > 255
+  ) {
+    MESSAGES.ERROR_REQUIRED_FIELDS.message += " [URL da Foto incorreto]";
+  } else {
+    return false;
+  }
+};
 
 const validarPassword = async function (user) {
-    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+  let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
 
-    if (user.current_password == '' || user.current_password == undefined || user.current_password == null || user.current_password.length > 15) {
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Senha Atual incorreto]'
-        return MESSAGES.ERROR_REQUIRED_FIELDS
-
-    } else if (user.new_password == '' || user.new_password == undefined || user.new_password == null || user.new_password.length > 15) {
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Nova Senha incorreto]'
-        return MESSAGES.ERROR_REQUIRED_FIELDS
-
-    } else {
-        return false
-    }
-}
+  if (
+    user.current_password == "" ||
+    user.current_password == undefined ||
+    user.current_password == null ||
+    user.current_password.length > 15
+  ) {
+    MESSAGES.ERROR_REQUIRED_FIELDS.message += " [Senha Atual incorreto]";
+    return MESSAGES.ERROR_REQUIRED_FIELDS;
+  } else if (
+    user.new_password == "" ||
+    user.new_password == undefined ||
+    user.new_password == null ||
+    user.new_password.length > 15
+  ) {
+    MESSAGES.ERROR_REQUIRED_FIELDS.message += " [Nova Senha incorreto]";
+    return MESSAGES.ERROR_REQUIRED_FIELDS;
+  } else {
+    return false;
+  }
+};
 
 module.exports = {
-    listUserId,
-    listUserLogin,
-    insertUser,
-    updateUser,
-    updatePassword,
-    deactivateUser,
-    reactivateUser
-}
+  listUserId,
+  listUserLogin,
+  insertUser,
+  updateUser,
+  updatePassword,
+  deactivateUser,
+  reactivateUser,
+};
