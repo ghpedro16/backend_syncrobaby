@@ -27,7 +27,7 @@ const setInsertDiaperStock = async function (diaper) {
     try {
         let dados = await db('tbl_stock_diaper')
         .insert({
-            quantidade: `${diaper.quantidade}`,
+            quantity: `${diaper.quantity}`,
             fk_id_diaper: `${diaper.fk_id_diaper}`,
             fk_id_stock_registry: `${diaper.fk_id_stock_registry}`
         })

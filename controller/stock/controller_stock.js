@@ -17,9 +17,9 @@ const listStockById = async function(id){
 
         if(resultStock){
             if(resultStock.length > 0){
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+               
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.stock = resultStock
+                MESSAGES.DEFAULT_HEADER.stock = resultStock
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
@@ -41,9 +41,9 @@ const listStockByType = async function(id_child, id_type){
 
         if(resultStock){
             if(resultStock.length > 0){
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.stock = resultStock
+                MESSAGES.DEFAULT_HEADER.stock = resultStock
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
@@ -65,9 +65,9 @@ const listStockByIdChild = async function(id_child){
 
         if(resultStock){
             if(resultStock.length > 0){
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.stock = resultStock
+                MESSAGES.DEFAULT_HEADER.stock = resultStock
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
@@ -94,9 +94,8 @@ const insertStock = async function(stock, contentType){
                 let resultStock = await stockDAO.setInsertStockProduct(stock)
 
                 if(resultStock){
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
+                    
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.response = stock
 
                     return MESSAGES.DEFAULT_HEADER // 201
                 }else{
@@ -126,7 +125,7 @@ const deleteStock = async function(id){
                 let resultStock = await stockDAO.setDeleteStockProduct(id)
 
                 if(resultStock){
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_DELETE_ITEM.status
+            
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETE_ITEM.status_code
                     MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_DELETE_ITEM.message
     

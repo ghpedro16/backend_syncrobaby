@@ -6,34 +6,35 @@
 *****************************************************************************************************************************************/
 
 const diaperDAO = require('../../../model/diaper.js')
+const controllerDiaperStock = require('../../stock/diaper/controller_diaper_stock.js')
 
 const DEFAULT_MESSAGES = require('../../modulo/config_messages.js')
 
-const listDiaperId = async function(id){
+const listDiaperId = async function (id) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
         let resultDiaper = await diaperDAO.getDiaperById(id)
 
-        if(resultDiaper){
-            if(resultDiaper.length > 0){
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+        if (resultDiaper) {
+            if (resultDiaper.length > 0) {
+                
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.diaper = resultDiaper
+                MESSAGES.DEFAULT_HEADER.diaper = resultDiaper
 
                 return MESSAGES.DEFAULT_HEADER // 200
-            }else{
-                return MESSAGES.ERROR_NOT_FOUND // 404
+            } else {
+                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
             }
-        }else{
-            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+        } else {
+            return MESSAGES.ERROR_NOT_FOUND // 404
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
     }
 }
- 
-const insertDiaper = async function(diaper, contentType){
+
+const insertDiaper = async function (diaper, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
@@ -41,20 +42,36 @@ const insertDiaper = async function(diaper, contentType){
 
             let validar = await validarDados(diaper)
 
-            if(!validar){
+            if (!validar) {
 
                 let resultDiaper = await diaperDAO.setInsertDiaper(diaper)
 
-                if(resultDiaper){
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
-                    MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.response = diaper
+                if (resultDiaper) {
 
-                    return MESSAGES.DEFAULT_HEADER // 201
-                }else{
+                    let lastId = await diaperDAO.getLastId()
+
+                    if (lastId) {
+
+                        for (product of diaper.product_id) {
+                            let diaperStock = {fk_id_diaper: lastId[0].id_diaper, fk_id_stock_registry: product.id, quantity: product.quantity_product}
+
+                            let resultDiaperStock = await controllerDiaperStock.insertDiaperStock(diaperStock, contentType)
+
+                            if (resultDiaperStock.status_code != 201) {
+                                return MESSAGES.ERROR_RELATIONAL_INSERTION // 500
+                            }
+                        }
+
+                        MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
+
+                        return MESSAGES.DEFAULT_HEADER // 201
+                    } else {
+                        return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+                    }
+                } else {
                     return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
                 }
-            }else{
+            } else {
                 return validar
             }
         } else {
@@ -64,8 +81,8 @@ const insertDiaper = async function(diaper, contentType){
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
     }
 }
- 
-const deleteDiaper = async function(id){
+
+const deleteDiaper = async function (id) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
@@ -73,51 +90,51 @@ const deleteDiaper = async function(id){
 
             let validarId = await listDiaperId(id)
 
-            if(validarId.status_code == 200){
+            if (validarId.status_code == 200) {
 
                 let resultDiaper = await diaperDAO.setDeleteDiaper(id)
 
-                if(resultDiaper){
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_DELETE_ITEM.status
+                if (resultDiaper) {
+                    
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETE_ITEM.status_code
                     MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_DELETE_ITEM.message
-    
+
                     return MESSAGES.DEFAULT_HEADER // 200
-                }else{
+                } else {
                     return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
                 }
-            }else{
+            } else {
                 MESSAGES.ERROR_NOT_FOUND // 404
             }
-        }else{
+        } else {
             MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID Incorreto!]'
             return MESSAGES.ERROR_REQUIRED_FIELDS // 400
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
-    } 
+    }
 }
 
-const validarDados = async function(diaper){
+const validarDados = async function (diaper) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
-    if(!diaper.date_time || Number.isNaN(new Date(diaper.date_time).getTime()) || new Date(diaper.date_time) > new Date()){
+    if (!diaper.date_time || Number.isNaN(new Date(diaper.date_time).getTime()) || new Date(diaper.date_time) > new Date()) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Data incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(diaper.type != "urine" && diaper.type != "stool"){
+    } else if (diaper.type != "urine" && diaper.type != "stool") {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Tipo incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(diaper.description == undefined || diaper.description.length > 255){
+    } else if (diaper.description == undefined || diaper.description.length > 255) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Descricao incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(diaper.fk_id_child == undefined || diaper.fk_id_child == null || diaper.fk_id_child == '' || isNaN(diaper.fk_id_child) || diaper.fk_id_child <= 0){
+    } else if (diaper.fk_id_child == undefined || diaper.fk_id_child == null || diaper.fk_id_child == '' || isNaN(diaper.fk_id_child) || diaper.fk_id_child <= 0) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID (chave estrangeira) incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else{
+    } else {
         return false
     }
 }

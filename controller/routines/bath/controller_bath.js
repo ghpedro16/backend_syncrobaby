@@ -6,6 +6,7 @@
 *****************************************************************************************************************************************/
 
 const bathDAO = require('../../../model/bath.js')
+const controllerBathStock = require('../../stock/bath/controller_bath_stock.js')
 
 const DEFAULT_MESSAGES = require('../../modulo/config_messages.js')
 
@@ -17,16 +18,16 @@ const listBathId = async function(id){
 
         if(resultBath){
             if(resultBath.length > 0){
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.bath = resultBath
+                MESSAGES.DEFAULT_HEADER.bath = resultBath
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
-                return MESSAGES.ERROR_NOT_FOUND // 404
+                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
             }
         }else{
-            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+            return MESSAGES.ERROR_NOT_FOUND // 404
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
@@ -46,11 +47,27 @@ const insertBath = async function(bath, contentType){
                 let resultBath = await bathDAO.setInsertBath(bath)
 
                 if(resultBath){
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
-                    MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.response = bath
 
-                    return MESSAGES.DEFAULT_HEADER // 201
+                    let lastId = await bathDAO.getLastId()
+
+                    if(lastId){
+
+                        for(product of bath.product_id){
+                            let bathStock = {fk_id_bath: lastId[0].id_bath, fk_id_stock_registry: product.id, quantity: product.quantity_product}
+
+                            let resultBathStock = await controllerBathStock.insertBathStock(bathStock, contentType)
+
+                            if(resultBathStock.status_code != 201){
+                                return MESSAGES.ERROR_RELATIONAL_INSERTION // 500
+                            }
+                        }
+
+                        MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
+    
+                        return MESSAGES.DEFAULT_HEADER // 201
+                    }else{
+                        return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+                    }
                 }else{
                     return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
                 }
@@ -78,7 +95,7 @@ const deleteBath = async function(id){
                 let resultBath = await bathDAO.setDeleteBath(id)
 
                 if(resultBath){
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_DELETE_ITEM.status
+                    
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETE_ITEM.status_code
                     MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_DELETE_ITEM.message
     

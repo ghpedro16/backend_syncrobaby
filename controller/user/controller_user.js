@@ -26,12 +26,18 @@ const listUserId = async function (id) {
           MESSAGES.SUCCESS_REQUEST.status_code;
         MESSAGES.DEFAULT_HEADER.response.user = resultUser;
 
-        return MESSAGES.DEFAULT_HEADER; // 200
-      } else {
-        return MESSAGES.ERROR_NOT_FOUND; // 404
-      }
-    } else {
-      return MESSAGES.ERROR_INTERNAL_SERVER_MODEL; // 500
+                MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
+                MESSAGES.DEFAULT_HEADER.user = resultUser
+
+                return MESSAGES.DEFAULT_HEADER // 200
+            } else {
+                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+            }
+        } else {
+            return MESSAGES.ERROR_NOT_FOUND // 404
+        }
+    } catch (error) {
+        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
     }
   } catch (error) {
     return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
@@ -59,10 +65,21 @@ const listUserLogin = async function (user, contentType) {
               MESSAGES.SUCCESS_REQUEST.status_code;
             MESSAGES.DEFAULT_HEADER.response.user = resultUser;
 
-            return MESSAGES.DEFAULT_HEADER; // 200
-          } else {
-            return MESSAGES.ERROR_NOT_FOUND; // 404
-          }
+                        MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
+                        MESSAGES.DEFAULT_HEADER.user = resultUser
+
+                        return MESSAGES.DEFAULT_HEADER // 200
+                    } else {
+                        return MESSAGES.ERROR_NOT_FOUND // 404
+                    }
+                } else {
+                    MESSAGES.ERROR_DISABLED_USER.message += ' [Conta Desativada]'
+                    return MESSAGES.ERROR_DISABLED_USER
+                }
+            } else {
+                MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Usuário ou Senha inválidos]'
+                return MESSAGES.ERROR_REQUIRED_FIELDS
+            }
         } else {
           MESSAGES.ERROR_DISABLED_USER.message += " [Conta Desativada]";
           return MESSAGES.ERROR_DISABLED_USER;
@@ -95,14 +112,7 @@ const insertUser = async function (user, contentType) {
 
           let resultUser = await userDAO.setInsertUser(user);
 
-          if (resultUser) {
-            delete user.password;
-
-            MESSAGES.DEFAULT_HEADER.status =
-              MESSAGES.SUCCESS_CREATE_ITEM.status;
-            MESSAGES.DEFAULT_HEADER.status_code =
-              MESSAGES.SUCCESS_CREATE_ITEM.status_code;
-            MESSAGES.DEFAULT_HEADER.response = user;
+                        MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
 
             return MESSAGES.DEFAULT_HEADER; // 201
           } else {
@@ -144,12 +154,14 @@ const updateUser = async function (user, id, contentType) {
           ) {
             let resultUser = await userDAO.setUpdateUser(user);
 
-            if (resultUser) {
-              MESSAGES.DEFAULT_HEADER.status =
-                MESSAGES.SUCCESS_UPDATE_ITEM.status;
-              MESSAGES.DEFAULT_HEADER.status_code =
-                MESSAGES.SUCCESS_UPDATE_ITEM.status_code;
-              MESSAGES.DEFAULT_HEADER.response.user = user;
+                    if (!validarEmail || validarEmail[0].id_guardian == user.id_guardian) {
+
+                        let resultUser = await userDAO.setUpdateUser(user)
+
+                        if (resultUser) {
+
+                            MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_UPDATE_ITEM.status_code
+                            MESSAGES.DEFAULT_HEADER.user = user
 
               return MESSAGES.DEFAULT_HEADER; // 200
             } else {
@@ -261,50 +273,47 @@ const deactivateUser = async function (user, id, contentType) {
 };
 
 const reactivateUser = async function (user, contentType) {
-  let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
+    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
-  try {
-    if (String(contentType).toUpperCase() == "APPLICATION/JSON") {
-      let validarEmail = await userDAO.getUserByEmail(user.email);
+    try {
 
-      if (validarEmail) {
-        const passwordValidation = await bcrypt.compare(
-          user.password,
-          validarEmail[0].password,
-        );
+        if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
 
-        if (passwordValidation) {
-          let id = validarEmail[0].id_guardian;
+            let validarEmail = await userDAO.getUserByEmail(user.email)
 
-          let resultUser = await userDAO.setReactivateUser(id);
+            if (validarEmail) {
 
-          if (resultUser) {
-            let tokenUser = await jwt.createJWT(id);
+                const passwordValidation = await bcrypt.compare(user.password, validarEmail[0].password)
 
-            MESSAGES.DEFAULT_HEADER.status =
-              MESSAGES.SUCCESS_REACTIVATE_ITEM.status;
-            MESSAGES.DEFAULT_HEADER.status_code =
-              MESSAGES.SUCCESS_REACTIVATE_ITEM.status_code;
-            MESSAGES.DEFAULT_HEADER.message =
-              MESSAGES.SUCCESS_REACTIVATE_ITEM.message;
-            MESSAGES.DEFAULT_HEADER.response.user = {
-              id_guardian: id,
-              token: tokenUser,
-            };
+                if (passwordValidation) {
+                    let id = validarEmail[0].id_guardian
 
-            return MESSAGES.DEFAULT_HEADER; // 200
-          } else {
-            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL; // 500
-          }
+                    let resultUser = await userDAO.setReactivateUser(id)
+
+                    if (resultUser) {
+
+                        let tokenUser = await jwt.createJWT(id)
+
+                        MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REACTIVATE_ITEM.status_code
+                        MESSAGES.DEFAULT_HEADER.user = {id_guardian: id, token: tokenUser}
+
+                        return MESSAGES.DEFAULT_HEADER // 200
+                    } else {
+                        return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+                    }
+                } else {
+                    return MESSAGES.ERROR_INVALID_PASSWORD // 401
+                }
+            } else {
+                MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [E-mail Incorreto!]'
+                return MESSAGES.ERROR_REQUIRED_FIELDS // 400
+            }
         } else {
           return MESSAGES.ERROR_INVALID_PASSWORD; // 401
         }
-      } else {
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += " [ID Incorreto!]";
-        return MESSAGES.ERROR_REQUIRED_FIELDS; // 400
-      }
-    } else {
-      return MESSAGES.ERROR_CONTENT_TYPE; // 415
+    } catch (error) {
+        console.log(error)
+        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
     }
   } catch (error) {
     return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER; // 500

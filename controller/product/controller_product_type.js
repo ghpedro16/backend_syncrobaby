@@ -17,9 +17,9 @@ const listProductTypeById = async function (id) {
 
         if(resultProductType){
             if(resultProductType.length > 0){
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.type = resultProductType
+                MESSAGES.DEFAULT_HEADER.type = resultProductType
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
@@ -41,9 +41,9 @@ const listAllProductType = async function () {
 
         if(resultProductType){
             if(resultProductType.length > 0){
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.type = resultProductType
+                MESSAGES.DEFAULT_HEADER.type = resultProductType
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{

@@ -7,11 +7,11 @@
 
 const db = require('../config/connection.js')
 
-const getBathById = async function (id){
+const getBathById = async function (id) {
     try {
         let dados = await db('tbl_bath_log')
-        .select('*')
-        .where('id_bath', id)
+            .select('*')
+            .where('id_bath', id)
 
         if (dados.length > 0)
             return dados
@@ -23,18 +23,14 @@ const getBathById = async function (id){
     }
 }
 
-const setInsertBath = async function(bath){
+const getLastId = async function () {
     try {
-        
         let dados = await db('tbl_bath_log')
-        .insert({
-            start_time: `${bath.start_time}`,
-            end_time: `${bath.end_time}`,
-            description: `${bath.description}`,
-            fk_id_child: `${bath.fk_id_child}`
-        })
+            .select('id_bath')
+            .orderBy('id_bath', 'desc')
+            .limit(1)
 
-        if(dados.length > 0)
+        if (dados.length > 0)
             return dados
         else
             return false
@@ -44,14 +40,35 @@ const setInsertBath = async function(bath){
     }
 }
 
-const setDeleteBath = async function(id){
+const setInsertBath = async function (bath) {
     try {
-        
-        let dados = await db('tbl_bath_log')
-        .where('id_bath', id)
-        .delete()
 
-        if(dados > 0)
+        let dados = await db('tbl_bath_log')
+            .insert({
+                start_time: `${bath.start_time}`,
+                end_time: `${bath.end_time}`,
+                description: `${bath.description}`,
+                fk_id_child: `${bath.fk_id_child}`
+            })
+
+        if (dados.length > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
+const setDeleteBath = async function (id) {
+    try {
+
+        let dados = await db('tbl_bath_log')
+            .where('id_bath', id)
+            .delete()
+
+        if (dados > 0)
             return dados
         else
             return false
@@ -63,6 +80,7 @@ const setDeleteBath = async function(id){
 
 module.exports = {
     getBathById,
+    getLastId,
     setInsertBath,
     setDeleteBath
 }

@@ -6,34 +6,35 @@
 *****************************************************************************************************************************************/
 
 const medicationDAO = require('../../../model/medication.js')
+const controllerMedicationStock = require('../../stock/medication/controller_medication_stock.js')
 
 const DEFAULT_MESSAGES = require('../../modulo/config_messages.js')
 
-const listMedicationId = async function(id){
+const listMedicationId = async function (id) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
         let resultMedication = await medicationDAO.getMedicationById(id)
 
-        if(resultMedication){
-            if(resultMedication.length > 0){
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+        if (resultMedication) {
+            if (resultMedication.length > 0) {
+        
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.medication = resultMedication
+                MESSAGES.DEFAULT_HEADER.medication = resultMedication
 
                 return MESSAGES.DEFAULT_HEADER // 200
-            }else{
-                return MESSAGES.ERROR_NOT_FOUND // 404
+            } else {
+                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
             }
-        }else{
-            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+        } else {
+            return MESSAGES.ERROR_NOT_FOUND // 404
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
     }
 }
- 
-const insertMedication = async function(medication, contentType){
+
+const insertMedication = async function (medication, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
@@ -41,20 +42,36 @@ const insertMedication = async function(medication, contentType){
 
             let validar = await validarDados(medication)
 
-            if(!validar){
+            if (!validar) {
 
                 let resultMedication = await medicationDAO.setInsertMedication(medication)
 
-                if(resultMedication){
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
-                    MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.response = medication
+                if (resultMedication) {
 
-                    return MESSAGES.DEFAULT_HEADER // 201
-                }else{
+                    let lastId = await medicationDAO.getLastId()
+
+                    if (lastId) {
+
+                        for (product of medication.product_id) {
+                            let medicationStock = { fk_id_medication: lastId[0].id_medication, fk_id_stock_registry: product.id, dosage: product.dosage }
+
+                            let resultMedicationStock = await controllerMedicationStock.insertMedicationStock(medicationStock, contentType)
+
+                            if (resultMedicationStock.status_code != 201) {
+                                return MESSAGES.ERROR_RELATIONAL_INSERTION // 500
+                            }
+                        }
+                        
+                        MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
+
+                        return MESSAGES.DEFAULT_HEADER // 201
+                    } else {
+                        return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+                    }
+                } else {
                     return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
                 }
-            }else{
+            } else {
                 return validar
             }
         } else {
@@ -64,8 +81,8 @@ const insertMedication = async function(medication, contentType){
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
     }
 }
- 
-const deleteMedication = async function(id){
+
+const deleteMedication = async function (id) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
@@ -73,47 +90,47 @@ const deleteMedication = async function(id){
 
             let validarId = await listMedicationId(id)
 
-            if(validarId.status_code == 200){
+            if (validarId.status_code == 200) {
 
                 let resultMedication = await medicationDAO.setDeleteMedication(id)
 
-                if(resultMedication){
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_DELETE_ITEM.status
+                if (resultMedication) {
+                    
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETE_ITEM.status_code
                     MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_DELETE_ITEM.message
-    
+
                     return MESSAGES.DEFAULT_HEADER // 200
-                }else{
+                } else {
                     return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
                 }
-            }else{
+            } else {
                 MESSAGES.ERROR_NOT_FOUND // 404
             }
-        }else{
+        } else {
             MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID Incorreto!]'
             return MESSAGES.ERROR_REQUIRED_FIELDS // 400
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
-    } 
+    }
 }
 
-const validarDados = async function(medication){
+const validarDados = async function (medication) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
-    if(!medication.date_time || Number.isNaN(new Date(medication.date_time).getTime()) || new Date(medication.date_time) > new Date()){
+    if (!medication.date_time || Number.isNaN(new Date(medication.date_time).getTime()) || new Date(medication.date_time) > new Date()) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Data incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(medication.description == undefined || medication.description.length > 255){
+    } else if (medication.description == undefined || medication.description.length > 255) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Descricao incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(medication.fk_id_child == undefined || medication.fk_id_child == null || medication.fk_id_child == '' || isNaN(medication.fk_id_child) || medication.fk_id_child <= 0){
+    } else if (medication.fk_id_child == undefined || medication.fk_id_child == null || medication.fk_id_child == '' || isNaN(medication.fk_id_child) || medication.fk_id_child <= 0) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID (chave estrangeira) incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else{
+    } else {
         return false
     }
 }

@@ -17,16 +17,16 @@ const listSleepId = async function(id){
 
         if(resultSleep){
             if(resultSleep.length > 0){
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.sleep = resultSleep
+                MESSAGES.DEFAULT_HEADER.sleep = resultSleep
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
-                return MESSAGES.ERROR_NOT_FOUND // 404
+                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
             }
         }else{
-            return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+            return MESSAGES.ERROR_NOT_FOUND // 404
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
@@ -46,9 +46,8 @@ const insertSleep = async function(sleep, contentType){
                 let resultSleep = await sleepDAO.setInsertSleep(sleep)
 
                 if(resultSleep){
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
+                    
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.response = sleep
 
                     return MESSAGES.DEFAULT_HEADER // 201
                 }else{
@@ -69,6 +68,7 @@ const deleteSleep = async function(id){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
+        
         if (!isNaN(id) && id != '' && id != null && id > 0) {
 
             let validarId = await listSleepId(id)
@@ -78,7 +78,7 @@ const deleteSleep = async function(id){
                 let resultSleep = await sleepDAO.setDeleteSleep(id)
 
                 if(resultSleep){
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_DELETE_ITEM.status
+                    
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETE_ITEM.status_code
                     MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_DELETE_ITEM.message
     

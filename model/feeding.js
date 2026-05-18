@@ -9,9 +9,26 @@ const db = require('../config/connection.js')
 
 const getFeedingById = async function (id){
     try {
-        let dados = await db('tbl_registro_alimentacao')
+        let dados = await db('tbl_feeding_log')
         .select('*')
-        .where('id_alimentacao', id)
+        .where('id_feeding', id)
+
+        if (dados.length > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
+const getLastId = async function () {
+    try {
+        let dados = await db('tbl_feeding_log')
+            .select('id_feeding')
+            .orderBy('id_feeding', 'desc')
+            .limit(1)
 
         if (dados.length > 0)
             return dados
@@ -26,12 +43,12 @@ const getFeedingById = async function (id){
 const setInsertFeeding = async function (feeding) {
     try {
 
-        let dados = await db('tbl_registro_alimentacao')
+        let dados = await db('tbl_feeding_log')
             .insert({
-                data_hora: `${feeding.data_hora}`,
-                descricao: `${feeding.descricao}`,
-                fk_id_filho: `${feeding.fk_id_filho}`,
-                fk_id_tipo_produto: `${feeding.fk_id_tipo_produto}`
+                date_time: `${feeding.date_time}`,
+                description: `${feeding.description}`,
+                fk_id_child: `${feeding.fk_id_child}`,
+                fk_id_product_type: `${feeding.fk_id_product_type}`
             })
 
         if (dados.length > 0)
@@ -47,8 +64,8 @@ const setInsertFeeding = async function (feeding) {
 const setDeleteFeeding = async function (id) {
     try {
 
-        let dados = await db('tbl_registro_alimentacao')
-            .where('id_alimentacao', id)
+        let dados = await db('tbl_feeding_log')
+            .where('id_feeding', id)
             .delete()
 
         if (dados > 0)
@@ -63,6 +80,7 @@ const setDeleteFeeding = async function (id) {
 
 module.exports = {
     getFeedingById,
+    getLastId,
     setInsertFeeding,
     setDeleteFeeding
 }

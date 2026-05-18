@@ -17,9 +17,9 @@ const listMedicationStock = async function(id_medication) {
 
         if(resultMedication){
             if(resultMedication.length > 0){
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.medication = resultMedication
+                MESSAGES.DEFAULT_HEADER.medication = resultMedication
 
                 return MESSAGES.DEFAULT_HEADER // 200
             }else{
@@ -46,9 +46,8 @@ const insertMedicationStock = async function(medication, contentType) {
                 let resultMedication = medicationStockDAO.setInsertMedicationStock(medication)
 
                 if(resultMedication){
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
+                    
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.response = medication
 
                     return MESSAGES.DEFAULT_HEADER // 201
                 }else{
@@ -68,8 +67,8 @@ const insertMedicationStock = async function(medication, contentType) {
 const validarDados = async function(medication) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
-    if(medication.quantity == undefined || medication.quantity == null || medication.quantity == '' || isNaN(medication.quantity) || medication.quantity <= 0){
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Quantidade incorreto]'
+    if(medication.dosage == undefined || medication.dosage == null || medication.dosage == '' || isNaN(medication.dosage) || medication.dosage < 0){
+        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Dosagem incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
     }else if(medication.fk_id_medication == undefined || medication.fk_id_medication == null || medication.fk_id_medication == '' || isNaN(medication.fk_id_medication) || medication.fk_id_medication <= 0){

@@ -22,6 +22,19 @@ const controller_sleep = require('../controller/routines/sleep/controller_sleep.
 const controller_diaper = require('../controller/routines/diaper/controller_diaper.js')
 const controller_bath = require('../controller/routines/bath/controller_bath.js')
 const controller_medication = require('../controller/routines/medication/controller_medication.js')
+const controller_feeding = require('../controller/routines/feeding/controller_feeding.js')
+const controller_routines = require('../controller/routines/controller_routines.js')
+
+
+//Retorna rotinas por id do FILHO filtrando pela DATA
+app.get('/syncrobaby/routines', verifyJWT, cors(), async (request, response) => {
+    let childId = request.query.child
+    let date = request.query.date
+    
+    let routine = await controller_routines.listRoutines(childId, date)
+
+    response.status(routine.status_code).json(routine)
+})
 
 //Insere rotina de SONO
 app.post('/syncrobaby/routines/sleep', verifyJWT, cors(), bodyParserJSON, async (request, response) => {
@@ -89,6 +102,23 @@ app.delete('/syncrobaby/routines/medication/:id', verifyJWT, cors(), async (requ
 
     let medication = await controller_medication.deleteMedication(medicationId)
     response.status(medication.status_code).json(medication)
+})
+
+//Insere rotina de ALIMENTAÇÃO
+app.post('/syncrobaby/routines/feeding', verifyJWT, cors(), bodyParserJSON, async (request, response) => {
+    let dadosBody = request.body
+    let contentType = request.headers['content-type']
+
+    let feeding = await controller_feeding.insertFeeding(dadosBody, contentType)
+    response.status(feeding.status_code).json(feeding)
+})
+
+//Deleta rotina de MEDICAMENTO
+app.delete('/syncrobaby/routines/feeding/:id', verifyJWT, cors(), async (request, response) => {
+    let feedingId = request.params.id
+
+    let feeding = await controller_feeding.deleteFeeding(feedingId)
+    response.status(feeding.status_code).json(feeding)
 })
 
 module.exports = app
