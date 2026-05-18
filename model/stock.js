@@ -27,10 +27,10 @@ const getStockRegistryById = async function(id){
 
 const getStockRegistryByType = async function(id_child, id_type){
     try {
-        let dados = await db('tbl_stock_registry')
+        let dados = await db('vw_stock_type')
         .select('*')
         .where({
-            fk_id_child: id_child,
+            id_child: id_child,
             fk_id_product_type: id_type
         })
 
