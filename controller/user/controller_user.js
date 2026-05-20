@@ -22,7 +22,7 @@ const listUserId = async function (id) {
         delete resultUser[0].password;
 
         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.user = resultUser
+        MESSAGES.DEFAULT_HEADER.user = resultUser
 
 
         return MESSAGES.DEFAULT_HEADER; // 200

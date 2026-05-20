@@ -20,7 +20,7 @@ const listProfessionalById = async function (id) {
       if (resultProfessional.length > 0) {
 
         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-        MESSAGES.DEFAULT_HEADER.vocational = resultProfessional
+        MESSAGES.DEFAULT_HEADER.professional = resultProfessional
 
         return MESSAGES.DEFAULT_HEADER // 200
 
@@ -49,7 +49,7 @@ const listProfessionalByChildrenId = async function (id_children) {
       if (resultProfessional.length > 0) {
 
         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-        MESSAGES.DEFAULT_HEADER.vocational = resultProfessional
+        MESSAGES.DEFAULT_HEADER.professional = resultProfessional
 
         return MESSAGES.DEFAULT_HEADER // 200
 
