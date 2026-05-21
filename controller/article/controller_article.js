@@ -29,7 +29,30 @@ const listAllArticles = async function () {
             return MESSAGES.ERROR_NOT_FOUND // 404
         }
     } catch (error) {
-        console.log(error)
+        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
+    }
+}
+
+const listArticleById = async function (id) {
+    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+
+    try {
+        let resultArticle = await articleDAO.getArticleById(id)
+
+        if(resultArticle){
+            if(resultArticle.length > 0){
+                
+                MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
+                MESSAGES.DEFAULT_HEADER.article = resultArticle
+
+                return MESSAGES.DEFAULT_HEADER // 200
+            }else{
+                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+            }
+        }else{
+            return MESSAGES.ERROR_NOT_FOUND // 404
+        }
+    } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
     }
 }
@@ -60,5 +83,6 @@ const listArticleByAgeGroup = async function (age_group) {
 
 module.exports = {
     listAllArticles,
+    listArticleById,
     listArticleByAgeGroup
 }

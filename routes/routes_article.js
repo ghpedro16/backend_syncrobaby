@@ -8,11 +8,7 @@
 //Import das dependencias da API
 const express = require('express')
 const cors = require('cors')
-const bodyParser = require('body-parser')
 const verifyJWT = require('../middleware/verify_jwt.js')
-
-//Cria um objeto especialista no formato JSON para receber dados via POST e PUT
-const bodyParserJSON = bodyParser.json()
 
 //Criando uma instancia de uma classe do express 
 const app = express()
@@ -23,6 +19,14 @@ const controller_article = require('../controller/article/controller_article.js'
 app.get('/syncrobaby/article', verifyJWT, cors(), async (request, response) => {
 
     let article = await controller_article.listAllArticles()
+
+    response.status(article.status_code).json(article)
+})
+
+//Retorna artigos por id
+app.get('/syncrobaby/article/:id', verifyJWT, cors(), async (request, response) => {
+    let articleId = request.params.id
+    let article = await controller_article.listArticleById(articleId)
 
     response.status(article.status_code).json(article)
 })
