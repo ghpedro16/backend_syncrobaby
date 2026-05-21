@@ -57,11 +57,11 @@ const listVaccines = async function () {
     }
 }
 
-const listVaccineByAgeGroup = async function (id_age_group) {
+const listVaccineByAgeGroup = async function (id_age_group, id_child) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
-        let resultVaccine = await vaccineDAO.getVaccineByAgeGroup(id_age_group)
+        let resultVaccine = await vaccineDAO.getVaccineByAgeGroup(id_age_group, id_child)
         
         if (resultVaccine) {
             if (resultVaccine.length > 0) {

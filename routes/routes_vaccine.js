@@ -35,10 +35,11 @@ app.get('/syncrobaby/vaccine', verifyJWT, cors(), async (request, response) => {
 })
 
 //Retorna vacinas por faixa etaria
-app.get('/syncrobaby/vaccine/age/:id', verifyJWT, cors(), async (request, response) => {
-    let ageGroup = request.params.id
+app.get('/syncrobaby/vaccine/age', verifyJWT, cors(), async (request, response) => {
+    let childId = request.query.child
+    let ageGroup = request.query.age
 
-    let vaccine = await controller_vaccine.listVaccineByAgeGroup(ageGroup)
+    let vaccine = await controller_vaccine.listVaccineByAgeGroup(ageGroup, childId)
     response.status(vaccine.status_code).json(vaccine)
 })
 
