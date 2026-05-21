@@ -62,7 +62,7 @@ const listVaccineByAgeGroup = async function (id_age_group) {
 
     try {
         let resultVaccine = await vaccineDAO.getVaccineByAgeGroup(id_age_group)
-
+        
         if (resultVaccine) {
             if (resultVaccine.length > 0) {
 

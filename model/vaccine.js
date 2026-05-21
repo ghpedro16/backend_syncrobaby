@@ -10,7 +10,7 @@ const db = require('../config/connection.js')
 const getVaccineByStatus = async function (status, id_child) {
     try {
         let dados = await db('vw_vaccination_status')
-            .select('vaccine', 'observation', 'prevented_diseases', 'application_status', 'application_date', 'id_child')
+            .select('id_vaccine', 'vaccine', 'observation', 'prevented_diseases', 'application_status', 'application_date', 'id_child')
             .where({
                 application_status: status,
                 id_child: id_child
@@ -44,7 +44,7 @@ const getAllVaccines = async function () {
 const getVaccineByAgeGroup = async function (id_age_group) {
     try {
         let dados = await db('vw_vaccination_status')
-            .select('vaccine', 'observation', 'prevented_diseases', 'id_age_group', 'age_group_name')
+            .select('id_vaccine', 'vaccine', 'observation', 'prevented_diseases', 'id_age_group', 'age_group_name')
             .where('id_age_group', id_age_group)
 
         if (dados.length > 0)

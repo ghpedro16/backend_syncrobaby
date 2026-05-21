@@ -97,9 +97,9 @@ const insertChildren = async function (child, id_guardian, contentType) {
                 let resultChildren = await childrenDAO.setInsertChildren(child)
 
                 if (resultChildren) {
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
+                    
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.response = child
+                    MESSAGES.DEFAULT_HEADER.child = child
 
                     return MESSAGES.DEFAULT_HEADER // 201
                 } else {
