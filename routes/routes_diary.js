@@ -23,9 +23,18 @@ const controller_diary = require("../controller/diary/controller_diary.js");
 app.get("/syncrobaby/diary/child/:id", verifyJWT, cors(), async (request, response) => {
     let childId = request.params.id
 
-    let user = await controller_diary.listDiaryByChildren(childId)
+    let diary = await controller_diary.listDiaryByChildren(childId)
 
-    response.status(user.status_code).json(user)
+    response.status(diary.status_code).json(diary)
+})
+
+// Retorna diarios por id
+app.get("/syncrobaby/diary/:id", verifyJWT, cors(), async (request, response) => {
+    let diaryId = request.params.id
+
+    let diary = await controller_diary.listDiaryById(diaryId)
+
+    response.status(diary.status_code).json(diary)
 })
 
 // Insere novo diario
