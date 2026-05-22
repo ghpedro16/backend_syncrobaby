@@ -9,6 +9,16 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const multer = require('multer')
+
+//Configuração para o multer enviar o arquivo de imagem
+const storage = multer.diskStorage({
+    destination: function(req, file, cb){
+        cb(null, 'uploads/')
+    }
+})
+
+const upload = multer()
 
 //Criando uma instancia de uma classe do express
 const app = express();
