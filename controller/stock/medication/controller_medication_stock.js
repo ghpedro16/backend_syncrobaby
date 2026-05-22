@@ -43,7 +43,7 @@ const insertMedicationStock = async function(medication, contentType) {
 
             if(!validar){
 
-                let resultMedication = medicationStockDAO.setInsertMedicationStock(medication)
+                let resultMedication = await medicationStockDAO.setInsertMedicationStock(medication)
 
                 if(resultMedication){
                     

@@ -7,6 +7,8 @@
 
 const diaperDAO = require('../../../model/diaper.js')
 const controllerDiaperStock = require('../../stock/diaper/controller_diaper_stock.js')
+const controllerNotification = require('../../notification/controller_notification.js')
+const stockDAO = require('../../../model/stock.js')
 
 const DEFAULT_MESSAGES = require('../../modulo/config_messages.js')
 
@@ -34,7 +36,7 @@ const listDiaperId = async function (id) {
     }
 }
 
-const insertDiaper = async function (diaper, contentType) {
+const insertDiaper = async function (diaper, id_guardian, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
@@ -59,6 +61,33 @@ const insertDiaper = async function (diaper, contentType) {
 
                             if (resultDiaperStock.status_code != 201) {
                                 return MESSAGES.ERROR_RELATIONAL_INSERTION // 500
+                            }
+
+                            let verifyStock = await stockDAO.getStockRegistryById(product.id)
+
+                            if(verifyStock[0].quantity == 1){
+
+                                let notification = {
+                                    title: `Atenção! ${verifyStock[0].product_name} está acabando!`,
+                                    message: `Existe apenas uma unidade do produto ${verifyStock[0].product_name} em estoque!`,
+                                    fk_id_guardian: id_guardian,
+                                    fk_id_child: diaper.fk_id_child,
+                                    fk_id_notification_type: 2
+                                }
+
+                                await controllerNotification.insertNotification(notification, contentType)
+
+                            }else if(verifyStock[0].quantity == 0){
+
+                                let notification = {
+                                    title: `${verifyStock[0].product_name} ACABOU!`,
+                                    message: `Não há mais nenhuma unidade do produto ${verifyStock[0].product_name} em estoque!`,
+                                    fk_id_guardian: id_guardian,
+                                    fk_id_child: diaper.fk_id_child,
+                                    fk_id_notification_type: 2
+                                }
+
+                                await controllerNotification.insertNotification(notification, contentType)
                             }
                         }
 

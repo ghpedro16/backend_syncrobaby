@@ -9,10 +9,10 @@ const db = require('../config/connection.js')
  
 const getStockRegistryById = async function(id){
     try {
-        let dados = await db('tbl_stock_registry')
-        .select('*')
+        let dados = await db('vw_stock_type')
+        .select('id', 'product_name', 'description', 'quantity', 'volume', 'id_child', 'id_product')
         .where({
-            id_stock_registry: id
+            id: id
         })
 
         if (dados.length > 0)
@@ -46,9 +46,9 @@ const getStockRegistryByType = async function(id_child, id_type){
 
 const getStockByChildrenId = async function(id_child){
     try {
-        let dados = await db('tbl_stock_registry')
-        .select('*')
-        .where('fk_id_child', id_child)
+        let dados = await db('vw_stock_type')
+        .select('id', 'product_name', 'description', 'quantity', 'volume', 'id_child', 'id_product')
+        .where('id_child', id_child)
 
         if (dados.length > 0)
             return dados

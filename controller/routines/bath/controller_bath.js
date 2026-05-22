@@ -7,8 +7,11 @@
 
 const bathDAO = require('../../../model/bath.js')
 const controllerBathStock = require('../../stock/bath/controller_bath_stock.js')
+const controllerNotification = require('../../notification/controller_notification.js')
+const stockDAO = require('../../../model/stock.js')
 
 const DEFAULT_MESSAGES = require('../../modulo/config_messages.js')
+const { request } = require('../../../routes/routes_user.js')
 
 const listBathId = async function(id){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
@@ -34,7 +37,7 @@ const listBathId = async function(id){
     }
 }
  
-const insertBath = async function(bath, contentType){
+const insertBath = async function(bath, id_guardian, contentType){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
@@ -60,6 +63,34 @@ const insertBath = async function(bath, contentType){
                             if(resultBathStock.status_code != 201){
                                 return MESSAGES.ERROR_RELATIONAL_INSERTION // 500
                             }
+
+                            let verifyStock = await stockDAO.getStockRegistryById(product.id)
+
+                            if(verifyStock[0].quantity == 1){
+
+                                let notification = {
+                                    title: `Atenção! ${verifyStock[0].product_name} está acabando!`,
+                                    message: `Existe apenas uma unidade do produto ${verifyStock[0].product_name} em estoque!`,
+                                    fk_id_guardian: id_guardian,
+                                    fk_id_child: bath.fk_id_child,
+                                    fk_id_notification_type: 2
+                                }
+
+                                await controllerNotification.insertNotification(notification, contentType)
+
+                            }else if(verifyStock[0].quantity == 0){
+
+                                let notification = {
+                                    title: `${verifyStock[0].product_name} ACABOU!`,
+                                    message: `Não há mais nenhuma unidade do produto ${verifyStock[0].product_name} em estoque!`,
+                                    fk_id_guardian: id_guardian,
+                                    fk_id_child: bath.fk_id_child,
+                                    fk_id_notification_type: 2
+                                }
+
+                                await controllerNotification.insertNotification(notification, contentType)
+                            }
+
                         }
 
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
@@ -78,6 +109,7 @@ const insertBath = async function(bath, contentType){
             return MESSAGES.ERROR_CONTENT_TYPE // 415
         }
     } catch (error) {
+        console.log(error)
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
     }
 }

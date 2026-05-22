@@ -56,9 +56,10 @@ app.delete('/syncrobaby/routines/sleep/:id', verifyJWT, cors(), async (request, 
 //Insere rotina de FRALDA
 app.post('/syncrobaby/routines/diaper', verifyJWT, cors(), bodyParserJSON, async (request, response) => {
     let dadosBody = request.body
+    let idGuardian = request.user.userID
     let contentType = request.headers['content-type']
 
-    let diaper = await controller_diaper.insertDiaper(dadosBody, contentType)
+    let diaper = await controller_diaper.insertDiaper(dadosBody, idGuardian, contentType)
     response.status(diaper.status_code).json(diaper)
 })
 
@@ -73,9 +74,10 @@ app.delete('/syncrobaby/routines/diaper/:id', verifyJWT, cors(), async (request,
 //Insere rotina de BANHO
 app.post('/syncrobaby/routines/bath', verifyJWT, cors(), bodyParserJSON, async (request, response) => {
     let dadosBody = request.body
+    let idGuardian = request.user.userID
     let contentType = request.headers['content-type']
 
-    let bath = await controller_bath.insertBath(dadosBody, contentType)
+    let bath = await controller_bath.insertBath(dadosBody, idGuardian, contentType)
     response.status(bath.status_code).json(bath)
 })
 
@@ -90,9 +92,10 @@ app.delete('/syncrobaby/routines/bath/:id', verifyJWT, cors(), async (request, r
 //Insere rotina de MEDICAMENTO
 app.post('/syncrobaby/routines/medication', verifyJWT, cors(), bodyParserJSON, async (request, response) => {
     let dadosBody = request.body
+    let idGuardian = request.user.userID
     let contentType = request.headers['content-type']
 
-    let medication = await controller_medication.insertMedication(dadosBody, contentType)
+    let medication = await controller_medication.insertMedication(dadosBody, idGuardian, contentType)
     response.status(medication.status_code).json(medication)
 })
 
@@ -107,9 +110,10 @@ app.delete('/syncrobaby/routines/medication/:id', verifyJWT, cors(), async (requ
 //Insere rotina de ALIMENTAÇÃO
 app.post('/syncrobaby/routines/feeding', verifyJWT, cors(), bodyParserJSON, async (request, response) => {
     let dadosBody = request.body
+    let idGuardian = request.user.userID
     let contentType = request.headers['content-type']
 
-    let feeding = await controller_feeding.insertFeeding(dadosBody, contentType)
+    let feeding = await controller_feeding.insertFeeding(dadosBody, idGuardian, contentType)
     response.status(feeding.status_code).json(feeding)
 })
 
