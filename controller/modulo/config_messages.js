@@ -5,12 +5,9 @@
  * Versão: 1.0
  *******************************************************************************************************************************************************************/
 
-const dataAtual = new Date()
-
 /********************************************************************   MENSAGENS PADRONIZADAS  ********************************************************************/
 
 const DEFAULT_HEADER = {status_code: Number}
-
 
 /********************************************************************   MENSAGENS DE SUCESSO    ********************************************************************/
 
@@ -27,6 +24,7 @@ const SUCCESS_MODIFIED_ITEM = {status: true, status_code: 204, message: 'Item mo
 const SUCCESS_REACTIVATE_ITEM = {status: true, status_code: 200, message: 'Item reativado com sucesso!'}
 
 const SUCCESS_DEACTIVATE_ITEM = {status: true, status_code: 204, message: 'Item desativado com sucesso!'}
+
 
 /********************************************************************    MENSAGENS DE ERRO      ********************************************************************/
 
