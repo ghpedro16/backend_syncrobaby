@@ -18,9 +18,9 @@ const listChildren = async function (id, id_guardian) {
 
         if (resultChildren) {
             if (resultChildren.length > 0) {
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+                
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.children = resultChildren
+                MESSAGES.DEFAULT_HEADER.child = resultChildren
 
                 return MESSAGES.DEFAULT_HEADER // 200
             } else {
@@ -42,9 +42,9 @@ const listChildrenByUserId = async function (id_user) {
 
         if (resultChildren) {
             if (resultChildren.length > 0) {
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.children = resultChildren
+                MESSAGES.DEFAULT_HEADER.children = resultChildren
 
                 return MESSAGES.DEFAULT_HEADER // 200
             } else {
@@ -66,9 +66,9 @@ const listDeactivateChildren = async function (id_user) {
 
         if (resultChildren) {
             if (resultChildren.length > 0) {
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REQUEST.status
+
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.response.children = resultChildren
+                MESSAGES.DEFAULT_HEADER.children = resultChildren
 
                 return MESSAGES.DEFAULT_HEADER // 200
             } else {
@@ -97,9 +97,8 @@ const insertChildren = async function (child, id_guardian, contentType) {
                 let resultChildren = await childrenDAO.setInsertChildren(child)
 
                 if (resultChildren) {
-                    MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
+                    
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                    MESSAGES.DEFAULT_HEADER.response = child
 
                     return MESSAGES.DEFAULT_HEADER // 201
                 } else {
@@ -136,9 +135,9 @@ const updateChildren = async function (id, child, contentType) {
                     let resultChildren = await childrenDAO.setUpdateChildren(child)
 
                     if (resultChildren) {
-                        MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_CREATE_ITEM.status
+                        
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                        MESSAGES.DEFAULT_HEADER.response = child
+                        MESSAGES.DEFAULT_HEADER.child = child
 
                         return MESSAGES.DEFAULT_HEADER // 201
                     } else {
@@ -210,7 +209,6 @@ const reactivateChildren = async function (id, idUser) {
 
             if (resultUser) {
 
-                MESSAGES.DEFAULT_HEADER.status = MESSAGES.SUCCESS_REACTIVATE_ITEM.status
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REACTIVATE_ITEM.status_code
                 MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_REACTIVATE_ITEM.message
 
