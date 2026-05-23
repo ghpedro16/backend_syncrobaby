@@ -7,6 +7,7 @@
 
 const diaryDAO = require("../../model/diary.js");
 const childrenDAO = require("../../model/children.js");
+const controller_upload = require('../upload/controller_upload_azure.js')
 
 const DEFAULT_MESSAGES = require("../modulo/config_messages.js");
 
@@ -73,12 +74,25 @@ const listDiaryById = async function (id) {
   }
 }
 
-const insertDiary = async function (diary, contentType) {
+const insertDiary = async function (diary, contentType, file) {
   let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
   try {
 
-    if (String(contentType).toUpperCase() == "APPLICATION/JSON") {
+    if (String(contentType).toUpperCase().includes('MULTIPART/FORM-DATA')) {
+
+      // Conversões necessárias para form-data
+      diary.fk_id_child = Number(diary.fk_id_child)
+
+      if (file) {
+        let upload = await controller_upload.uploadFiles(file)
+
+        if (!upload.success)
+          return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER
+
+        diary.media = upload.url
+      }
+
       let validar = await validarDados(diary)
 
       if (!validar) {
@@ -151,6 +165,53 @@ const updateDiary = async function (diary, id, contentType) {
   }
 }
 
+const updateMediaDiary = async function(id, contentType, file) {
+    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+
+    try {
+        if (String(contentType).toUpperCase().includes('MULTIPART/FORM-DATA')) {
+
+            let validarId = await listDiaryById(id)
+
+            if (validarId) {
+
+                if (!file)
+                    return MESSAGES.ERROR_REQUIRED_FIELDS // 400
+
+                // Busca URL antiga para deletar depois
+                let fotoAntiga = await diaryDAO.getMediaByDiary(id)
+
+                // Faz upload da nova foto
+                let upload = await controller_upload.uploadFiles(file)
+
+                if (!upload.success)
+                    return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
+
+                // Atualiza no banco
+                let result = await diaryDAO.setUpdateMediaDiary(id, upload.url)
+
+                if (!result)
+                    return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+
+                // Deleta a antiga só após confirmar que o banco atualizou
+                if (fotoAntiga)
+                    await controller_upload.deleteFile(fotoAntiga[0].media)
+
+                MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_MODIFIED_ITEM.status_code
+
+                return MESSAGES.DEFAULT_HEADER // 200
+
+            } else {
+                validarId
+            }
+        } else {
+            return MESSAGES.ERROR_CONTENT_TYPE // 415
+        }
+    } catch (error) {
+        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
+    }
+}
+
 const deleteDiary = async function (id) {
   let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
@@ -200,7 +261,7 @@ const validarDados = async function (diary) {
     MESSAGES.ERROR_REQUIRED_FIELDS.message += " [Conteudo incorreto]"
     return MESSAGES.ERROR_REQUIRED_FIELDS
 
-  } else if (diary.media == undefined || diary.media.length > 255 || diary.media == null || diary.media == "") {
+  } else if (diary.media == undefined || diary.media.length > 255) {
     MESSAGES.ERROR_REQUIRED_FIELDS.message += " [Midia incorreto]"
     return MESSAGES.ERROR_REQUIRED_FIELDS
 
@@ -226,5 +287,6 @@ module.exports = {
   listDiaryById,
   insertDiary,
   updateDiary,
+  updateMediaDiary,
   deleteDiary,
 };

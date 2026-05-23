@@ -81,6 +81,24 @@ const setInsertStockProduct = async function(stock_product){
     }
 }
 
+const setUpdateQuantityStockProduct = async function(id, newQuantity) {
+    try {
+        let dados = await db('tbl_stock_registry')
+        .update({
+            quantity: newQuantity
+        })
+        .where('id_stock_registry', id)
+
+        if (dados > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
 const setDeleteStockProduct = async function(id){
     try {
         let dados = await db('tbl_stock_registry')
@@ -102,5 +120,6 @@ module.exports = {
     getStockRegistryByType,
     getStockByChildrenId,
     setInsertStockProduct,
+    setUpdateQuantityStockProduct,
     setDeleteStockProduct
 }

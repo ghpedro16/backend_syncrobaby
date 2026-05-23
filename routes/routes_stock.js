@@ -47,6 +47,16 @@ app.post('/syncrobaby/stock', verifyJWT, cors(), bodyParserJSON, async (request,
     response.status(stock.status_code).json(stock)
 })
 
+//Atualiza quantidade de produto no estoque
+app.patch('/syncrobaby/stock/quantity/:id', verifyJWT, cors(), bodyParserJSON, async(request, response) => {
+    let idStock = request.params.id
+    let quantity = request.body
+    let contentType = request.headers['content-type']
+
+    let stock = await controller_stock.updateQuantityStock(idStock, quantity, contentType)
+    response.status(stock.status_code).json(stock)
+})
+
 //Deleta produto do estoque
 app.delete('/syncrobaby/stock/:id', verifyJWT, cors(), async (request, response) => {
     let stockId = request.params.id

@@ -39,6 +39,22 @@ const getDiaryById = async function (id) {
     }
 }
 
+const getMediaByDiary = async function (id) {
+    try {
+        let dados = await db("tbl_diary_note")
+            .select("media")
+            .where("id_diary_note", id)
+
+        if (dados.length > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
 const setInsertDiary = async function (diary) {
     try {
         let dados = await db("tbl_diary_note")
@@ -68,9 +84,26 @@ const setUpdateDiary = async function (diary, id) {
                 title: `${diary.title}`,
                 date: `${diary.date}}`,
                 content: `${diary.content}`,
-                media: `${diary.media}`,
                 color: `${diary.color}`,
                 fk_id_child: `${diary.fk_id_child}`,
+            })
+            .where("id_diary_note", id)
+
+        if (dados > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
+const setUpdateMediaDiary = async function(id, url) {
+    try {
+        let dados = await db("tbl_diary_note")
+            .update({
+                media: url
             })
             .where("id_diary_note", id)
 
@@ -103,7 +136,9 @@ const setDeleteDiary = async function (id) {
 module.exports = {
   getDiaryByChildrenId,
   getDiaryById,
+  getMediaByDiary,
   setInsertDiary,
   setUpdateDiary,
-  setDeleteDiary,
+  setUpdateMediaDiary,
+  setDeleteDiary
 }
