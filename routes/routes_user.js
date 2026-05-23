@@ -10,6 +10,7 @@ const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const verifyJWT = require('../middleware/verify_jwt.js')
+const {upload} = require('../middleware/middleware_multer.js')
 
 //Cria um objeto especialista no formato JSON para receber dados via POST e PUT
 const bodyParserJSON = bodyParser.json()
@@ -81,6 +82,16 @@ app.patch('/syncrobaby/user/password', verifyJWT, cors(), bodyParserJSON, async 
     let contentType = request.headers['content-type']
 
     let user = await controller_user.updatePassword(dadosBody, idUser, contentType)
+    response.status(user.status_code).json(user)
+})
+
+//Atualiza foto de perfil do usuario
+app.patch('/syncrobaby/user/profile-picture', verifyJWT, cors(), upload.single('profile_picture'), async function (request, response){
+    let idUser = request.user.userID
+    let contentType = request.headers['content-type']
+    let file = request.file
+
+    let user = await controller_user.updateProfilePicture(idUser, contentType, file)
     response.status(user.status_code).json(user)
 })
 

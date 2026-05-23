@@ -10,6 +10,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const verifyJWT = require("../middleware/verify_jwt.js");
+const {upload} = require('../middleware/middleware_multer.js')
 
 //Cria um objeto especialista no formato JSON para receber dados via POST e PUT
 const bodyParserJSON = bodyParser.json();
@@ -38,11 +39,12 @@ app.get("/syncrobaby/diary/:id", verifyJWT, cors(), async (request, response) =>
 })
 
 // Insere novo diario
-app.post("/syncrobaby/diary", verifyJWT, cors(), bodyParserJSON, async (request, response) => {
+app.post("/syncrobaby/diary", verifyJWT, cors(), upload.single('media'), async (request, response) => {
     let dadosBody = request.body
     let contentType = request.headers["content-type"]
+    let file = request.file
 
-    let diary = await controller_diary.insertDiary(dadosBody, contentType)
+    let diary = await controller_diary.insertDiary(dadosBody, contentType, file)
     response.status(diary.status_code).json(diary)
 })
 
@@ -53,6 +55,16 @@ app.put("/syncrobaby/diary/:id", verifyJWT, cors(), bodyParserJSON, async (reque
     let contentType = request.headers["content-type"]
 
     let diary = await controller_diary.updateDiary(dadosBody, diaryId, contentType)
+    response.status(diary.status_code).json(diary)
+})
+
+//Atualiza foto de lembrança do diario
+app.patch('/syncrobaby/diary/media/:id', verifyJWT, cors(), upload.single('media'), async function (request, response){
+    let idDiary = request.params.id
+    let contentType = request.headers['content-type']
+    let file = request.file
+
+    let diary = await controller_diary.updateMediaDiary(idDiary, contentType, file)
     response.status(diary.status_code).json(diary)
 })
 

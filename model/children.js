@@ -49,6 +49,22 @@ const getDeactivateChildren = async function (id_guardian) {
   }
 };
 
+const getPhotoByChilren = async function(id) {
+  try {
+    let dados = await db('tbl_child')
+    .select('photo')
+    .where('id_child', id)
+
+    if(dados.length > 0)
+      return dados
+    else
+      return false
+
+  } catch (error) {
+    return false
+  }
+}
+
 const setInsertChildren = async function (child) {
   try {
     let dados = await db("tbl_child").insert({
@@ -62,8 +78,11 @@ const setInsertChildren = async function (child) {
       fk_id_guardian: `${child.fk_id_guardian}`,
     });
 
-    if (dados.length > 0) return dados;
-    else return false;
+    if (dados.length > 0) 
+      return dados;
+    else 
+      return false;
+
   } catch (error) {
     return false;
   }
@@ -76,20 +95,39 @@ const setUpdateChildren = async function (child) {
         child_name: `${child.child_name}`,
         birth_date: `${child.birth_date}`,
         blood_type: `${child.blood_type}`,
-        gender: `${child.gender}`,
-        photo: `${child.photo}`,
+        gender: `${child.gender}`
       })
       .where({
         id_child: child.id_child,
         fk_id_guardian: child.fk_id_guardian,
       });
 
-    if (dados > 0) return dados;
-    else return false;
+    if (dados > 0)
+       return dados;
+    else
+       return false;
   } catch (error) {
     return false;
   }
 };
+
+const setUpdatePhotoChildren = async function (id, url) {
+  try {
+    let dados = await db('tbl_child')
+    .update({
+      photo: url
+    })
+    .where('id_child', id)
+
+    if(dados > 0)
+      return dados
+    else
+      return false
+
+  } catch (error) {
+    return false
+  }
+}
 
 const setDeactivateChildren = async function (id, id_guardian) {
   try {
@@ -131,8 +169,10 @@ module.exports = {
   getChildrenById,
   getAllChildrenByIdUser,
   getDeactivateChildren,
+  getPhotoByChilren,
   setInsertChildren,
   setUpdateChildren,
+  setUpdatePhotoChildren,
   setDeactivateChildren,
   setReactivateChildren,
 };

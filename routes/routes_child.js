@@ -10,6 +10,7 @@ const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const verifyJWT = require('../middleware/verify_jwt.js')
+const {upload} = require('../middleware/middleware_multer.js')
 
 //Cria um objeto especialista no formato JSON para receber dados via POST e PUT
 const bodyParserJSON = bodyParser.json()
@@ -45,12 +46,13 @@ app.get('/syncrobaby/user/child/deactivate', verifyJWT, cors(), async (request, 
 })
 
 //Insere novo filho
-app.post('/syncrobaby/child', verifyJWT, cors(), bodyParserJSON, async (request, response) => {
+app.post('/syncrobaby/child', verifyJWT, cors(), upload.single('photo'), async (request, response) => {
     let idUser = request.user.userID
     let dadosBody = request.body
     let contentType = request.headers['content-type']
-    let child = await controller_children.insertChildren(dadosBody, idUser, contentType)
+    let file = request.file
 
+    let child = await controller_children.insertChildren(dadosBody, idUser, contentType, file)
     response.status(child.status_code).json(child)
 })
 
@@ -62,6 +64,17 @@ app.put('/syncrobaby/child/:id', verifyJWT, cors(), bodyParserJSON, async functi
     let contentType = request.headers['content-type']
 
     let child = await controller_children.updateChildren(idChild, dadosBody, contentType)
+    response.status(child.status_code).json(child)
+})
+
+//Atualiza foto de perfil do filho
+app.patch('/syncrobaby/child/photo/:id', verifyJWT, cors(), upload.single('photo'), async function (request, response){
+    let idChild = request.params.id
+    let idUser = request.user.userID
+    let contentType = request.headers['content-type']
+    let file = request.file
+
+    let child = await controller_children.updatePhotoChild(idChild, idUser, contentType, file)
     response.status(child.status_code).json(child)
 })
 

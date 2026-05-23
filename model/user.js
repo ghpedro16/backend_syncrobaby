@@ -70,16 +70,32 @@ const getUserByLogin = async function (user) {
     }
 }
 
-const setInsertUser = async function (user) {
+const getProfilePictureByUser = async function (id) {
+    try {
+        let dados = await db('tbl_guardian')
+        .select('profile_picture')
+        .where({
+            id_guardian: id
+        })
 
+        if(dados.length > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
+const setInsertUser = async function (user) {
     try {
 
         let dados = await db('tbl_guardian')
             .insert({
                 guardian_name: user.guardian_name,
                 email: user.email,
-                password: user.password,
-                profile_picture: user.profile_picture
+                password: user.password
             })
 
         if (dados.length > 0)
@@ -99,8 +115,7 @@ const setUpdateUser = async function (user) {
         let dados = await db('tbl_guardian')
         .update({
             guardian_name: `${user.guardian_name}`,
-            email: `${user.email}`,
-            profile_picture: `${user.profile_picture}`
+            email: `${user.email}`
         })
         .where({id_guardian: `${user.id_guardian}`})
 
@@ -177,13 +192,35 @@ const setReactivateUser = async function (id) {
     }
 }
 
+const setUpdateProfilePicture = async function (id, url) {
+    try {
+        let dados = await db('tbl_guardian')
+        .update({
+            profile_picture: url
+        })
+        .where({
+            id_guardian: id
+        })
+
+        if(dados > 0)
+            return dados
+        else
+            return false
+
+    } catch (error) {
+        return false
+    }
+}
+
 module.exports = {
     getUserById,
     getUserByEmail,
     getUserByLogin,
+    getProfilePictureByUser,
     setInsertUser,
     setUpdateUser,
     setUpdatePassword,
     setDeactivateUser,
-    setReactivateUser
+    setReactivateUser,
+    setUpdateProfilePicture
 }

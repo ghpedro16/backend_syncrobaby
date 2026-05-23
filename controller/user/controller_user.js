@@ -8,6 +8,7 @@
 const userDAO = require("../../model/user.js");
 const jwt = require("../../middleware/middleware_jwt.js");
 const bcrypt = require("bcrypt");
+const controller_upload = require('../upload/controller_upload_azure.js')
 
 const DEFAULT_MESSAGES = require("../modulo/config_messages.js");
 
@@ -213,6 +214,53 @@ const updatePassword = async function (user, id, contentType) {
   }
 };
 
+const updateProfilePicture = async function(id, contentType, file){
+    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+
+    try {
+        if (String(contentType).toUpperCase().includes('MULTIPART/FORM-DATA')) {
+
+            let validarId = await listUserId(id)
+
+            if (validarId) {
+
+                if (!file)
+                    return MESSAGES.ERROR_REQUIRED_FIELDS // 400
+
+                // Busca URL antiga para deletar depois
+                let fotoAntiga = await userDAO.getProfilePictureByUser(id)
+
+                // Faz upload da nova foto
+                let upload = await controller_upload.uploadFiles(file)
+
+                if (!upload.success)
+                    return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
+
+                // Atualiza no banco
+                let result = await userDAO.setUpdateProfilePicture(id, upload.url)
+
+                if (!result)
+                    return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+
+                // Deleta a antiga só após confirmar que o banco atualizou
+                if (fotoAntiga)
+                    await controller_upload.deleteFile(fotoAntiga[0].profile_picture)
+
+                MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_MODIFIED_ITEM.status_code
+
+                return MESSAGES.DEFAULT_HEADER // 200
+
+            } else {
+                validarId
+            }
+        } else {
+            return MESSAGES.ERROR_CONTENT_TYPE // 415
+        }
+    } catch (error) {
+        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
+    }
+}
+
 const deactivateUser = async function (user, id, contentType) {
   let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES));
 
@@ -322,11 +370,6 @@ const validarDados = async function (user) {
   ) {
     MESSAGES.ERROR_REQUIRED_FIELDS.message += " [Senha incorreto]";
     return MESSAGES.ERROR_REQUIRED_FIELDS;
-  } else if (
-    user.profile_picture == undefined ||
-    user.profile_picture.length > 255
-  ) {
-    MESSAGES.ERROR_REQUIRED_FIELDS.message += " [URL da Foto incorreto]";
   } else {
     return false;
   }
@@ -351,11 +394,6 @@ const validarUpdate = async function (user) {
   ) {
     MESSAGES.ERROR_REQUIRED_FIELDS.message += " [E-mail incorreto]";
     return MESSAGES.ERROR_REQUIRED_FIELDS;
-  } else if (
-    user.profile_picture == undefined ||
-    user.profile_picture.length > 255
-  ) {
-    MESSAGES.ERROR_REQUIRED_FIELDS.message += " [URL da Foto incorreto]";
   } else {
     return false;
   }
@@ -391,6 +429,7 @@ module.exports = {
   insertUser,
   updateUser,
   updatePassword,
+  updateProfilePicture,
   deactivateUser,
   reactivateUser,
 };

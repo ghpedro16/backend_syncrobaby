@@ -9,23 +9,23 @@ const stockDAO = require('../../model/stock.js')
 
 const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
 
-const listStockById = async function(id){
+const listStockById = async function (id) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
         let resultStock = await stockDAO.getStockRegistryById(id)
 
-        if(resultStock){
-            if(resultStock.length > 0){
-               
+        if (resultStock) {
+            if (resultStock.length > 0) {
+
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
                 MESSAGES.DEFAULT_HEADER.stock = resultStock
 
                 return MESSAGES.DEFAULT_HEADER // 200
-            }else{
+            } else {
                 return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
             }
-        }else{
+        } else {
             return MESSAGES.ERROR_NOT_FOUND // 404
         }
     } catch (error) {
@@ -33,23 +33,23 @@ const listStockById = async function(id){
     }
 }
 
-const listStockByType = async function(id_child, id_type){
+const listStockByType = async function (id_child, id_type) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
         let resultStock = await stockDAO.getStockRegistryByType(id_child, id_type)
 
-        if(resultStock){
-            if(resultStock.length > 0){
-                
+        if (resultStock) {
+            if (resultStock.length > 0) {
+
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
                 MESSAGES.DEFAULT_HEADER.stock = resultStock
 
                 return MESSAGES.DEFAULT_HEADER // 200
-            }else{
+            } else {
                 return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
             }
-        }else{
+        } else {
             return MESSAGES.ERROR_NOT_FOUND // 404
         }
     } catch (error) {
@@ -57,23 +57,23 @@ const listStockByType = async function(id_child, id_type){
     }
 }
 
-const listStockByIdChild = async function(id_child){
+const listStockByIdChild = async function (id_child) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
         let resultStock = await stockDAO.getStockByChildrenId(id_child)
 
-        if(resultStock){
-            if(resultStock.length > 0){
-                
+        if (resultStock) {
+            if (resultStock.length > 0) {
+
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
                 MESSAGES.DEFAULT_HEADER.stock = resultStock
 
                 return MESSAGES.DEFAULT_HEADER // 200
-            }else{
+            } else {
                 return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
             }
-        }else{
+        } else {
             return MESSAGES.ERROR_NOT_FOUND // 404
         }
     } catch (error) {
@@ -81,7 +81,7 @@ const listStockByIdChild = async function(id_child){
     }
 }
 
-const insertStock = async function(stock, contentType){
+const insertStock = async function (stock, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
@@ -89,19 +89,19 @@ const insertStock = async function(stock, contentType){
 
             let validar = await validarDados(stock)
 
-            if(!validar){
+            if (!validar) {
 
                 let resultStock = await stockDAO.setInsertStockProduct(stock)
 
-                if(resultStock){
-                    
+                if (resultStock) {
+
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
 
                     return MESSAGES.DEFAULT_HEADER // 201
-                }else{
+                } else {
                     return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
                 }
-            }else{
+            } else {
                 return validar
             }
         } else {
@@ -112,7 +112,43 @@ const insertStock = async function(stock, contentType){
     }
 }
 
-const deleteStock = async function(id){
+const updateQuantityStock = async function (id, stock, contentType) {
+    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+
+    try {
+        if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
+
+            if (!isNaN(id) && id != '' && id != null && id > 0) {
+
+                if (!isNaN(stock.new_quantity) && stock.new_quantity >= 0) {
+
+                    let resultStock = await stockDAO.setUpdateQuantityStockProduct(id, stock.new_quantity)
+
+                    if (resultStock) {
+
+                        MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
+
+                        return MESSAGES.DEFAULT_HEADER // 201
+                    } else {
+                        return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+                    }
+                }else{
+                    MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Quantidade incorreto]'
+                    return MESSAGES.ERROR_REQUIRED_FIELDS
+                }
+            } else {
+                MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID Incorreto!]'
+                return MESSAGES.ERROR_REQUIRED_FIELDS // 400
+            }
+        } else {
+            return MESSAGES.ERROR_CONTENT_TYPE // 415
+        }
+    } catch (error) {
+        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
+    }
+}
+
+const deleteStock = async function (id) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
@@ -120,55 +156,55 @@ const deleteStock = async function(id){
 
             let validarId = await listStockById(id)
 
-            if(validarId.status_code == 200){
+            if (validarId.status_code == 200) {
 
                 let resultStock = await stockDAO.setDeleteStockProduct(id)
 
-                if(resultStock){
-            
+                if (resultStock) {
+
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETE_ITEM.status_code
                     MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_DELETE_ITEM.message
-    
+
                     return MESSAGES.DEFAULT_HEADER // 200
-                }else{
+                } else {
                     return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
                 }
-            }else{
+            } else {
                 MESSAGES.ERROR_NOT_FOUND // 404
             }
-        }else{
+        } else {
             MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID Incorreto!]'
             return MESSAGES.ERROR_REQUIRED_FIELDS // 400
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
-    } 
+    }
 }
 
-const validarDados = async function(stock){
+const validarDados = async function (stock) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
-    if(stock.quantity == undefined || stock.quantity == null || stock.quantity == '' || isNaN(stock.quantity) || stock.quantity <= 0){
+    if (stock.quantity == undefined || stock.quantity == null || stock.quantity == '' || isNaN(stock.quantity) || stock.quantity <= 0) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Quantidade incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(stock.volume == undefined || isNaN(stock.volume) || stock.volume < 0){
+    } else if (stock.volume == undefined || isNaN(stock.volume) || stock.volume < 0) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Volume incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(stock.description == undefined || stock.description.length > 255){
+    } else if (stock.description == undefined || stock.description.length > 255) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Descricao incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(stock.fk_id_child == undefined || stock.fk_id_child == null || stock.fk_id_child == '' || isNaN(stock.fk_id_child) || stock.fk_id_child <= 0){
+    } else if (stock.fk_id_child == undefined || stock.fk_id_child == null || stock.fk_id_child == '' || isNaN(stock.fk_id_child) || stock.fk_id_child <= 0) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID (chave estrangeira) incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(stock.fk_id_product == undefined || stock.fk_id_product == null || stock.fk_id_product == '' || isNaN(stock.fk_id_product) || stock.fk_id_product <= 0){
+    } else if (stock.fk_id_product == undefined || stock.fk_id_product == null || stock.fk_id_product == '' || isNaN(stock.fk_id_product) || stock.fk_id_product <= 0) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID (chave estrangeira) incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else{
+    } else {
         return false
     }
 }
@@ -178,5 +214,6 @@ module.exports = {
     listStockByType,
     listStockByIdChild,
     insertStock,
+    updateQuantityStock,
     deleteStock
 }

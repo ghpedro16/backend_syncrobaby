@@ -6,6 +6,7 @@
  * ****************************************************************************************************************************************/
 
 const childrenDAO = require('../../model/children.js')
+const controller_upload = require('../upload/controller_upload_azure.js')
 
 const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
 
@@ -18,7 +19,7 @@ const listChildren = async function (id, id_guardian) {
 
         if (resultChildren) {
             if (resultChildren.length > 0) {
-                
+
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
                 MESSAGES.DEFAULT_HEADER.child = resultChildren
 
@@ -82,22 +83,36 @@ const listDeactivateChildren = async function (id_user) {
     }
 }
 
-const insertChildren = async function (child, id_guardian, contentType) {
+const insertChildren = async function (child, id_guardian, contentType, file) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
-        if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
+        if (String(contentType).toUpperCase().includes('MULTIPART/FORM-DATA')) {
 
             child.fk_id_guardian = id_guardian
+
+            // Conversões necessárias para form-data
+            child.height = Number(child.height)
+            child.weight = Number(child.weight)
+
+            if (file) {
+                let upload = await controller_upload.uploadFiles(file)
+
+                if (!upload.success)
+                    return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER
+
+                child.photo = upload.url
+            }
 
             let validar = await validarDados(child)
 
             if (!validar) {
 
                 let resultChildren = await childrenDAO.setInsertChildren(child)
+                console.log(resultChildren)
 
                 if (resultChildren) {
-                    
+
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
 
                     return MESSAGES.DEFAULT_HEADER // 201
@@ -135,7 +150,7 @@ const updateChildren = async function (id, child, contentType) {
                     let resultChildren = await childrenDAO.setUpdateChildren(child)
 
                     if (resultChildren) {
-                        
+
                         MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
                         MESSAGES.DEFAULT_HEADER.child = child
 
@@ -148,6 +163,54 @@ const updateChildren = async function (id, child, contentType) {
                 }
             } else {
                 return validar
+            }
+        } else {
+            return MESSAGES.ERROR_CONTENT_TYPE // 415
+        }
+    } catch (error) {
+        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
+    }
+}
+
+const updatePhotoChild = async function (id, id_guardian, contentType, file) {
+    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+
+    try {
+        if (String(contentType).toUpperCase().includes('MULTIPART/FORM-DATA')) {
+
+            let validarId = await childrenDAO.getChildrenById(id, id_guardian)
+
+            if (validarId) {
+
+                if (!file)
+                    return MESSAGES.ERROR_REQUIRED_FIELDS // 400
+
+                // Busca URL antiga para deletar depois
+                let fotoAntiga = await childrenDAO.getPhotoByChilren(id)
+
+                // Faz upload da nova foto
+                let upload = await controller_upload.uploadFiles(file)
+
+                if (!upload.success)
+                    return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
+
+                // Atualiza no banco
+                let result = await childrenDAO.setUpdatePhotoChildren(id, upload.url)
+
+                if (!result)
+                    return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+
+                // Deleta a antiga só após confirmar que o banco atualizou
+                if (fotoAntiga)
+                    await controller_upload.deleteFile(fotoAntiga[0].photo)
+
+                MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_MODIFIED_ITEM.status_code
+
+                return MESSAGES.DEFAULT_HEADER // 200
+
+            } else {
+                MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID Incorreto!]'
+                return MESSAGES.ERROR_REQUIRED_FIELDS // 400
             }
         } else {
             return MESSAGES.ERROR_CONTENT_TYPE // 415
@@ -280,10 +343,6 @@ const validarUpdate = async function (child) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Tipo Sanguíneo incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    } else if (child.photo == undefined || child.photo.length > 255) {
-        MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Foto incorreto]'
-        return MESSAGES.ERROR_REQUIRED_FIELDS
-
     } else if (child.gender == undefined || child.gender == null || child.gender == '') {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Gênero incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
@@ -299,6 +358,7 @@ module.exports = {
     listDeactivateChildren,
     insertChildren,
     updateChildren,
+    updatePhotoChild,
     deactivateChildren,
     reactivateChildren
 }
