@@ -114,7 +114,7 @@ const insertDiary = async function (diary, contentType, file) {
       }
 
     } else {
-      return MESSAGES.ERROR_CONTENT_TYPE // 415
+      return MESSAGES.ERROR_CONTENT_TYPE_FORM_DATA // 415
     }
 
   } catch (error) {
@@ -205,7 +205,7 @@ const updateMediaDiary = async function(id, contentType, file) {
                 validarId
             }
         } else {
-            return MESSAGES.ERROR_CONTENT_TYPE // 415
+          return MESSAGES.ERROR_CONTENT_TYPE_FORM_DATA // 415
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
