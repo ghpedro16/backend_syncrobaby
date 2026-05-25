@@ -254,7 +254,7 @@ const updateProfilePicture = async function(id, contentType, file){
                 validarId
             }
         } else {
-            return MESSAGES.ERROR_CONTENT_TYPE // 415
+          return MESSAGES.ERROR_CONTENT_TYPE_FORM_DATA // 415
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500

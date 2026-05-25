@@ -11,7 +11,6 @@ const controllerNotification = require('../../notification/controller_notificati
 const stockDAO = require('../../../model/stock.js')
 
 const DEFAULT_MESSAGES = require('../../modulo/config_messages.js')
-const { request } = require('../../../routes/routes_user.js')
 
 const listBathId = async function(id){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))

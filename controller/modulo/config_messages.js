@@ -38,6 +38,8 @@ const ERROR_REQUIRED_FIELDS = {status: false, status_code: 400, message: 'Existe
 
 const ERROR_CONTENT_TYPE = {status: false, status_code: 415, message: 'Não foi possível processar a requisição, pois o tipo de dado enviado no corpo deve ser JSON'}
 
+const ERROR_CONTENT_TYPE_FORM_DATA = {status: false, status_code: 415, message: 'Não foi possível processar a requisição, pois o tipo de dado enviado no corpo deve ser FORM-DATA'}
+
 const ERROR_RELATIONAL_INSERTION = {status: false, status_code: 500, message: 'A requisição do item principal foi processada com sucesso, porém houveram problemas ao inserir dados na tabela de relação!'}
 
 const ERROR_UNIQUE_CONFLICT = {status: false, status_code: 409, message: "Não foi possivel processar a requisição pois o item principal causará um conflito na base de dados."}
@@ -55,6 +57,7 @@ module.exports = {
     ERROR_REQUIRED_FIELDS,
     SUCCESS_CREATE_ITEM,
     ERROR_CONTENT_TYPE,
+    ERROR_CONTENT_TYPE_FORM_DATA,
     SUCCESS_UPDATE_ITEM,
     SUCCESS_DELETE_ITEM,
     ERROR_RELATIONAL_INSERTION,

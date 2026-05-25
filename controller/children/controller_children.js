@@ -123,7 +123,7 @@ const insertChildren = async function (child, id_guardian, contentType, file) {
                 return validar
             }
         } else {
-            return MESSAGES.ERROR_CONTENT_TYPE // 415
+            return MESSAGES.ERROR_CONTENT_TYPE_FORM_DATA // 415
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
@@ -213,7 +213,7 @@ const updatePhotoChild = async function (id, id_guardian, contentType, file) {
                 return MESSAGES.ERROR_REQUIRED_FIELDS // 400
             }
         } else {
-            return MESSAGES.ERROR_CONTENT_TYPE // 415
+            return MESSAGES.ERROR_CONTENT_TYPE_FORM_DATA // 415
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
