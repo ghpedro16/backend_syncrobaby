@@ -28,8 +28,10 @@ const getChildrenById = async function (id, id_guardian) {
       fk_id_guardian: id_guardian,
     });
 
-    if (dados.length > 0) return dados;
-    else return false;
+    if (dados.length > 0) 
+      return dados;
+    else 
+    return false;
   } catch (error) {
     return false;
   }

@@ -109,7 +109,6 @@ const insertChildren = async function (child, id_guardian, contentType, file) {
             if (!validar) {
 
                 let resultChildren = await childrenDAO.setInsertChildren(child)
-                console.log(resultChildren)
 
                 if (resultChildren) {
 
