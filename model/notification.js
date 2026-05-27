@@ -7,12 +7,12 @@
 
 const db = require('../config/connection.js')
 
-const getNotificationByUserId = async function (id_user) {
+const getNotificationById = async function (id) {
     try {
-        let dados = await db('tbl_notification')
+        let dados = await db('vw_notification_type')
         .select('*')
         .where({
-            fk_id_guardian: id_user
+            id_notification: id
         })
 
         if(dados.length > 0)
@@ -25,9 +25,28 @@ const getNotificationByUserId = async function (id_user) {
     }
 }
 
+const getNotificationByUserId = async function (id_user) {
+    try {
+        let dados = await db('vw_notification_type')
+        .select('*')
+        .where({
+            fk_id_guardian: id_user
+        })
+
+        if(dados.length > 0)
+            return dados
+        else 
+            return false
+
+    } catch (error) {
+        console.log(error)
+        return false
+    }
+}
+
 const getNotificationByChildId = async function (id_child) {
     try {
-        let dados = await db('tbl_notification')
+        let dados = await db('vw_notification_type')
         .select('*')
         .where({
             fk_id_child: id_child
@@ -68,7 +87,7 @@ const setUpdateReadNotification = async function(id){
     try {
         let dados = await db('tbl_notification')
         .update({
-            read_status: true
+            read_status: 1
         })
         .where({
             id_notification: id
@@ -103,6 +122,7 @@ const setDeleteNotification = async function(id){
 }
 
 module.exports = {
+    getNotificationById,
     getNotificationByChildId,
     getNotificationByUserId,
     setInsertNotification,
