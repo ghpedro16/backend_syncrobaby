@@ -9,6 +9,31 @@ const notificationDAO = require('../../model/notification.js')
 
 const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
 
+const listNotificationById = async function (id) {
+    let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
+
+    try {
+
+        let resultNotification = await notificationDAO.getNotificationById(id)
+
+        if (resultNotification) {
+            if (resultNotification.length > 0) {
+
+                MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
+                MESSAGES.DEFAULT_HEADER.notification = resultNotification
+
+                return MESSAGES.DEFAULT_HEADER // 200
+            } else {
+                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+            }
+        } else {
+            return MESSAGES.ERROR_NOT_FOUND // 404
+        }
+    } catch (error) {
+        return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
+    }
+}
+
 const listNotificationByUser = async function (id_user) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
@@ -18,10 +43,11 @@ const listNotificationByUser = async function (id_user) {
 
         if (resultNotification) {
             if (resultNotification.length > 0) {
-                MESSAGES.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.notification = resultNotification
 
-                return MESSAGES // 200
+                MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
+                MESSAGES.DEFAULT_HEADER.notification = resultNotification
+
+                return MESSAGES.DEFAULT_HEADER // 200
             } else {
                 return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
             }
@@ -42,10 +68,10 @@ const listNotificationByChild = async function (id_child) {
 
         if (resultNotification) {
             if (resultNotification.length > 0) {
-                MESSAGES.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.notification = resultNotification
+                MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
+                MESSAGES.DEFAULT_HEADER.notification = resultNotification
 
-                return MESSAGES // 200
+                return MESSAGES.DEFAULT_HEADER // 200
             } else {
                 return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
             }
@@ -71,10 +97,10 @@ const insertNotification = async function (notification, contentType) {
 
                 if (resultNotification) {
 
-                    MESSAGES.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
-                    MESSAGES.message = MESSAGES.SUCCESS_CREATE_ITEM.message
+                    MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_CREATE_ITEM.status_code
+                    MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_CREATE_ITEM.message
 
-                    return MESSAGES // 201
+                    return MESSAGES.DEFAULT_HEADER // 201
                 } else {
                     return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
                 }
@@ -95,7 +121,7 @@ const updateNotification = async function (id) {
     try {
         if (!isNaN(id) && id != '' && id != null && id > 0) {
 
-            let validarId = await listNotificationByChild(id)
+            let validarId = await listNotificationById(id)
 
             if(validarId.status_code == 200){
 
@@ -103,14 +129,14 @@ const updateNotification = async function (id) {
 
                 if(resultNotification){
 
-                    MESSAGES.status_code = MESSAGES.SUCCESS_MODIFIED_ITEM.status_code
+                    MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_MODIFIED_ITEM.status_code
     
-                    return MESSAGES // 200
+                    return MESSAGES.DEFAULT_HEADER // 200
                 }else{
                     return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
                 }
             }else{
-                MESSAGES.ERROR_NOT_FOUND // 404
+                return MESSAGES.ERROR_NOT_FOUND // 404
             }
         }else{
             MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID Incorreto!]'
@@ -127,17 +153,17 @@ const deleteNotification = async function (id) {
     try {
         if (!isNaN(id) && id != '' && id != null && id > 0) {
 
-            let validarId = await listNotificationByChild(id)
+            let validarId = await listNotificationById(id)
 
             if(validarId.status_code == 200){
 
                 let resultNotification = await notificationDAO.setDeleteNotification(id)
 
                 if(resultNotification){
-                    MESSAGES.status_code = MESSAGES.SUCCESS_DELETE_ITEM.status_code
-                    MESSAGES.message = MESSAGES.SUCCESS_DELETE_ITEM.message
+                    MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETE_ITEM.status_code
+                    MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_DELETE_ITEM.message
     
-                    return MESSAGES // 200
+                    return MESSAGES.DEFAULT_HEADER // 200
                 }else{
                     return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
                 }
@@ -182,6 +208,7 @@ const validarDados = async function(notification){
 }
 
 module.exports = {
+    listNotificationById,
     listNotificationByChild,
     listNotificationByUser,
     insertNotification,

@@ -15,8 +15,16 @@ const app = express()
 
 const controller_notification = require('../controller/notification/controller_notification.js')
 
+//Retorna notificacoes por ID
+app.get('/syncrobaby/notification/:id', verifyJWT, cors(), async (request, response) => {
+    let notId = request.params.id
+
+    let nots = await controller_notification.listNotificationById(notId)
+    response.status(nots.status_code).json(nots)
+})
+
 //Retorna notificacoes do filho por ID
-app.get('/syncrobaby/notification/child/:id', verifyJWT, cors(), async (request, response) => {
+app.get('/syncrobaby/notifications/child/:id', verifyJWT, cors(), async (request, response) => {
     let childId = request.params.id
 
     let nots = await controller_notification.listNotificationByChild(childId)
@@ -24,7 +32,7 @@ app.get('/syncrobaby/notification/child/:id', verifyJWT, cors(), async (request,
 })
 
 //Retorna notificacoes do usuario por ID
-app.get('/syncrobaby/notification/user', verifyJWT, cors(), async (request, response) => {
+app.get('/syncrobaby/notifications/user', verifyJWT, cors(), async (request, response) => {
     let userId = request.user.userID
 
     let nots = await controller_notification.listNotificationByUser(userId)

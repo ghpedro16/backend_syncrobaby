@@ -30,11 +30,11 @@ const listDiaryByChildren = async function (id_children) {
           return MESSAGES.DEFAULT_HEADER // 200
 
         } else {
-          return MESSAGES.ERROR_NOT_FOUND // 404
+          return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
         }
 
       } else {
-        return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+        return MESSAGES.ERROR_NOT_FOUND // 404
       }
 
     } else {
@@ -62,11 +62,11 @@ const listDiaryById = async function (id) {
         return MESSAGES.DEFAULT_HEADER // 200
 
       } else {
-        return MESSAGES.ERROR_NOT_FOUND // 404
+        return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
       }
 
     } else {
-      return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+      return MESSAGES.ERROR_NOT_FOUND // 404
     }
 
   } catch (error) {
