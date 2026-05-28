@@ -13,20 +13,27 @@ const listVaccineByStatus = async function (status, id_child) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
-        let resultVaccine = await vaccineDAO.getVaccineByStatus(status, id_child)
+        if(status == 1 || status == 0){
 
-        if (resultVaccine) {
-            if (resultVaccine.length > 0) {
+            let resultVaccine = await vaccineDAO.getVaccineByStatus(status, id_child)
 
-                MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.vaccine = resultVaccine
+            if (resultVaccine) {
 
-                return MESSAGES.DEFAULT_HEADER // 200
+                if (resultVaccine.length > 0) {
+
+                    MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
+                    MESSAGES.DEFAULT_HEADER.vaccine = resultVaccine
+
+                    return MESSAGES.DEFAULT_HEADER // 200
+                } else {
+                    return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+                }
             } else {
-                return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
+                return MESSAGES.ERROR_NOT_FOUND // 404
             }
-        } else {
-            return MESSAGES.ERROR_NOT_FOUND // 404
+        }else{
+            MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Status Incorreto!]'
+            return MESSAGES.ERROR_REQUIRED_FIELDS // 400
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
@@ -116,7 +123,7 @@ const updateStatusVaccine = async function (vaccine, contentType) {
 const validarDados = async function (vaccine) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
-    if (vaccine.application_status != true && vaccine.application_status != false) {
+    if (vaccine.application_status != 1 && vaccine.application_status != 0) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Status de Aplicacao incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 

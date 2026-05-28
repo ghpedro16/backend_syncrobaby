@@ -140,15 +140,15 @@ const insertMeasures = async function(measures, contentType){
 const validarDados = async function(measures){
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
-    if(isNaN(measures.head_circumference) || measures.head_circumference == undefined || measures.head_circumference < 0){
+    if(measures.head_circumference != null && (Number.isNaN(Number(measures.head_circumference)) || Number(measures.head_circumference) < 0)){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Perímetro Cefálico incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(isNaN(measures.height) || measures.height == undefined || measures.height < 0){
+    }else if(measures.height != null && (Number.isNaN(Number(measures.height)) || Number(measures.height) < 0)){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Altura incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(isNaN(measures.weight) || measures.weight == undefined || measures.weight < 0){
+    }else if(measures.weight != null && (Number.isNaN(Number(measures.weight)) || Number(measures.weight) < 0)){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Peso incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
