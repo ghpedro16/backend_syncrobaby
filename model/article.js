@@ -10,7 +10,7 @@ const db = require('../config/connection.js')
 const getAllArticles = async function () {
     try {
         let dados = await db('tbl_article')
-        .select('*')
+        .select('id_article', 'title', 'publication_date', 'author', 'media', 'source_link', 'description')
 
         if (dados.length > 0)
             return dados

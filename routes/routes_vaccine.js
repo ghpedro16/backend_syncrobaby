@@ -29,8 +29,10 @@ app.get('/syncrobaby/vaccine/status', verifyJWT, cors(), async (request, respons
 })
 
 //Retorna todas as vacinas
-app.get('/syncrobaby/vaccine', verifyJWT, cors(), async (request, response) => {
-    let vaccine = await controller_vaccine.listVaccines()
+app.get('/syncrobaby/vaccine/child/:id', verifyJWT, cors(), async (request, response) => {
+    let idChild = request.params.id
+
+    let vaccine = await controller_vaccine.listVaccines(idChild)
     response.status(vaccine.status_code).json(vaccine)
 })
 

@@ -40,11 +40,11 @@ const listVaccineByStatus = async function (status, id_child) {
     }
 }
 
-const listVaccines = async function () {
+const listVaccines = async function (id_child) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
-        let resultVaccine = await vaccineDAO.getAllVaccines()
+        let resultVaccine = await vaccineDAO.getAllVaccines(id_child)
 
         if (resultVaccine) {
             if (resultVaccine.length > 0) {
