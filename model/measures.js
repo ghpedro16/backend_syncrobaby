@@ -12,6 +12,7 @@ const getHeightByChildrenId = async function(id){
         let dados = await db('tbl_measurement_history')
         .select('height', 'update_date')
         .where('fk_id_child', id)
+        .orderBy('update_date')
 
         if(dados.length > 0)
             return dados
@@ -28,6 +29,7 @@ const getWeightByChildrenId = async function(id){
         let dados = await db('tbl_measurement_history')
         .select('weight', 'update_date')
         .where('fk_id_child', id)
+        .orderBy('update_date')
 
         if(dados.length > 0)
             return dados
@@ -44,6 +46,7 @@ const getBmiByChildrenId = async function(id){
         let dados = await db('tbl_measurement_history')
         .select('bmi', 'update_date')
         .where('fk_id_child', id)
+        .orderBy('update_date')
 
         if(dados.length > 0)
             return dados
@@ -60,6 +63,7 @@ const getHeadCircumferenceByChildrenId = async function(id){
         let dados = await db('tbl_measurement_history')
         .select('head_circumference', 'update_date')
         .where('fk_id_child', id)
+        .orderBy('update_date')
 
         if(dados.length > 0)
             return dados
