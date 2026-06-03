@@ -9,6 +9,10 @@
 const express = require('express')
 const cors = require('cors')
 const verifyJWT = require('../middleware/verify_jwt.js')
+const bodyParser = require("body-parser")
+
+//Cria um objeto especialista no formato JSON para receber dados via POST e PUT
+const bodyParserJSON = bodyParser.json()
 
 //Criando uma instancia de uma classe do express 
 const app = express()
@@ -39,15 +43,16 @@ app.get('/syncrobaby/notifications/user', verifyJWT, cors(), async (request, res
     response.status(nots.status_code).json(nots)
 })
 
-//Retorna notificacoes do filho por ID
-app.patch('/syncrobaby/notification/:id', verifyJWT, cors(), async (request, response) => {
-    let notificationId = request.params.id
+//Atualiza o status de leitura de notificacoes
+app.patch('/syncrobaby/notification/read', verifyJWT, cors(), bodyParserJSON, async (request, response) => {
+    let notificationId = request.body
+    let contentType = request.headers['content-type']
 
-    let nots = await controller_notification.updateNotification(notificationId)
+    let nots = await controller_notification.updateNotification(notificationId, contentType)
     response.status(nots.status_code).json(nots)
 })
 
-//Retorna notificacoes do filho por ID
+//Deleta notificacoes do filho por ID
 app.delete('/syncrobaby/notification/:id', verifyJWT, cors(), async (request, response) => {
     let notificationId = request.params.id
 

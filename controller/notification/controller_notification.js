@@ -115,32 +115,22 @@ const insertNotification = async function (notification, contentType) {
     }
 }
 
-const updateNotification = async function (id) {
+const updateNotification = async function (not, contentType) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     try {
-        if (!isNaN(id) && id != '' && id != null && id > 0) {
+        if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
 
-            let validarId = await listNotificationById(id)
-
-            if(validarId.status_code == 200){
-
-                let resultNotification = await notificationDAO.setUpdateReadNotification(id)
-
-                if(resultNotification){
-
-                    MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_MODIFIED_ITEM.status_code
-    
-                    return MESSAGES.DEFAULT_HEADER // 200
-                }else{
-                    return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
-                }
-            }else{
-                return MESSAGES.ERROR_NOT_FOUND // 404
+            for (notification of not.notifications) {
+                await notificationDAO.setUpdateReadNotification(notification.id)
             }
-        }else{
-            MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID Incorreto!]'
-            return MESSAGES.ERROR_REQUIRED_FIELDS // 400
+
+            MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_MODIFIED_ITEM.status_code
+
+            return MESSAGES.DEFAULT_HEADER // 200
+            
+        } else {
+            return MESSAGES.ERROR_CONTENT_TYPE // 415
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
@@ -155,31 +145,31 @@ const deleteNotification = async function (id) {
 
             let validarId = await listNotificationById(id)
 
-            if(validarId.status_code == 200){
+            if (validarId.status_code == 200) {
 
                 let resultNotification = await notificationDAO.setDeleteNotification(id)
 
-                if(resultNotification){
+                if (resultNotification) {
                     MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_DELETE_ITEM.status_code
                     MESSAGES.DEFAULT_HEADER.message = MESSAGES.SUCCESS_DELETE_ITEM.message
-    
+
                     return MESSAGES.DEFAULT_HEADER // 200
-                }else{
+                } else {
                     return MESSAGES.ERROR_INTERNAL_SERVER_MODEL // 500
                 }
-            }else{
+            } else {
                 MESSAGES.ERROR_NOT_FOUND // 404
             }
-        }else{
+        } else {
             MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID Incorreto!]'
             return MESSAGES.ERROR_REQUIRED_FIELDS // 400
         }
     } catch (error) {
         return MESSAGES.ERROR_INTERNAL_SERVER_CONTROLLER // 500
-    } 
+    }
 }
 
-const validarDados = async function(notification){
+const validarDados = async function (notification) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
 
     if (notification.title == '' || notification.title == undefined || notification.title == null || notification.title.length > 150) {
@@ -190,19 +180,19 @@ const validarDados = async function(notification){
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [Mensagem incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(notification.fk_id_guardian == undefined || notification.fk_id_guardian == null || notification.fk_id_guardian == '' || isNaN(notification.fk_id_guardian) || notification.fk_id_guardian <= 0){
+    } else if (notification.fk_id_guardian == undefined || notification.fk_id_guardian == null || notification.fk_id_guardian == '' || isNaN(notification.fk_id_guardian) || notification.fk_id_guardian <= 0) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID (chave estrangeira) incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(notification.fk_id_child == undefined || notification.fk_id_child == null || notification.fk_id_child == '' || isNaN(notification.fk_id_child) || notification.fk_id_child <= 0){
+    } else if (notification.fk_id_child == undefined || notification.fk_id_child == null || notification.fk_id_child == '' || isNaN(notification.fk_id_child) || notification.fk_id_child <= 0) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID (chave estrangeira) incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else if(notification.fk_id_notification_type == undefined || notification.fk_id_notification_type == null || notification.fk_id_notification_type == '' || isNaN(notification.fk_id_notification_type) || notification.fk_id_notification_type <= 0){
+    } else if (notification.fk_id_notification_type == undefined || notification.fk_id_notification_type == null || notification.fk_id_notification_type == '' || isNaN(notification.fk_id_notification_type) || notification.fk_id_notification_type <= 0) {
         MESSAGES.ERROR_REQUIRED_FIELDS.message += ' [ID (chave estrangeira) incorreto]'
         return MESSAGES.ERROR_REQUIRED_FIELDS
 
-    }else{
+    } else {
         return false
     }
 }

@@ -49,7 +49,8 @@ const getNotificationByChildId = async function (id_child) {
         let dados = await db('vw_notification_type')
         .select('*')
         .where({
-            fk_id_child: id_child
+            fk_id_child: id_child,
+            active: 1
         })
 
         if(dados.length > 0)
@@ -106,10 +107,12 @@ const setUpdateReadNotification = async function(id){
 const setDeleteNotification = async function(id){
     try {
         let dados = await db('tbl_notification')
+        .update({
+            active: false
+        })
         .where({
             id_notification: id
         })
-        .delete()
 
         if(dados > 0)
             return dados
