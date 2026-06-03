@@ -8,6 +8,7 @@
 const vaccineDAO = require('../../model/vaccine.js')
 
 const DEFAULT_MESSAGES = require('../modulo/config_messages.js')
+const { groupVaccinesByAgeGroup } = require('./group_vaccine.js')
 
 const listVaccineByStatus = async function (status, id_child) {
     let MESSAGES = JSON.parse(JSON.stringify(DEFAULT_MESSAGES))
@@ -50,7 +51,7 @@ const listVaccines = async function (id_child) {
             if (resultVaccine.length > 0) {
 
                 MESSAGES.DEFAULT_HEADER.status_code = MESSAGES.SUCCESS_REQUEST.status_code
-                MESSAGES.DEFAULT_HEADER.vaccine = resultVaccine
+                MESSAGES.DEFAULT_HEADER.vaccine = groupVaccinesByAgeGroup(resultVaccine)
 
                 return MESSAGES.DEFAULT_HEADER // 200
             } else {
