@@ -41,7 +41,7 @@ const getAllVaccines = async function (id_child) {
 
     } catch (error) {
         return false
-    }
+    }   
 }
 
 const getVaccineByAgeGroup = async function (id_age_group, id_child) {

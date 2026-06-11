@@ -9,6 +9,7 @@ const medicationDAO = require('../../../model/medication.js')
 const controllerMedicationStock = require('../../stock/medication/controller_medication_stock.js')
 const controllerNotification = require('../../notification/controller_notification.js')
 const stockDAO = require('../../../model/stock.js')
+const childDAO = require('../../../model/children.js')
 
 const DEFAULT_MESSAGES = require('../../modulo/config_messages.js')
 
@@ -68,9 +69,12 @@ const insertMedication = async function (medication, id_guardian, contentType) {
 
 
                             if(verifyStock[0].quantity == 1){
+
+                                const childName = await childDAO.getChildrenById(medication.fk_id_child, id_guardian)
+
                                 let notification = {
                                     title: `Atenção! ${verifyStock[0].product_name} está acabando!`,
-                                    message: `Existe apenas uma unidade do produto ${verifyStock[0].product_name} em estoque!`,
+                                    message: `Existe apenas uma unidade do produto ${verifyStock[0].product_name} no estoque de ${childName[0].child_name}!`,
                                     fk_id_guardian: id_guardian,
                                     fk_id_child: medication.fk_id_child,
                                     fk_id_notification_type: 2
@@ -80,9 +84,11 @@ const insertMedication = async function (medication, id_guardian, contentType) {
 
                             }else if(verifyStock[0].quantity == 0){
 
+                                const childName = await childDAO.getChildrenById(medication.fk_id_child, id_guardian)
+
                                 let notification = {
                                     title: `${verifyStock[0].product_name} ACABOU!`,
-                                    message: `Não há mais nenhuma unidade do produto ${verifyStock[0].product_name} em estoque!`,
+                                    message: `Não há mais nenhuma unidade do produto ${verifyStock[0].product_name} no estoque de ${childName[0].child_name}!`,
                                     fk_id_guardian: id_guardian,
                                     fk_id_child: medication.fk_id_child,
                                     fk_id_notification_type: 2
