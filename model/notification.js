@@ -30,6 +30,7 @@ const getNotificationByUserId = async function (id_user) {
         let dados = await db('vw_notification_type')
         .select('*')
         .where({
+            active: 1,
             fk_id_guardian: id_user
         })
 
