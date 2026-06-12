@@ -66,6 +66,7 @@ const getUserByLogin = async function (user) {
         return dados
 
     } catch (error) {
+        console.log(error)
         return false
     }
 }
