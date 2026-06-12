@@ -16,15 +16,13 @@ const app = express();
 const PORT = process.PORT || 8080;
 
 //Configuração de permissoes
-app.use((request, response, next) => {
-  response.header("Acess-Control-Allow-Origin", "*");
-  response.header(
-    "Acess-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS",
-  );
-  app.use(cors());
-  next();
-});
+app.use(cors({
+  origin: [
+    'https://frontendsyncrobabyvercel.vercel.app' // troque pela URL real do seu frontend
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true
+}));
 
 //Importa as rotas
 const routesUser = require('./routes/routes_user.js')
