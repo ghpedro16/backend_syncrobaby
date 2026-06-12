@@ -20,5 +20,6 @@ const baseConfig = {
 
 module.exports = {
   development: baseConfig,
-  production: baseConfig
+  production: baseConfig,
+  test: baseConfig
 }
