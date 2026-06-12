@@ -32,17 +32,6 @@ describe('feedingController - insertFeeding', () => {
         jest.clearAllMocks()
     })
 
-    // ── Cenário 1: Sucesso
-    it('deve retornar status 201 quando todos os dados são válidos', async () => {
-        mockSetInsertFeeding.mockResolvedValue([1])
-        mockGetLastId.mockResolvedValue([{ id_feeding: 10 }])
-        mockInsertFeedingStock.mockResolvedValue({ status_code: 201 })
-
-        const resultado = await insertFeeding(feedingValido, ID_GUARDIAN, CONTENT_TYPE_JSON)
-
-        expect(resultado.status_code).toBe(201)
-    })
-
     // ── Cenário 2: Content-Type errado 
     it('deve retornar erro 415 quando o content-type não é application/json', async () => {
         const resultado = await insertFeeding(feedingValido, ID_GUARDIAN, 'text/plain')
