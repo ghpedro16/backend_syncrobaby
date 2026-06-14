@@ -20,7 +20,7 @@ app.use(cors({
   origin: [
     'https://frontendsyncrobabyvercel.vercel.app' // troque pela URL real do seu frontend
   ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   credentials: true
 }));
 
